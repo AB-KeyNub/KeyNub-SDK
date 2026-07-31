@@ -1,0 +1,24 @@
+[package]
+name = "keynub-licdongle"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.70"
+description = "Rust binding for the KeyNub USB-C license dongle"
+license = "Apache-2.0"
+repository = "https://github.com/AB-KeyNub/KeyNub-SDK"
+keywords = ["license", "licensing", "dongle", "usb", "copy-protection"]
+categories = ["api-bindings", "hardware-support"]
+readme = "README.md"
+links = "keynub_licdongle"
+build = "build.rs"
+exclude = ["/target"]
+
+# No dependencies, deliberately. A licensing crate is the last place a customer
+# wants a transitive dependency tree, and the C ABI needs nothing beyond core.
+[dependencies]
+
+[features]
+default = []
+# Links keynub_licdongle_sim instead of the production library, which additionally
+# exports licd_open_simulated. For this crate's own tests only — never ship it.
+simulator = []

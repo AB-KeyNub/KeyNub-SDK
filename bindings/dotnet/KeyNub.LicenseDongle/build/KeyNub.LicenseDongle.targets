@@ -1,0 +1,20 @@
+<Project>
+
+  <!--
+    KeyNub.LicenseDongle native runtimes for classic (.NET Framework) consumers.
+
+    SDK-style .NET projects (net8.0+) resolve the NuGet runtimes/<rid>/native/ tree
+    automatically, so this only runs for .NETFramework. It copies the whole runtimes
+    tree next to the app; the binding's netstandard2.0 loader then LoadLibrary's the
+    process-matching native at startup.
+  -->
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <None Include="$(MSBuildThisFileDirectory)..\runtimes\**\*">
+      <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+      <Pack>false</Pack>
+    </None>
+  </ItemGroup>
+
+</Project>

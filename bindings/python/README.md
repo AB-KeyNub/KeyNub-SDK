@@ -1,0 +1,126 @@
+# KeyNub License Dongle — Python binding
+
+`keynub-licdongle` is a thin [ctypes](https://docs.python.org/3/library/ctypes.html)
+wrapper over the native `keynub_licdongle` core — no protocol or crypto logic in
+Python. Pure Python (no compiler needed at install); the native library is bundled
+per platform. Works on Windows, Linux, and macOS with no drivers.
+
+## Install
+
+```
+pip install keynub-licdongle
+```
+
+## Use
+
+```python
+import keynub_licdongle as kn
+
+with kn.LicenseDongleContext() as ctx:
+    for d in ctx.enumerate():
+        print(d.serial, d.path)
+
+    dongle = ctx.open()                    # first attached dongle (or open(serial=...))
+    print(dongle.get_serial())
+
+    result = dongle.verify_genuine()       # cert chain + live challenge-response
+    print("genuine:", result.is_genuine)
+
+    with dongle.open_session() as session:  # ECDH -> HKDF -> AES-256-GCM
+        license = session.read_record("license")            # read role
+
+        # Developer/provisioning tools elevate to the write role:
+        session.authorize_write(master_key_der)
+        session.write_record("license", new_bytes)
+
+        # App-data envelope encryption — unusable without a genuine dongle:
+        blob = session.app_encrypt(kn.Scope.DEVICE, plaintext)
+        assert session.app_decrypt(blob) == plaintext
+```
+
+- `LicenseDongleContext` — enumerate / open / logging (a context manager).
+- `Dongle` — `get_info`, `get_serial`, `verify_genuine`, `open_session`.
+- `Session` — records, counters, app-crypto, `authorize_write`.
+- Failures raise `LicenseDongleError` (with a `.status`); common cases have
+  subclasses (`NotGenuineError`, `WriteAuthorizationRequiredError`, `RecordNotFoundError`, …).
+- `read_record` / `write_record` accept a `progress` callback `(TransferProgress) -> bool`;
+  return `False` to cancel (raises `OperationCancelledError`).
+
+## Native library resolution
+
+The binding loads, in order: `$KEYNUB_LICDONGLE_LIBRARY` (explicit path), the
+bundled `keynub_licdongle/_libs/<lib>`, a copy next to the package, then the
+system search path. Linux additionally needs the shipped udev rule (a permission
+rule, not a driver).
+
+## Test & build (no hardware required)
+
+The test suite runs the whole binding against the in-process software dongle
+(`keynub_licdongle_sim`, shipped as a prebuilt binary), driven through the same simulator entry
+points as the C and .NET suites:
+
+```
+see NATIVES.md for the prebuilt library
+cd bindings/python
+KEYNUB_SIM_PATH=../../build/libkeynub_licdongle_sim.so PYTHONPATH=. python the binding's end-to-end test
+```
+
+Building the wheel needs the license files staged in first — PEP 639 cannot reach
+outside the project directory, so they are copied from the SDK root (the build fails
+loudly rather than producing a wheel with no attribution):
+
+```
+
+python -m build           # produces a wheel (CI bundles the native per platform)
+```
+
+## `licd-tool` — the command line
+
+Installing the wheel also installs **`licd-tool`**, which drives the same
+production core an application would. Useful for licence issuance, for support
+("what is this dongle and is it genuine?"), and for reproducing what an
+application sees without the application.
+
+```
+licd-tool list                                   # attached dongles
+licd-tool info                                   # firmware, storage, provisioning state
+licd-tool --trust-root ca.der verify             # prove it is genuine
+
+# Anything inside a session needs --trust-root; anything that writes needs the
+# developer master key.
+licd-tool --trust-root ca.der records list
+licd-tool --trust-root ca.der --master-key mk.der records write license lic.bin
+licd-tool --trust-root ca.der records read license -o lic.bin
+licd-tool --trust-root ca.der counter read
+
+# Envelope-encrypt data so it only decrypts with a dongle attached.
+licd-tool --trust-root ca.der appcrypto encrypt assets.bin -o assets.enc --scope developer
+licd-tool --trust-root ca.der appcrypto decrypt assets.enc -o assets.bin
+```
+
+`--json` makes every command emit machine-readable output on stdout, so it drops
+into a licence-issuing script. Irreversible operations refuse to run without
+`--yes`: incrementing a monotonic counter cannot be undone, and `records erase
+--all` wipes the dongle. Record writes are read back and compared before the tool
+reports success, because a silent truncation would otherwise surface at the
+customer.
+
+Factory provisioning is deliberately **not** in this tool — it lives with the CA
+in the firmware repo's `tools/provision`, is vendor-internal, and has irreversible
+steps.
+
+## Security
+
+Read [`docs/integration-security.md`](../../docs/integration-security.md) before
+writing your licensing check. `verify_genuine()` proves a genuine dongle is attached;
+it cannot stop an attacker from patching your application or pointing
+`KEYNUB_LICDONGLE_LIBRARY` at a fake library. Branch on a boolean and you will be
+bypassed — put dongle-derived data (`app_encrypt`/`app_decrypt`) on the path your
+application actually needs.
+
+## License
+
+Apache-2.0 — see [`LICENSE`](../../LICENSE), [`NOTICE`](../../NOTICE), and
+[`THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt) (all three ship inside the
+wheel, under `.dist-info/licenses/`). The bundled native statically links Mbed TLS
+(Apache-2.0 elected) and hidapi (BSD-style elected); no GPL terms apply.

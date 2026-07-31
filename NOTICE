@@ -1,0 +1,14 @@
+KeyNub License Dongle SDK
+Copyright (c) 2026 KeyNub
+
+This product includes software developed as part of the KeyNub License Dongle
+SDK (https://github.com/AB-KeyNub/KeyNub-SDK). The bindings, samples and C ABI
+header published there are licensed under the Apache License, Version 2.0; see
+the LICENSE file for the full terms. The prebuilt native libraries are not
+published as source and are covered by the accompanying BINARY-LICENSE.txt.
+
+This product also includes third-party software. The native library
+(keynub_licdongle) statically links Mbed TLS and hidapi; the Java binding
+depends on JNA. Their copyright notices, the licenses elected for them, and the
+full text of those licenses are recorded in THIRD-PARTY-NOTICES.txt, which is
+distributed with this product.

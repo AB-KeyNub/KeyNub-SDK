@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>KeyNub.LicenseDongle</AssemblyName>
+    <RootNamespace>KeyNub.LicenseDongle</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!-- Marshaling structs use platform-specific string charsets by design;
+         the analyzer's cross-platform advice does not apply here. -->
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+
+  <!-- NuGet package metadata -->
+  <PropertyGroup>
+    <PackageId>KeyNub.LicenseDongle</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>KeyNub</Authors>
+    <Company>KeyNub</Company>
+    <Product>KeyNub License Dongle SDK</Product>
+    <Description>Managed .NET binding for the KeyNub USB-C license dongle: verify authenticity, open an encrypted session, read/write license records, monotonic counters, and app-data envelope encryption. Driverless on Windows, Linux, and macOS. Wraps the native keynub_licdongle core (no protocol or crypto logic in managed code).</Description>
+    <PackageTags>keynub;license;dongle;usb;hid;licensing;security;hardware;copy-protection</PackageTags>
+    <Copyright>Copyright (c) KeyNub</Copyright>
+    <PackageProjectUrl>https://github.com/AB-KeyNub/KeyNub-SDK</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AB-KeyNub/KeyNub-SDK.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>BINARY-LICENSE.txt</PackageLicenseFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <!-- Native assets are supplied per-RID under runtimes/; nothing to build here. -->
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="KeyNub.LicenseDongle.Tests" />
+  </ItemGroup>
+
+  <!-- Package the README at the package root. -->
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/" Visible="false" />
+  </ItemGroup>
+
+  <!-- Licence and attribution notices at the package root. The natives statically
+       link Mbed TLS and hidapi, so the attribution obligation travels with the
+       binary: these files belong inside the .nupkg, not merely in the repo. -->
+  <ItemGroup>
+    <None Include="../../../LICENSE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../../BINARY-LICENSE.txt" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../../NOTICE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../../THIRD-PARTY-NOTICES.txt" Pack="true" PackagePath="/" Visible="false" />
+  </ItemGroup>
+
+  <!-- Package the native runtimes tree (runtimes/<rid>/native/...), staged by the
+       build/CI under bindings/dotnet/runtimes/. Missing on a fresh checkout: the
+       glob then matches nothing and the package ships managed-only. -->
+  <ItemGroup>
+    <None Include="../runtimes/**/*" Pack="true" PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)" Visible="false" />
+  </ItemGroup>
+
+  <!-- MSBuild targets for classic (.NET Framework) consumers: copy the native
+       runtimes tree to their output so the netstandard2.0 loader can find it.
+       SDK-style .NET resolves runtimes/ itself and ignores these. -->
+  <ItemGroup>
+    <None Include="build/KeyNub.LicenseDongle.targets" Pack="true" PackagePath="build/KeyNub.LicenseDongle.targets" Visible="false" />
+    <None Include="build/KeyNub.LicenseDongle.targets" Pack="true" PackagePath="buildTransitive/KeyNub.LicenseDongle.targets" Visible="false" />
+  </ItemGroup>
+
+</Project>

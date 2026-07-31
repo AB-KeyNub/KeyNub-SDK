@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.keynub</groupId>
+  <artifactId>keynub-licdongle</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>KeyNub License Dongle SDK</name>
+  <description>Java binding for the KeyNub USB-C license dongle (JNA; driverless on Windows/Linux/macOS).</description>
+  <url>https://github.com/AB-KeyNub/KeyNub-SDK</url>
+
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>KeyNub</name>
+    <url>https://github.com/AB-KeyNub/KeyNub-SDK</url>
+  </organization>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jna.version>5.14.0</jna.version>
+    <junit.version>5.10.2</junit.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <!-- The forked test JVM inherits the environment (KEYNUB_SIM_PATH) from Maven;
+             the test also falls back to the standard native/ path if it is unset. -->
+      </plugin>
+
+      <!-- Copy the SDK's license and attribution files into META-INF/ so they are
+           inside the JAR. The canonical copies stay at the SDK root; this reads them
+           there directly, so they cannot drift. Required because the natives shipped
+           with the SDK statically link Mbed TLS and hidapi - the obligation travels
+           with the binary, not just the repo. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>copy-license-files</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/../..</directory>
+                  <includes>
+                    <include>LICENSE</include>
+                    <include>NOTICE</include>
+                    <include>THIRD-PARTY-NOTICES.txt</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

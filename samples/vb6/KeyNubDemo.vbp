@@ -1,0 +1,41 @@
+Type=Exe
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Module=modMain; modMain.bas
+Startup="Sub Main"
+Command32=""
+Name="KeyNubDemo"
+HelpContextID="0"
+CompatibleMode="0"
+MajorVer=1
+MinorVer=0
+RevisionVer=0
+AutoIncrementVer=0
+ServerSupportFiles=0
+CompilationType=0
+OptimizationType=0
+FavorPentiumPro(tm)=0
+CodeViewDebugInfo=0
+NoAliasing=0
+BoundsCheck=0
+OverflowCheck=0
+FlPointCheck=0
+FDIVCheck=0
+UnroundedFP=0
+StartMode=0
+Unattended=0
+Retained=0
+ThreadPerObject=0
+MaxNumberOfThreads=1
+
+'This sample binds late (CreateObject), so there is deliberately NO reference to
+'the KeyNub type library here -- the project opens and runs whether or not the
+'server happens to be registered on this machine, and the error you get if it is
+'not is the one you would get in production.
+'
+'To switch to early binding for IntelliSense and compile-time checking:
+'  Project > References... > browse to KeyNub.dll > tick "KeyNub License Dongle"
+'then change modMain's `Dim dongle As Object` to `Dim dongle As KeyNub.Dongle`.
+'
+'VB6 may rewrite the stdole2.tlb path above the first time it opens this project.
+'That is normal -- the reference is resolved by GUID from the registry, and the
+'path is only a hint.

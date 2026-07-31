@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>KeyNub.Samples.VerifyAndRead</RootNamespace>
+    <AssemblyName>verify_and_read_vb</AssemblyName>
+    <!-- Option Strict is off by default in VB projects created by some tooling;
+         on is the right setting for interop code, where a silent narrowing
+         conversion of a byte array or a handle is exactly what you do not want. -->
+    <OptionStrict>On</OptionStrict>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionInfer>On</OptionInfer>
+    <!-- Directory holding the native keynub_licdongle built by CMake. Override with
+         -p:KeynubNativeDir=... ; defaults to the standard SDK/build output. A real
+         consumer would instead `dotnet add package KeyNub.LicenseDongle`, which
+         brings the native automatically (see bindings/dotnet/README.md). -->
+    <KeynubNativeDir Condition="'$(KeynubNativeDir)' == ''">$(MSBuildProjectDirectory)/../../../build</KeynubNativeDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../bindings/dotnet/KeyNub.LicenseDongle/KeyNub.LicenseDongle.csproj" />
+  </ItemGroup>
+
+  <!-- Copy the platform native next to the sample so it runs from the CMake build. -->
+  <ItemGroup>
+    <None Include="$(KeynubNativeDir)/keynub_licdongle.dll" Condition="Exists('$(KeynubNativeDir)/keynub_licdongle.dll')"
+          CopyToOutputDirectory="PreserveNewest" Link="keynub_licdongle.dll" />
+    <None Include="$(KeynubNativeDir)/libkeynub_licdongle.so" Condition="Exists('$(KeynubNativeDir)/libkeynub_licdongle.so')"
+          CopyToOutputDirectory="PreserveNewest" Link="libkeynub_licdongle.so" />
+    <None Include="$(KeynubNativeDir)/libkeynub_licdongle.dylib" Condition="Exists('$(KeynubNativeDir)/libkeynub_licdongle.dylib')"
+          CopyToOutputDirectory="PreserveNewest" Link="libkeynub_licdongle.dylib" />
+  </ItemGroup>
+
+</Project>

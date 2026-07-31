@@ -1,0 +1,39 @@
+{
+  "name": "@keynub/licdongle",
+  "version": "1.0.0",
+  "description": "Node.js and Electron binding for the KeyNub USB-C license dongle",
+  "license": "SEE LICENSE IN BINARY-LICENSE.txt",
+  "author": "KeyNub",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib/",
+    "prebuilds/",
+    "LICENSE",
+    "BINARY-LICENSE.txt",
+    "NOTICE",
+    "THIRD-PARTY-NOTICES.txt",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/end_to_end.js"
+  },
+  "dependencies": {
+    "koffi": "^3.1.2"
+  },
+  "keywords": [
+    "keynub",
+    "license",
+    "licensing",
+    "dongle",
+    "usb",
+    "hid",
+    "copy-protection",
+    "electron"
+  ]
+}

@@ -1,0 +1,276 @@
+// KeyNub License Dongle — COM / ActiveX automation interface.
+//
+// This is the binding for the classic-Windows languages that cannot call a cdecl
+// C function safely: Visual Basic 6, twinBASIC, VBScript/HTA, and any VBA host
+// that would rather have an object than a screenful of Declare statements. It is
+// also the least error-prone way in from .NET, PowerShell and Delphi.
+//
+// WHY COM RATHER THAN Declare STATEMENTS
+//   VB6's Declare emits a stdcall call; the flat C API (bindings/flat) is cdecl.
+//   On x64 that distinction does not exist, so the VBA binding gets away with it,
+//   but in a 32-bit process nobody pops the arguments and the stack pointer drifts
+//   on every call. Going through COM removes the question: the caller reaches the
+//   object through a vtable/IDispatch that the marshaller owns, so the calling
+//   convention is no longer the application's problem.
+//
+// WHAT COM ADDS BEYOND SAFETY
+//   * The handle is owned by the object, so a dropped reference closes the dongle.
+//     The flat API's 32-handle table is easy to exhaust from a language where an
+//     early Exit Sub skips the Close.
+//   * Failures raise, with Err.Number carrying the status and Err.Description the
+//     SDK's own diagnostic detail — which is what separates "no dongle attached"
+//     from "a dongle whose certificate did not validate".
+//   * Byte arrays are SAFEARRAYs, which VB6 Byte() already is. No pointer maths.
+//
+// One deliberate exception to the raising rule: IsGenuine returns False instead of
+// raising, for use directly in a gate, and fails closed on every kind of error.
+//
+// READ FIRST: docs/integration-security.md. An object model this pleasant makes it
+// tempting to write `If d.IsGenuine Then Unlock` — one line for an attacker to cut.
+// Put the data your program cannot compute through AppEncrypt/AppDecrypt instead.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+    uuid(98291089-D295-4594-BA08-D6CB551403EE),
+    v1_enum,
+    helpstring("Who may decrypt an AppEncrypt envelope.")
+]
+typedef enum KeyNubScope
+{
+    [helpstring("Only this one physical dongle can decrypt it.")]
+    keynubScopeDevice = 0,
+    [helpstring("Any dongle from the same developer batch can decrypt it.")]
+    keynubScopeDeveloper = 1
+} KeyNubScope;
+
+[
+    uuid(C1FD94B6-C25B-4BCB-B490-ECC3F104DCBF),
+    v1_enum,
+    helpstring("Bits in the Flags property.")
+]
+typedef enum KeyNubFlag
+{
+    [helpstring("The secure element answered and is ready.")]
+    keynubFlagSeReady = 1,
+    [helpstring("The dongle carries an identity certificate.")]
+    keynubFlagProvisioned = 2,
+    [helpstring("The last boot followed a watchdog reset, not a clean power-up.")]
+    keynubFlagWatchdogReboot = 4,
+    [helpstring("The dongle confirmed its USB and parsing code is fenced off from keys and storage.")]
+    keynubFlagIsolated = 8
+} KeyNubFlag;
+
+[
+    uuid(E1B547C9-C125-4FBE-BD36-D6EA75F59A7D),
+    v1_enum,
+    helpstring("SDK status codes. Err.Number is 5000 + the absolute value of these.")
+]
+typedef enum KeyNubStatus
+{
+    keynubOk = 0,
+    keynubErrInvalidArg = -1,
+    keynubErrNoDevice = -2,
+    keynubErrAccessDenied = -3,
+    keynubErrIo = -4,
+    keynubErrTimeout = -5,
+    keynubErrProtocol = -6,
+    keynubErrNotGenuine = -7,
+    keynubErrCertInvalid = -8,
+    keynubErrSessionExpired = -9,
+    keynubErrTagMismatch = -10,
+    keynubErrRange = -11,
+    keynubErrStorageFull = -12,
+    keynubErrBusy = -13,
+    keynubErrNotFound = -14,
+    keynubErrAuthRequired = -15,
+    keynubErrFwIncompatible = -16,
+    keynubErrSdkTooOld = -17,
+    keynubErrCancelled = -18,
+    keynubErrNotImplemented = -19,
+    keynubErrInternal = -20
+} KeyNubStatus;
+
+[
+    object,
+    uuid(72FCBC35-494F-4771-B295-E34DC2523078),
+    dual,
+    oleautomation,
+    pointer_default(unique),
+    helpstring("A KeyNub license dongle. Create one, Open it, and Close it (or just "
+               "drop the reference).")
+]
+interface IDongle : IDispatch
+{
+    // --- discovery: valid before Open, and does not need a dongle -------------
+
+    [propget, id(1), helpstring("How many dongles are attached. Call this before "
+        "DeviceSerial: it takes the snapshot the index refers to.")]
+    HRESULT DeviceCount([out, retval] long* value);
+
+    [id(2), helpstring("Serial of attached dongle `index`, without opening it.")]
+    HRESULT DeviceSerial([in] long index, [out, retval] BSTR* value);
+
+    [id(3), helpstring("OS device path of attached dongle `index`. Use with OpenPath "
+        "to pin one dongle when several are attached.")]
+    HRESULT DevicePath([in] long index, [out, retval] BSTR* value);
+
+    // --- lifetime ------------------------------------------------------------
+
+    [id(4), helpstring("Opens a dongle. Omit the serial to take the first one found. "
+        "Raises keynubErrNoDevice if there is nothing to open.")]
+    HRESULT Open([in, defaultvalue("")] BSTR serial);
+
+    [id(5), helpstring("Opens the dongle at an exact OS path, from DevicePath.")]
+    HRESULT OpenPath([in] BSTR path);
+
+    [id(6), helpstring("Closes the dongle. Safe to call when not open, and safe to "
+        "call twice, so it belongs in your error handler too.")]
+    HRESULT Close();
+
+    [propget, id(7), helpstring("True between a successful Open and a Close.")]
+    HRESULT IsOpen([out, retval] VARIANT_BOOL* value);
+
+    // --- plaintext identity and health ---------------------------------------
+
+    [propget, id(8), helpstring("The dongle's USB serial. This is not proof of "
+        "anything on its own — see VerifyGenuine.")]
+    HRESULT Serial([out, retval] BSTR* value);
+
+    [propget, id(9), helpstring("Firmware version as \"major.minor.patch\".")]
+    HRESULT FirmwareVersion([out, retval] BSTR* value);
+
+    [propget, id(10), helpstring("Wire protocol version as \"major.minor\".")]
+    HRESULT ProtocolVersion([out, retval] BSTR* value);
+
+    [propget, id(11), helpstring("Bitmask of KeyNubFlag values.")]
+    HRESULT Flags([out, retval] long* value);
+
+    [propget, id(12), helpstring("Total user data storage, in bytes.")]
+    HRESULT Capacity([out, retval] long* value);
+
+    [propget, id(13), helpstring("Unused user data storage, in bytes.")]
+    HRESULT FreeBytes([out, retval] long* value);
+
+    // --- proof of authenticity -----------------------------------------------
+
+    [propget, id(14), helpstring("True only for a genuine dongle. Never raises and "
+        "fails closed, so it is safe in a gate — but a gate on a Boolean is one line "
+        "for an attacker to delete. Prefer AppDecrypt.")]
+    HRESULT IsGenuine([out, retval] VARIANT_BOOL* value);
+
+    [id(15), helpstring("Proves authenticity by certificate chain plus a live "
+        "challenge-response, and returns the certificate serial. Raises unless the "
+        "dongle is genuine. Also fills in Batch.")]
+    HRESULT VerifyGenuine([out, retval] BSTR* certificateSerial);
+
+    [propget, id(16), helpstring("Batch name from the last successful VerifyGenuine; "
+        "empty before then.")]
+    HRESULT Batch([out, retval] BSTR* value);
+
+    // --- session -------------------------------------------------------------
+
+    [id(17), helpstring("Opens the encrypted session that records, counters and "
+        "app-crypto all require.")]
+    HRESULT SessionOpen();
+
+    [id(18), helpstring("Closes the encrypted session.")]
+    HRESULT SessionClose();
+
+    [id(19), helpstring("Elevates to the write role with the developer master key. "
+        "Vendor provisioning tools only — never ship this key to a customer.")]
+    HRESULT AuthorizeWrite([in] SAFEARRAY(unsigned char) der);
+
+    // --- records -------------------------------------------------------------
+
+    [propget, id(20), helpstring("How many records are stored.")]
+    HRESULT RecordCount([out, retval] long* value);
+
+    [id(21), helpstring("Name of record `index`. Read RecordCount and the names back "
+        "to back: adding a record shifts the indices.")]
+    HRESULT RecordName([in] long index, [out, retval] BSTR* value);
+
+    [id(22), helpstring("Size in bytes of a named record, without reading it.")]
+    HRESULT RecordSize([in] BSTR name, [out, retval] long* value);
+
+    [id(23), helpstring("Reads a record. Raises keynubErrNotFound if there is no such "
+        "record.")]
+    HRESULT RecordRead([in] BSTR name, [out, retval] SAFEARRAY(unsigned char)* value);
+
+    [id(24), helpstring("Writes a record, replacing any existing one of that name. "
+        "Needs AuthorizeWrite first.")]
+    HRESULT RecordWrite([in] BSTR name, [in] SAFEARRAY(unsigned char) data);
+
+    [id(25), helpstring("Erases one named record. An empty name is refused rather "
+        "than treated as \"all\".")]
+    HRESULT RecordErase([in] BSTR name);
+
+    [id(26), helpstring("Erases every record. Separate from RecordErase so that an "
+        "accidentally empty variable cannot wipe the dongle.")]
+    HRESULT RecordEraseAll();
+
+    // --- counters ------------------------------------------------------------
+
+    [id(27), helpstring("Reads a monotonic hardware counter.")]
+    HRESULT CounterRead([in] long counterId, [out, retval] long* value);
+
+    [id(28), helpstring("Increments a monotonic hardware counter and returns the new "
+        "value. Cannot be undone or wound back.")]
+    HRESULT CounterIncrement([in] long counterId, [out, retval] long* value);
+
+    // --- app-data envelopes: the pair to build a real licence check on --------
+
+    [id(29), helpstring("Encrypts data to this dongle or to your whole batch. Run "
+        "once, when you issue a licence, with your developer dongle.")]
+    HRESULT AppEncrypt([in] KeyNubScope scope,
+                       [in] SAFEARRAY(unsigned char) plaintext,
+                       [out, retval] SAFEARRAY(unsigned char)* value);
+
+    [id(30), helpstring("Decrypts an AppEncrypt envelope. THIS is the licence check: "
+        "no dongle means no data, and a tampered envelope raises rather than "
+        "returning different data.")]
+    HRESULT AppDecrypt([in] SAFEARRAY(unsigned char) packed,
+                       [out, retval] SAFEARRAY(unsigned char)* value);
+
+    // --- diagnostics ---------------------------------------------------------
+
+    [id(31), helpstring("Overrides the CA root that VerifyGenuine trusts. "
+        "Applications do not need this; a release build embeds the KeyNub root.")]
+    HRESULT SetTrustRoot([in] SAFEARRAY(unsigned char) der);
+
+    [propget, id(32), helpstring("Diagnostic detail for the most recent failure. "
+        "Err.Description already carries this; the property is for logging.")]
+    HRESULT LastError([out, retval] BSTR* value);
+
+    [propget, id(33), helpstring("SDK version as \"major.minor.patch\".")]
+    HRESULT Version([out, retval] BSTR* value);
+}
+
+[
+    uuid(2C529A65-017E-422C-A515-BD9FEB0AA6EB),
+    version(1.0),
+    helpstring("KeyNub License Dongle 1.0 Type Library")
+]
+library KeyNubLib
+{
+    importlib("stdole2.tlb");
+
+    interface IDongle;
+
+    // The enums are pulled in explicitly; nothing in the interface signatures
+    // references KeyNubFlag or KeyNubStatus by type, so MIDL would otherwise leave
+    // them out of the typelib and they would not reach the VB6 object browser.
+    typedef [public] KeyNubScope KeyNubScopeEnum;
+    typedef [public] KeyNubFlag KeyNubFlagEnum;
+    typedef [public] KeyNubStatus KeyNubStatusEnum;
+
+    [
+        uuid(335416C9-F790-454B-81B6-866020DB2A13),
+        helpstring("A KeyNub license dongle. Dim d As New KeyNub.Dongle")
+    ]
+    coclass Dongle
+    {
+        [default] interface IDongle;
+    };
+};

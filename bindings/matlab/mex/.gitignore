@@ -1,0 +1,12 @@
+# Built MEX gateways (keynub.build). Platform- and release-specific binaries are
+# packaging artifacts, not source; a release ships them prebuilt so customers
+# need no compiler. The folder itself is tracked so keynub.internal.call can
+# point at it in its "not built yet" message.
+*.mexw64
+*.mexw32
+*.mexa64
+*.mexmaci64
+*.mexmaca64
+*.pdb
+*.exp
+*.lib

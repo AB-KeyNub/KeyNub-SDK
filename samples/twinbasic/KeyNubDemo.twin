@@ -1,0 +1,141 @@
+'==============================================================================
+' KeyNub License Dongle - twinBASIC sample
+'
+' twinBASIC compiles VB6 source, so it can open samples/vb6/KeyNubDemo.vbp
+' directly and that sample will build and run unchanged. This file exists for
+' what twinBASIC adds on top, because two of those things change what you should
+' actually deploy:
+'
+'   1. IT BUILDS 64-BIT. VB6 could only ever produce a 32-bit binary, so a VB6
+'      application must ship the 32-bit KeyNub.dll. A 64-bit twinBASIC build
+'      needs the 64-bit one. Register the build that matches your EXE:
+'
+'          64-bit EXE ->  C:\Windows\System32\regsvr32.exe  KeyNub.dll   (x64)
+'          32-bit EXE ->  C:\Windows\SysWOW64\regsvr32.exe  KeyNub.dll   (x86)
+'
+'      Mixing them gives "class not registered", which sends people looking for
+'      a registry problem rather than a bitness problem.
+'
+'   2. IT SUPPORTS CDecl. See the bottom of this file: twinBASIC can call the
+'      flat C API directly, which VB6 cannot do safely. That is a real option
+'      here, with real trade-offs, and it is spelled out rather than hidden.
+'
+' Run: paste this into a new twinBASIC project (or add the file), set the startup
+' to Main, and build. Output goes to the debug console via Debug.Print.
+'==============================================================================
+Option Explicit
+
+' Err.Number for a KeyNub failure is vbObjectError + 5000 + |status|. With a
+' project reference to the type library, use the keynubErr* enum instead.
+Private Const KEYNUB_ERR_BASE      As Long = vbObjectError + 5000
+Private Const KEYNUB_E_NO_DEVICE   As Long = 2
+Private Const KEYNUB_E_NOT_GENUINE As Long = 7
+
+Private Const SCOPE_DEVICE    As Long = 0
+Private Const SCOPE_DEVELOPER As Long = 1
+
+
+Public Sub Main()
+    Debug.Print "KeyNub License Dongle - twinBASIC sample"
+    ' Which KeyNub.dll this build needs registered, stated up front: getting it
+    ' wrong reports "class not registered", which reads like a registry fault.
+#If Win64 Then
+    Debug.Print "64-bit build -- needs the x64 KeyNub.dll (System32\regsvr32)"
+#Else
+    Debug.Print "32-bit build -- needs the x86 KeyNub.dll (SysWOW64\regsvr32)"
+#End If
+    Debug.Print "----------------------------------------"
+
+    Dim dongle As Object
+    On Error GoTo Failed
+
+    ' Late binding, so this runs with no project reference. For IntelliSense and
+    ' compile-time checking add a reference to KeyNub.dll and declare it as
+    ' `Dim dongle As KeyNub.Dongle`.
+    Set dongle = CreateObject("KeyNub.Dongle")
+    Debug.Print "SDK version: " & dongle.Version
+
+    Dim attached As Long
+    attached = dongle.DeviceCount
+    Debug.Print "Dongles attached: " & attached
+    If attached = 0 Then
+        Debug.Print "Nothing to do -- plug in a dongle and run again."
+        Exit Sub
+    End If
+
+    dongle.Open
+    Debug.Print "Opened:      " & dongle.Serial
+    Debug.Print "Firmware:    " & dongle.FirmwareVersion
+    Debug.Print "Certificate: " & dongle.VerifyGenuine
+
+    dongle.SessionOpen
+
+    ' The check worth building: gate on data the program cannot compute, not on a
+    ' Boolean somebody can delete. docs/integration-security.md makes the
+    ' full argument, and the VB6 sample's ShowTheRealGate has the long comment.
+    Dim theDataMyProgramNeeds() As Byte
+    theDataMyProgramNeeds = StrConv("rate=17.4;factor=0.93;limit=2200", vbFromUnicode)
+
+    Dim envelope() As Byte
+    envelope = dongle.AppEncrypt(SCOPE_DEVELOPER, theDataMyProgramNeeds)
+    Debug.Print "Envelope:    " & (UBound(envelope) - LBound(envelope) + 1) & " bytes"
+
+    Dim recovered() As Byte
+    recovered = dongle.AppDecrypt(envelope)
+    Debug.Print "Recovered:   " & StrConv(recovered, vbUnicode)
+
+    dongle.SessionClose
+    dongle.Close
+    Debug.Print "Done."
+    Exit Sub
+
+Failed:
+    Debug.Print "FAILED: " & Err.Description
+    Select Case Err.Number
+        Case KEYNUB_ERR_BASE + KEYNUB_E_NO_DEVICE
+            Debug.Print "  -> No dongle found. Check it is plugged in."
+        Case KEYNUB_ERR_BASE + KEYNUB_E_NOT_GENUINE
+            Debug.Print "  -> That dongle is not a genuine KeyNub dongle."
+    End Select
+    On Error Resume Next
+    If Not dongle Is Nothing Then dongle.Close
+End Sub
+
+
+'==============================================================================
+' THE OTHER OPTION: calling the flat C API directly
+'
+' twinBASIC implements Declare ... CDecl properly, so unlike VB6 it can call
+' keynub_licdongle_flat.dll without going through COM at all. The declarations
+' below are the shape it takes; bindings/vba/KeyNubLicDongle.bas has the full
+' set, and in twinBASIC each one needs CDecl added.
+'
+' WHEN THAT IS THE BETTER CHOICE
+'   * No registration step, so no regsvr32 and no per-machine state -- just put
+'     the DLL next to your EXE. For a portable or per-user install that is a
+'     genuine simplification.
+'
+' WHEN COM IS THE BETTER CHOICE
+'   * The handle is yours to leak. The flat API has a 32-slot handle table and no
+'     destructor; an early Exit Sub that skips licdf_close costs a slot until the
+'     process ends. The COM object closes on release.
+'   * Errors come back as return codes with no Err.Description, so the diagnostic
+'     detail that separates "no dongle" from "bad certificate" has to be fetched
+'     by hand with licdf_last_error.
+'   * Byte arrays become caller-allocated buffers with a two-call size protocol,
+'     rather than plain Byte() in and out.
+'   * The same source no longer compiles in VB6, which matters if this code has
+'     to build in both.
+'
+' The COM route above is the recommended one for that reason. This is here so the
+' choice is informed rather than absent.
+'==============================================================================
+'
+' Private Declare PtrSafe Function licdf_open CDecl Lib "keynub_licdongle_flat.dll" ( _
+'     ByVal serialOrEmpty As String) As Long
+'
+' Private Declare PtrSafe Function licdf_close CDecl Lib "keynub_licdongle_flat.dll" ( _
+'     ByVal handle As Long) As Long
+'
+' Private Declare PtrSafe Function licdf_get_serial CDecl Lib "keynub_licdongle_flat.dll" ( _
+'     ByVal handle As Long, ByVal outBuf As String, ByVal outSize As Long) As Long

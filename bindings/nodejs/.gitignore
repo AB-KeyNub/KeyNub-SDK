@@ -1,0 +1,10 @@
+node_modules/
+# Staged by the SDK build before `npm pack`.
+# are authoritative.
+LICENSE
+NOTICE
+THIRD-PARTY-NOTICES.txt
+# Per-platform natives staged for packaging (see README: "Shipping the native
+# library"). Build artifacts, not source.
+prebuilds/
+*.tgz

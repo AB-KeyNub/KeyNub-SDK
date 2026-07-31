@@ -1,0 +1,50 @@
+[build-system]
+# setuptools >= 77 for PEP 639 (SPDX `license` + `license-files`), which places the
+# license and attribution files in the wheel's .dist-info/licenses/. This is a
+# build-time requirement only; the wheel itself still supports Python >= 3.8.
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "keynub-licdongle"
+version = "1.0.0"
+description = "Python binding for the KeyNub USB-C license dongle (ctypes; driverless on Windows/Linux/macOS)."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [{ name = "KeyNub" }]
+keywords = ["keynub", "license", "dongle", "usb", "hid", "licensing", "security", "copy-protection"]
+# A built wheel carries the native library, which is under BINARY-LICENSE.txt
+# rather than Apache-2.0.
+license = "Apache-2.0 AND LicenseRef-KeyNub-Binary"
+# The bundled native library statically links Mbed TLS and hidapi, so the
+# attribution notices must ship inside the wheel. PEP 639 requires these paths to
+# be inside the project directory and forbids "..", so they are copied here from
+# the SDK root by packaging/stage_license_files.py - run that before building.
+license-files = ["LICENSE", "BINARY-LICENSE.txt", "NOTICE", "THIRD-PARTY-NOTICES.txt"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Software Development :: Libraries",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/AB-KeyNub/KeyNub-SDK"
+Repository = "https://github.com/AB-KeyNub/KeyNub-SDK.git"
+
+# `pip install keynub-licdongle` also provides the licd-tool CLI (see cli.py).
+[project.scripts]
+licd-tool = "keynub_licdongle.cli:main"
+
+[tool.setuptools]
+packages = ["keynub_licdongle"]
+
+# Native binaries are staged under keynub_licdongle/_libs/<lib> by the build/CI
+# (one per platform wheel); absent from a source checkout.
+[tool.setuptools.package-data]
+keynub_licdongle = ["_libs/*", "py.typed"]

@@ -1,0 +1,10 @@
+# KeyNub license dongle — grant non-root access to the HID device.
+#
+# This is a PERMISSION rule, not a driver: Linux already has the in-kernel
+# hidraw driver. Without it, opening the dongle needs root. Install with:
+#   sudo cp 99-keynub-dongle.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# KeyNub's allocated VID:PID pair.
+# KeyNub's allocated VID:PID pair.
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="cafe", ATTRS{idProduct}=="4b6e", TAG+="uaccess"

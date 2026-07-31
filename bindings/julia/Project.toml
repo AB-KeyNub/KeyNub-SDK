@@ -1,0 +1,17 @@
+name = "KeyNubLicDongle"
+uuid = "8f1d5c7e-3a2b-4e6f-9c8d-1b0a7e4f2d63"
+authors = ["KeyNub"]
+version = "1.0.0"
+
+# No dependencies. ccall is part of the language, so the binding needs nothing
+# outside Base — which is the right shape for a licensing library: no package a
+# customer could substitute in the path of the check.
+
+[compat]
+julia = "1.6"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

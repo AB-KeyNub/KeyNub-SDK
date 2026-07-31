@@ -1,0 +1,13 @@
+; Only the four entry points COM and regsvr32 look for. Everything else — the flat
+; API the object is built on, the C core beneath it — stays internal: a COM client
+; reaches all of it through the object, and exporting a second, cdecl-callable copy
+; of the same functionality is how a caller ends up back in the calling-convention
+; trap this binding exists to remove.
+;
+; PRIVATE keeps the names out of the generated import library, so nothing can link
+; against them at build time either.
+EXPORTS
+    DllGetClassObject   PRIVATE
+    DllCanUnloadNow     PRIVATE
+    DllRegisterServer   PRIVATE
+    DllUnregisterServer PRIVATE

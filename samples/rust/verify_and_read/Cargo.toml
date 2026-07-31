@@ -1,0 +1,14 @@
+[package]
+name = "keynub-verify-and-read"
+version = "1.0.0"
+edition = "2021"
+publish = false
+
+# Path dependency so the sample builds straight from a checkout. A real consumer
+# would write `keynub-licdongle = "0.2"` and take it from crates.io.
+[dependencies]
+keynub-licdongle = { path = "../../../bindings/rust" }
+
+# The sample is a demonstration, not a place to chase binary size.
+[profile.release]
+opt-level = 1

@@ -1,0 +1,11 @@
+// Embeds the type library in the DLL as resource 1.
+//
+// This is what makes the server a single file to deploy: RegisterTypeLib reads the
+// .tlb back out of the module, a client that binds early finds it there, and the
+// IDispatch implementation can load it even with nothing in the registry (see the
+// LoadTypeLibEx fallback in keynub_com.cpp) — which is what registration-free COM
+// activation needs.
+//
+// Generated from keynub_com.rc.in; the path is substituted by the native build because MIDL
+// writes the .tlb into the build tree, not next to this file.
+1 TYPELIB "@KEYNUB_TLB_PATH@"

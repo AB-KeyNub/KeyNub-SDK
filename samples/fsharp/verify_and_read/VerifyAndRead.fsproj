@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>KeyNub.Samples.VerifyAndRead</RootNamespace>
+    <AssemblyName>verify_and_read_fs</AssemblyName>
+    <!-- Interop code is exactly where an accidentally-null reference hurts, and F#
+         will not warn about one coming back from a .NET API unless this is on. -->
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- Directory holding the native keynub_licdongle built by CMake. Override with
+         -p:KeynubNativeDir=... ; defaults to the standard SDK/build output. A real
+         consumer would instead `dotnet add package KeyNub.LicenseDongle`, which
+         brings the native automatically (see bindings/dotnet/README.md). -->
+    <KeynubNativeDir Condition="'$(KeynubNativeDir)' == ''">$(MSBuildProjectDirectory)/../../../build</KeynubNativeDir>
+  </PropertyGroup>
+
+  <!-- F# compiles in declaration order, so the file list is explicit and ordered. -->
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../bindings/dotnet/KeyNub.LicenseDongle/KeyNub.LicenseDongle.csproj" />
+  </ItemGroup>
+
+  <!-- Copy the platform native next to the sample so it runs from the CMake build. -->
+  <ItemGroup>
+    <None Include="$(KeynubNativeDir)/keynub_licdongle.dll" Condition="Exists('$(KeynubNativeDir)/keynub_licdongle.dll')"
+          CopyToOutputDirectory="PreserveNewest" Link="keynub_licdongle.dll" />
+    <None Include="$(KeynubNativeDir)/libkeynub_licdongle.so" Condition="Exists('$(KeynubNativeDir)/libkeynub_licdongle.so')"
+          CopyToOutputDirectory="PreserveNewest" Link="libkeynub_licdongle.so" />
+    <None Include="$(KeynubNativeDir)/libkeynub_licdongle.dylib" Condition="Exists('$(KeynubNativeDir)/libkeynub_licdongle.dylib')"
+          CopyToOutputDirectory="PreserveNewest" Link="libkeynub_licdongle.dylib" />
+  </ItemGroup>
+
+</Project>

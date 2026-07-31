@@ -1,0 +1,16 @@
+; Exports for the TEST-ONLY sim build of the COM server (keynub_licdongle_com_sim).
+;
+; The four COM entry points, plus the fixture developer key that the test harness
+; needs in order to reach the write role — the same key the Fortran and COBOL suites
+; read out of keynub_licdongle_flat_sim. Without it a COM test could only prove that
+; RecordWrite is refused, not that a record round-trips.
+;
+; This file is why the sim target has its own .def rather than sharing the shipping
+; one: the shipping server must not export a way to obtain a developer key, and the
+; difference should be visible in the build rather than hidden behind a macro.
+EXPORTS
+    DllGetClassObject            PRIVATE
+    DllCanUnloadNow              PRIVATE
+    DllRegisterServer            PRIVATE
+    DllUnregisterServer          PRIVATE
+    licd_test_get_master_key_der PRIVATE

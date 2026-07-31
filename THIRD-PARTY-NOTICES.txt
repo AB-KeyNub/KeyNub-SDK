@@ -1,0 +1,117 @@
+================================================================================
+ THIRD-PARTY NOTICES - KeyNub License Dongle SDK
+================================================================================
+
+The KeyNub License Dongle SDK's published source - the language bindings, the
+samples and the C ABI header, as published at
+https://github.com/AB-KeyNub/KeyNub-SDK - is licensed under the Apache License,
+Version 2.0 (see the accompanying LICENSE file).
+
+The prebuilt native libraries (keynub_licdongle, keynub_licdongle_flat and the
+KeyNub COM server) are not published as source and are NOT licensed under
+Apache-2.0. Their distribution terms are in the accompanying BINARY-LICENSE.txt.
+
+Either way, this distribution incorporates the third-party components listed
+below, and their attribution obligations travel with every copy of it.
+
+Several of these components are offered by their authors under a CHOICE of
+licenses. For each one, the license KeyNub has elected is stated explicitly, and
+the options that are not elected are named so there is no ambiguity about which
+terms apply to this distribution. Where Apache-2.0 is elected, the text in the
+accompanying LICENSE file is the applicable license text.
+
+Components marked "statically linked" are compiled into the native library
+(keynub_licdongle.dll / libkeynub_licdongle.so / libkeynub_licdongle.dylib).
+Their attribution obligations therefore travel with every binary distribution of
+the SDK - the NuGet package, the Python wheel, the Maven JAR, and the C/Delphi
+archives each carry a copy of this file alongside LICENSE and NOTICE.
+
+--------------------------------------------------------------------------------
+ 1. Mbed TLS 3.6.7  -  statically linked into the native library
+--------------------------------------------------------------------------------
+
+    Project:  https://github.com/Mbed-TLS/mbedtls  (tag mbedtls-3.6.7)
+    Offered:  dual license - Apache-2.0 OR GPL-2.0-or-later
+    ELECTED:  Apache-2.0
+              The GPL-2.0-or-later option is NOT elected and does not apply to
+              this distribution.
+
+    Copyright The Mbed TLS Contributors
+
+    Licensed under the Apache License, Version 2.0. The full text of that
+    license is in the accompanying LICENSE file.
+
+--------------------------------------------------------------------------------
+ 2. hidapi 0.15.0  -  statically linked into the native library
+--------------------------------------------------------------------------------
+
+    Project:  https://github.com/libusb/hidapi  (tag hidapi-0.15.0)
+    Offered:  a choice of three licenses - GPL-3.0, a BSD-style license, or the
+              more liberal original HIDAPI license
+    ELECTED:  the BSD-style license (hidapi's LICENSE-bsd.txt), reproduced in
+              full below.
+              The GPL-3.0 option is NOT elected and does not apply to this
+              distribution. Note that some operating-system distributions
+              package hidapi under GPL-3.0; that packaging is unrelated to this
+              distribution, which vendors hidapi from source under the terms
+              below.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Copyright (c) 2010, Alan Ott, Signal 11 Software
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of Signal 11 Software nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+--------------------------------------------------------------------------------
+ 3. Java Native Access (JNA) 5.14.0  -  Java binding only
+--------------------------------------------------------------------------------
+
+    Project:  https://github.com/java-native-access/jna
+    Offered:  dual license - LGPL-2.1-or-later OR Apache-2.0
+    ELECTED:  Apache-2.0
+              The LGPL-2.1-or-later option is NOT elected and does not apply to
+              this distribution.
+
+    Copyright (c) 2007-2023 Timothy Wall, Wayne Meissner, Matthias Bläsing and
+    the JNA contributors
+
+    JNA is a dependency of the Java binding only. It is resolved from Maven
+    Central at build time and is NOT redistributed inside the KeyNub JAR; it is
+    recorded here so that consumers assembling a distribution have the election
+    in writing. Licensed under the Apache License, Version 2.0 - full text in
+    the accompanying LICENSE file.
+
+--------------------------------------------------------------------------------
+ Not part of this SDK
+--------------------------------------------------------------------------------
+
+    The KeyNub dongle firmware links further third-party components (notably
+    Microchip CryptoAuthLib and littlefs) under their own separate terms. The
+    firmware is a distinct licensing unit and is not distributed as part of this
+    SDK; those components are not present in, and their terms do not apply to,
+    any SDK artifact.
+
+================================================================================

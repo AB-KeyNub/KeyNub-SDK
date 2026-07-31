@@ -1,0 +1,91 @@
+================================================================================
+ KEYNUB LICENSE DONGLE SDK
+ Licence for the prebuilt native libraries
+================================================================================
+
+This distribution contains two kinds of thing, under two different licences.
+
+
+1. SOURCE - Apache License, Version 2.0
+--------------------------------------------------------------------------------
+
+The language bindings, the samples and the C ABI header are licensed under the
+Apache License, Version 2.0. The full text is in the accompanying LICENSE file,
+and the source is published at https://github.com/AB-KeyNub/KeyNub-SDK.
+
+
+2. PREBUILT NATIVE LIBRARIES - these terms
+--------------------------------------------------------------------------------
+
+The compiled libraries - keynub_licdongle, keynub_licdongle_flat and the KeyNub
+COM server, supplied as .dll and .lib, .so, .dylib and .a - are not published as
+source and are NOT licensed under Apache-2.0. They are licensed as follows.
+
+GRANT
+
+    Subject to these terms, KeyNub grants you a worldwide, royalty-free,
+    non-exclusive licence to:
+
+    (a) use and reproduce the libraries to develop, test and support your own
+        application; and
+
+    (b) distribute the libraries, in binary form, as an integral component of
+        that application, to your customers and end users.
+
+CONDITIONS
+
+    (1) You distribute the libraries unmodified.
+
+    (2) You distribute them only as a component of your own application - not as
+        a standalone product, library, SDK or download, and not in a form whose
+        principal purpose is to supply the libraries to others.
+
+    (3) You keep this file, LICENSE, NOTICE and THIRD-PARTY-NOTICES.txt with any
+        distribution that includes the libraries, and you do not remove or alter
+        any copyright, trademark or attribution notice they contain.
+
+    (4) You do not sublicense, rent, lease or sell the libraries on their own.
+
+RESERVED RIGHTS
+
+    No rights are granted in the "KeyNub" name, logo or other trademarks. All
+    rights not expressly granted above are reserved by KeyNub.
+
+YOUR STATUTORY RIGHTS
+
+    Nothing in these terms restricts any right you have under applicable law that
+    cannot be restricted by agreement. In the European Union, for example, that
+    includes the right to decompile for interoperability purposes under Article 6
+    of Directive 2009/24/EC.
+
+
+3. THIRD-PARTY COMPONENTS
+--------------------------------------------------------------------------------
+
+The libraries statically link Mbed TLS and hidapi. The licences KeyNub has elected
+for them, their copyright notices and the full licence texts are in
+THIRD-PARTY-NOTICES.txt. Those attribution obligations apply to you as well when
+you redistribute the libraries inside your application.
+
+
+4. NO WARRANTY
+--------------------------------------------------------------------------------
+
+THE LIBRARIES ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+
+5. LIMITATION OF LIABILITY
+--------------------------------------------------------------------------------
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, KEYNUB SHALL NOT BE LIABLE FOR
+ANY INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES, OR FOR ANY LOSS OF
+PROFITS, REVENUE OR DATA, ARISING OUT OF OR IN CONNECTION WITH THE LIBRARIES OR
+THEIR USE. Nothing in these terms excludes or limits liability that cannot be
+excluded or limited under applicable law.
+
+
+--------------------------------------------------------------------------------
+Questions about these terms, or about a use they do not cover - OEM redistribution,
+source escrow, an unusual platform: https://www.keynub.com/#contact
