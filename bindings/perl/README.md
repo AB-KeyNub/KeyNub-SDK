@@ -54,18 +54,6 @@ Set `KEYNUB_LICDONGLE_FLAT_LIBRARY` to point at a specific library.
 > What cannot be deleted is data the program needs and only the dongle can
 > decrypt.
 
-## Testing
-
-```
-KEYNUB_SIM_PATH=../../build/libkeynub_licdongle_flat_sim.so prove -l t/
-```
-
-46 tests against an in-process software dongle — **no hardware**. Note the library:
-because this binding uses the flat API, the tests need
-`keynub_licdongle_flat_sim` (the flat library with the simulator compiled in), not
-`keynub_licdongle_sim`. `Test::More` is core, so only `FFI::Platypus` has to be
-installed.
-
 ## Status
 
 Shipping this one is still an open decision. It works and it is tested like

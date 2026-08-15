@@ -35,8 +35,8 @@ let private report (dongle: Dongle) =
         printfn "WARNING: this dongle's previous boot ended in a watchdog reset."
 
     let result = dongle.VerifyGenuine()
-    printfn "Genuine: %b (serial %s, batch %s, provisioned %O)"
-        result.IsGenuine result.Serial result.Batch result.ProvisionedDate
+    printfn "Genuine: %b (serial %s, provisioned %O)"
+        result.IsGenuine result.Serial result.ProvisionedDate
 
 let private readRecords (session: Session) =
     let records = session.ListRecords()
@@ -55,7 +55,7 @@ let private readRecords (session: Session) =
 /// The part that actually protects something. At licence-issue time you would call
 /// AppEncrypt once, with a developer dongle, and ship only the blob; the application
 /// then cannot proceed without a dongle, because it holds no other copy of the data.
-/// Scope.Developer lets any dongle from your batch decrypt it, so one file serves
+/// Scope.Developer lets any dongle you have issued decrypt it, so one file serves
 /// every customer; Scope.Device locks it to one dongle.
 let private protectSomething (session: Session) =
     let needed = Encoding.UTF8.GetBytes("the data this program cannot run without")

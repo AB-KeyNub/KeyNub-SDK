@@ -38,9 +38,9 @@ sub report {
     }
 
     my $result = $dongle->verify_genuine;
-    printf "Genuine: %s (serial %s, batch %s)\n",
+    printf "Genuine: %s (serial %s)\n",
         $result->{genuine} ? 'true' : 'false',
-        $result->{serial}, $result->{batch};
+        $result->{serial};
 }
 
 sub read_records {
@@ -60,7 +60,7 @@ sub read_records {
 # The part that actually protects something. At licence-issue time you would call
 # app_encrypt once, with a developer dongle, and ship only the blob; the program
 # then cannot proceed without a dongle, because it holds no other copy of the data.
-# $SCOPE_DEVELOPER lets any dongle from your batch decrypt it, so one file serves
+# $SCOPE_DEVELOPER lets any dongle you have issued decrypt it, so one file serves
 # every customer; $SCOPE_DEVICE locks it to one dongle.
 sub protect_something {
     my ($dongle) = @_;

@@ -51,6 +51,18 @@ public final class Session implements AutoCloseable {
                 new LicdLibrary.SizeT(masterKeyDer.length)), ch(), "licd_write_auth");
     }
 
+    /**
+     * Replace the dongle's write-auth key with your own (DER EC private key).
+     *
+     * <p>Call {@link #authorizeWrite} with the current key first. From the next session on, only
+     * the new key elevates.
+     */
+    public void rotateWriteKey(byte[] newKeyDer) {
+        guard();
+        Errors.check(LicdLibrary.INSTANCE.licd_write_auth_rotate(h(), newKeyDer,
+                new LicdLibrary.SizeT(newKeyDer.length)), ch(), "licd_write_auth_rotate");
+    }
+
     /** List the record names and sizes stored on the dongle. */
     public List<RecordInfo> listRecords() {
         guard();

@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>KeyNub.Samples.RotateWriteKey</RootNamespace>
+    <AssemblyName>rotate_write_key_fs</AssemblyName>
+    <!-- Interop code is exactly where an accidentally-null reference hurts, and F#
+         will not warn about one coming back from a .NET API unless this is on. -->
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- Directory holding the native keynub_licdongle. A checkout of the SDK carries
+         one per platform under natives/<rid>/, which is what makes a sample run with
+         nothing set; the CMake build output is the fallback for a tree that has none.
+         Override with -p:KeynubNativeDir=... or the KeynubNativeDir environment
+         variable. A real consumer would instead `dotnet add package
+         KeyNub.LicenseDongle`, which brings the native automatically (see
+         bindings/dotnet/README.md). -->
+    <KeynubRid Condition="'$(KeynubRid)' == ''">$(NETCoreSdkPortableRuntimeIdentifier)</KeynubRid>
+    <KeynubNativeDir Condition="'$(KeynubNativeDir)' == '' And Exists('$(MSBuildProjectDirectory)/../../../natives/$(KeynubRid)')">$(MSBuildProjectDirectory)/../../../natives/$(KeynubRid)</KeynubNativeDir>
+    <KeynubNativeDir Condition="'$(KeynubNativeDir)' == ''">$(MSBuildProjectDirectory)/../../../build</KeynubNativeDir>
+  </PropertyGroup>
+
+  <!-- F# compiles in declaration order, so the file list is explicit and ordered. -->
+  <ItemGroup>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../../bindings/dotnet/KeyNub.LicenseDongle/KeyNub.LicenseDongle.csproj" />
+  </ItemGroup>
+
+  <!-- Copy the platform native next to the sample so it runs from the CMake build. -->
+  <ItemGroup>
+    <None Include="$(KeynubNativeDir)/keynub_licdongle.dll" Condition="Exists('$(KeynubNativeDir)/keynub_licdongle.dll')"
+          CopyToOutputDirectory="PreserveNewest" Link="keynub_licdongle.dll" />
+    <None Include="$(KeynubNativeDir)/libkeynub_licdongle.so" Condition="Exists('$(KeynubNativeDir)/libkeynub_licdongle.so')"
+          CopyToOutputDirectory="PreserveNewest" Link="libkeynub_licdongle.so" />
+    <None Include="$(KeynubNativeDir)/libkeynub_licdongle.dylib" Condition="Exists('$(KeynubNativeDir)/libkeynub_licdongle.dylib')"
+          CopyToOutputDirectory="PreserveNewest" Link="libkeynub_licdongle.dylib" />
+  </ItemGroup>
+
+  <!-- Nothing above fails when the native is absent: each copy is conditional, so
+       the sample compiles and then stops at its first call. Say so while the build
+       is still running, because DllNotFoundException at startup does not name the
+       property that fixes it. -->
+  <Target Name="KeynubCheckNative" AfterTargets="Build"
+          Condition="!Exists('$(KeynubNativeDir)/keynub_licdongle.dll') And !Exists('$(KeynubNativeDir)/libkeynub_licdongle.so') And !Exists('$(KeynubNativeDir)/libkeynub_licdongle.dylib')">
+    <Warning Text="No keynub_licdongle library in '$(KeynubNativeDir)', so $(AssemblyName) will compile and then fail at startup with DllNotFoundException. Set KeynubNativeDir - as an MSBuild property or an environment variable - to a directory holding the native library. See samples/README.md." />
+  </Target>
+
+</Project>

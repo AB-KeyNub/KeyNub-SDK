@@ -55,12 +55,16 @@ classdef Dongle < handle
             %                    leaves behind, and a power cycle clears it.
             %   isolated         the dongle confirmed at boot that its USB and
             %                    parsing code is fenced off from keys and
-            %                    storage. The simulator reports false.
+            %                    storage. Anything that is not a dongle reports false.
+            %   writeAuthRotated the write-auth key has been rotated away from
+            %                    the factory one. That key is public, so false
+            %                    means this dongle takes writes from anyone
+            %                    holding it.
             info = keynub.internal.call('get_info', obj.checkedHandle());
         end
 
         function serial = getSerial(obj)
-            %GETSERIAL The dongle serial as hex, e.g. '0123456789ABCDEFEE'.
+            %GETSERIAL The dongle serial as hex, e.g. '04A1B2C3D4E5F6'.
             serial = keynub.internal.call('get_serial', obj.checkedHandle());
         end
 
@@ -68,7 +72,7 @@ classdef Dongle < handle
             %VERIFYGENUINE Proves authenticity; errors if the dongle is not genuine.
             %   Validates the device certificate chain to the trusted root and
             %   checks a live ECDSA challenge-response, then returns a struct with
-            %   genuine, serial, batch and provisionedDate from the certificate.
+            %   genuine, serial and provisionedDate from the certificate.
             result = keynub.internal.call('verify_genuine', obj.checkedHandle());
         end
 

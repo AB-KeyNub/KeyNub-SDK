@@ -5,7 +5,7 @@ namespace KeyNub.LicenseDongle
     /// <summary>A dongle discovered by <see cref="LicenseDongleContext.Enumerate"/>.</summary>
     public readonly struct DeviceInfo
     {
-        /// <summary>The device serial as hex (e.g. <c>0123456789ABCDEFEE</c>), or empty if unavailable.</summary>
+        /// <summary>The device serial as hex (e.g. <c>04A1B2C3D4E5F6</c>), or empty if unavailable.</summary>
         public string Serial { get; }
 
         /// <summary>An opaque, platform-specific path accepted by <see cref="LicenseDongleContext.OpenByPath"/>.</summary>
@@ -60,13 +60,16 @@ namespace KeyNub.LicenseDongle
         public bool WatchdogReboot { get; }
 
         /// <summary>Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-        /// from keys and storage. The software simulator reports false.</summary>
+        /// from keys and storage. Anything that is not a dongle reports false.</summary>
         public bool Isolated { get; }
+
+        /// <summary>Whether the write-auth key has been rotated away from the factory one. That key is public, so a dongle reporting false accepts writes from anyone holding it.</summary>
+        public bool WriteAuthRotated { get; }
 
         /// <summary>Creates a new <see cref="DongleInfo"/>.</summary>
         public DongleInfo(Version protocolVersion, Version firmwareVersion, bool seReady,
             bool provisioned, uint dataCapacity, uint dataFree, bool watchdogReboot = false,
-            bool isolated = false)
+            bool isolated = false, bool writeAuthRotated = false)
         {
             ProtocolVersion = protocolVersion;
             FirmwareVersion = firmwareVersion;
@@ -76,6 +79,7 @@ namespace KeyNub.LicenseDongle
             DataFree = dataFree;
             WatchdogReboot = watchdogReboot;
             Isolated = isolated;
+            WriteAuthRotated = writeAuthRotated;
         }
     }
 
@@ -88,18 +92,14 @@ namespace KeyNub.LicenseDongle
         /// <summary>The device serial from the certificate.</summary>
         public string Serial { get; }
 
-        /// <summary>The batch/issuer label, or empty.</summary>
-        public string Batch { get; }
-
         /// <summary>The provisioning date as <c>YYYY-MM-DD</c>, or empty.</summary>
         public string ProvisionedDate { get; }
 
         /// <summary>Creates a new <see cref="GenuineResult"/>.</summary>
-        public GenuineResult(bool isGenuine, string serial, string batch, string provisionedDate)
+        public GenuineResult(bool isGenuine, string serial, string provisionedDate)
         {
             IsGenuine = isGenuine;
             Serial = serial;
-            Batch = batch;
             ProvisionedDate = provisionedDate;
         }
     }

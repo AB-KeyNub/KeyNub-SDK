@@ -17,12 +17,8 @@ No dependencies: `importc` is part of the language, and the library is resolved 
 run time through `dynlib`, so nothing needs to be linked. Verified with **Nim
 2.2.10**.
 
-The library name is a compile-time define, so a test build can point at the device
-simulator without the shipping code knowing about it:
-
-```
-nim c -d:keynubLib=keynub_licdongle_sim --path:. -r the binding's end-to-end test
-```
+The library name is a compile-time define (`-d:keynubLib=...`), so a build can be
+pointed at a specific library without the source knowing about it.
 
 ## Notes
 

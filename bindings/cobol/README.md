@@ -25,8 +25,8 @@ storage with the right picture clauses.
                                              BY REFERENCE KN-GENUINE
                                              BY REFERENCE KN-SERIAL
                                              BY VALUE KEYNUB-SERIAL-SIZE
-                                             BY REFERENCE KN-BATCH
-                                             BY VALUE KEYNUB-BATCH-SIZE
+                                             BY REFERENCE KN-PROV-DATE
+                                             BY VALUE KEYNUB-DATE-SIZE
                 RETURNING KN-STATUS
 ```
 
@@ -51,7 +51,7 @@ dialect-defined, and under an IBM or Micro Focus dialect it is big-endian and
 decimal-truncated, which hands C the wrong bytes.
 
 Getting `BY VALUE` and `BY REFERENCE` the wrong way round *does* fail immediately,
-which is the mistake worth being careful about. The test suite has a deliberate
+which is the mistake worth being careful about. This binding has a deliberate
 control for it.
 
 Every call returns zero on success or a negative status; `licdf_open` is the
@@ -96,16 +96,3 @@ cannot run without — a rate table, a fee schedule, the parameters of a calcula
 licence, ship the blob, and decrypt at run time.
 
 See [`../../docs/integration-security.md`](../../docs/integration-security.md).
-
-## Testing
-
-the SDK test suite runs in CI as `licd_cobol_tests`
-wherever the native build finds `cobc`, driving the whole surface against an in-process
-software dongle with **no hardware**: info, verify, session, records including the
-two-call size protocol, counters, app-crypto with a tamper check, the empty-name
-erase guard, and closing a handle twice.
-
-The test is compiled in **free format** (`cobc -free`). Fixed format truncates at
-column 72, and it does so silently — an over-long line loses the end of an
-identifier and the error you get names a symbol you never wrote. The copybook
-itself is written to work in either format.

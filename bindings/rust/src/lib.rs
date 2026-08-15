@@ -167,7 +167,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Scope {
     /// Only this one physical dongle.
     Device,
-    /// Any dongle from the same developer batch — one blob for every customer.
+    /// Any dongle issued by the same developer — one blob for every customer.
     Developer,
 }
 
@@ -221,8 +221,11 @@ pub struct Info {
     /// power cycle clears it — worth logging.
     pub watchdog_reboot: bool,
     /// Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-    /// from keys and storage. The software simulator reports false.
+    /// from keys and storage. Anything that is not a dongle reports false.
     pub isolated: bool,
+    /// Whether the write-auth key has been rotated away from the factory one. That key
+    /// is public, so a dongle reporting false accepts writes from anyone holding it.
+    pub writeauth_rotated: bool,
 }
 
 /// The verified identity from [`Dongle::verify_genuine`].
@@ -232,8 +235,6 @@ pub struct GenuineResult {
     pub genuine: bool,
     /// Device serial, taken from the certificate.
     pub serial: String,
-    /// Batch or issuer label.
-    pub batch: String,
     /// `YYYY-MM-DD`, or empty.
     pub provisioned_date: String,
 }
@@ -496,6 +497,7 @@ impl<'ctx> Dongle<'ctx> {
             data_free: raw.data_free,
             watchdog_reboot: raw.watchdog_reboot != 0,
             isolated: raw.isolated != 0,
+            writeauth_rotated: raw.writeauth_rotated != 0,
         })
     }
 
@@ -517,7 +519,6 @@ impl<'ctx> Dongle<'ctx> {
         Ok(GenuineResult {
             genuine: raw.genuine != 0,
             serial: fixed_to_string(&raw.serial),
-            batch: fixed_to_string(&raw.batch),
             provisioned_date: fixed_to_string(&raw.provisioned_date),
         })
     }
@@ -578,12 +579,24 @@ impl Session<'_, '_> {
     }
 
     /// Elevates to the write role with the developer master key (a DER EC private
-    /// key). Vendor tooling only — never ship that key in an application.
+    /// key). This belongs in your licence-issuing tooling; never ship
+    /// that key in the application your users run.
     pub fn authorize_write(&self, master_key_der: &[u8]) -> Result<()> {
         let rc = unsafe {
             sys::licd_write_auth(self.dev(), master_key_der.as_ptr(), master_key_der.len())
         };
         self.check(rc, "licd_write_auth")
+    }
+
+    /// Replaces the dongle's write-auth key with your own (a DER EC private key).
+    ///
+    /// Call [`Session::authorize_write`] with the current key first. From the
+    /// next session on, only the new key elevates.
+    pub fn rotate_write_key(&self, new_key_der: &[u8]) -> Result<()> {
+        let rc = unsafe {
+            sys::licd_write_auth_rotate(self.dev(), new_key_der.as_ptr(), new_key_der.len())
+        };
+        self.check(rc, "licd_write_auth_rotate")
     }
 
     /// Lists the records stored on the dongle.

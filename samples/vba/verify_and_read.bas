@@ -106,7 +106,7 @@ End Sub
 ' The part that actually protects something. At licence-issue time you would call
 ' KeyNubAppEncrypt once, with a developer dongle, and ship only the blob; the
 ' workbook then cannot compute without a dongle, because it holds no other copy of
-' the data. KEYNUB_SCOPE_DEVELOPER lets any dongle from your batch decrypt it, so
+' the data. KEYNUB_SCOPE_DEVELOPER lets any dongle you have issued decrypt it, so
 ' one file serves every customer; KEYNUB_SCOPE_DEVICE locks it to one dongle.
 Private Sub ProtectSomething(ByVal handle As Long)
     Dim needed() As Byte

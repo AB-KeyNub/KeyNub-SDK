@@ -58,7 +58,7 @@ final class Scope
 {
     /** Only this one physical dongle. */
     public const DEVICE = 0;
-    /** Any dongle from the same developer batch — one blob for every customer. */
+    /** Any dongle issued by the same developer — one blob for every customer. */
     public const DEVELOPER = 1;
 }
 
@@ -218,7 +218,7 @@ final class Context
                 for ($i = 0; $i < $count[0]; $i++) {
                     $entry = $list[0][$i];
                     $out[] = [
-                        'serial' => Native::fixedString($entry->serial, 19),
+                        'serial' => Native::fixedString($entry->serial, 15),
                         'path' => Native::fixedString($entry->path, 512),
                         'vendorId' => $entry->vendor_id,
                         'productId' => $entry->product_id,
@@ -312,7 +312,7 @@ final class Dongle
      *
      * @return array{protocolVersion: array{int, int}, firmwareVersion: array{int, int, int},
      *               seReady: bool, provisioned: bool, dataCapacity: int, dataFree: int,
-     *               watchdogReboot: bool, isolated: bool}
+     *               watchdogReboot: bool, isolated: bool, writeAuthRotated: bool}
      */
     public function getInfo(): array
     {
@@ -328,6 +328,7 @@ final class Dongle
             'dataFree' => $raw->data_free,
             'watchdogReboot' => $raw->watchdog_reboot !== 0,
             'isolated' => $raw->isolated !== 0,
+            'writeAuthRotated' => $raw->writeauth_rotated !== 0,
         ];
     }
 
@@ -335,19 +336,19 @@ final class Dongle
     public function getSerial(): string
     {
         $ffi = $this->context->ffi();
-        $buffer = $ffi->new('char[19]');
+        $buffer = $ffi->new('char[15]');
         $this->context->check(
-            $ffi->licd_get_serial($this->handle(), $buffer, 19),
+            $ffi->licd_get_serial($this->handle(), $buffer, 15),
             'licd_get_serial'
         );
-        return Native::fixedString($buffer, 19);
+        return Native::fixedString($buffer, 15);
     }
 
     /**
      * Proves authenticity: the certificate chain to the trusted root plus a live
      * ECDSA challenge-response. Throws unless the dongle is genuine.
      *
-     * @return array{genuine: bool, serial: string, batch: string, provisionedDate: string}
+     * @return array{genuine: bool, serial: string, provisionedDate: string}
      */
     public function verifyGenuine(): array
     {
@@ -359,8 +360,7 @@ final class Dongle
         );
         return [
             'genuine' => $raw->genuine !== 0,
-            'serial' => Native::fixedString($raw->serial, 19),
-            'batch' => Native::fixedString($raw->batch, 64),
+            'serial' => Native::fixedString($raw->serial, 15),
             'provisionedDate' => Native::fixedString($raw->provisioned_date, 11),
         ];
     }
@@ -439,13 +439,27 @@ final class Session
 
     /**
      * Elevates to the write role with the developer master key (a DER EC private
-     * key). Vendor tooling only — never ship that key in an application.
+     * key). This belongs in your licence-issuing tooling; never ship
+     * that key in the application your users run.
      */
     public function authorizeWrite(string $masterKeyDer): void
     {
         $this->check(
             $this->ffi()->licd_write_auth($this->device(), Native::bytes($masterKeyDer), \strlen($masterKeyDer)),
             'licd_write_auth'
+        );
+    }
+
+    /**
+     * Replaces the dongle's write-auth key with your own (a DER EC private key).
+     * Call authorizeWrite with the current key first. From the next session on,
+     * only the new key elevates.
+     */
+    public function rotateWriteKey(string $newKeyDer): void
+    {
+        $this->check(
+            $this->ffi()->licd_write_auth_rotate($this->device(), Native::bytes($newKeyDer), \strlen($newKeyDer)),
+            'licd_write_auth_rotate'
         );
     }
 

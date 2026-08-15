@@ -6,7 +6,7 @@
 //
 // The MATLAB classes in +keynub are deliberately thin. Every argument check,
 // every handle validation and all marshalling live *here*, in C, because this
-// file is covered by a native test (the SDK test suite) that drives
+// file is where the behaviour lives; it drives
 // mexFunction through a minimal implementation of the mx/mex API. The .m files
 // cannot be executed without MATLAB, so as little logic as possible sits there.
 //
@@ -28,13 +28,6 @@
 #include "mex.h"
 
 #include "licdongle.h"
-
-#ifdef LICD_MEX_ENABLE_SIM
-// Test-only entry points, exported by keynub_licdongle_sim and *not* by the
-// shipping library. Compiled in only for the binding's own test suite.
-extern int licd_open_simulated(licd_ctx *ctx, licd_device **out_dev);
-extern void licd_test_get_master_key_der(const uint8_t **out_der, uint32_t *out_len);
-#endif
 
 // ============================================================================
 // Errors
@@ -486,6 +479,11 @@ static void cmd_error_detail(int nlhs, mxArray *plhs[], int nrhs, const mxArray 
     plhs[0] = mxCreateString(detail != NULL ? detail : "");
 }
 
+// Field counts are derived, never written twice. A hardcoded count is what broke
+// when `isolated` was added and again when `batch` was removed: the array and the
+// number disagreed, and mxCreateStructMatrix read past the end of the array.
+#define NFIELDS(a) ((int)(sizeof(a) / sizeof((a)[0])))
+
 static const char *k_device_fields[] = {"serial", "path", "vendorId", "productId"};
 
 static void cmd_enumerate(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
@@ -498,7 +496,8 @@ static void cmd_enumerate(int nlhs, mxArray *plhs[], int nrhs, const mxArray *pr
         fail_status(s->ctx, rc, "licd_enumerate");
     }
     // 0x0 when empty, so isempty() is true but the fields still exist.
-    mxArray *out = mxCreateStructMatrix(count == 0 ? 0 : 1, (mwSize)count, 4, k_device_fields);
+    mxArray *out = mxCreateStructMatrix(count == 0 ? 0 : 1, (mwSize)count, NFIELDS(k_device_fields),
+                                        k_device_fields);
     for (size_t i = 0; i < count; i++) {
         mxSetField(out, (mwIndex)i, "serial", mxCreateString(list[i].serial));
         mxSetField(out, (mwIndex)i, "path", mxCreateString(list[i].path));
@@ -557,7 +556,8 @@ static void cmd_close(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
 
 static const char *k_info_fields[] = {"protocolVersion", "firmwareVersion", "seReady",
                                       "provisioned",     "dataCapacity",    "dataFree",
-                                      "watchdogReboot",  "isolated"};
+                                      "watchdogReboot",  "isolated",
+                                      "writeAuthRotated"};
 
 static void cmd_get_info(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     (void)nlhs; (void)nrhs;
@@ -571,10 +571,7 @@ static void cmd_get_info(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prh
     double proto[2] = {(double)info.proto_version_major, (double)info.proto_version_minor};
     double fw[3] = {(double)info.fw_version_major, (double)info.fw_version_minor,
                     (double)info.fw_version_patch};
-    // Count derived from the array: a hardcoded 7 here is what broke when the
-    // isolated field was added -- the name was present but unallocated.
-    const int nfields = (int)(sizeof(k_info_fields) / sizeof(k_info_fields[0]));
-    mxArray *out = mxCreateStructMatrix(1, 1, nfields, k_info_fields);
+    mxArray *out = mxCreateStructMatrix(1, 1, NFIELDS(k_info_fields), k_info_fields);
     mxSetField(out, 0, "protocolVersion", out_doubles(proto, 2));
     mxSetField(out, 0, "firmwareVersion", out_doubles(fw, 3));
     mxSetField(out, 0, "seReady", mxCreateLogicalScalar(info.se_ready != 0));
@@ -583,6 +580,8 @@ static void cmd_get_info(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prh
     mxSetField(out, 0, "dataFree", mxCreateDoubleScalar((double)info.data_free));
     mxSetField(out, 0, "watchdogReboot", mxCreateLogicalScalar(info.watchdog_reboot != 0));
     mxSetField(out, 0, "isolated", mxCreateLogicalScalar(info.isolated != 0));
+    mxSetField(out, 0, "writeAuthRotated",
+               mxCreateLogicalScalar(info.writeauth_rotated != 0));
     plhs[0] = out;
 }
 
@@ -608,7 +607,7 @@ static void cmd_verify_genuine(int nlhs, mxArray *plhs[], int nrhs, const mxArra
     if (rc != LICD_OK) {
         fail_status(s->ctx, rc, "licd_verify_genuine");
     }
-    mxArray *out = mxCreateStructMatrix(1, 1, 4, k_genuine_fields);
+    mxArray *out = mxCreateStructMatrix(1, 1, NFIELDS(k_genuine_fields), k_genuine_fields);
     mxSetField(out, 0, "genuine", mxCreateLogicalScalar(res.genuine != 0));
     mxSetField(out, 0, "serial", mxCreateString(res.serial));
     mxSetField(out, 0, "batch", mxCreateString(res.batch));
@@ -643,6 +642,17 @@ static void cmd_write_auth(int nlhs, mxArray *plhs[], int nrhs, const mxArray *p
     }
 }
 
+static void cmd_write_auth_rotate(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+    (void)nlhs; (void)plhs; (void)nrhs;
+    slot_t *s = arg_dev_slot(prhs[1]);
+    size_t len = 0;
+    const uint8_t *der = arg_bytes(prhs[2], &len, "the replacement key");
+    int rc = licd_write_auth_rotate((licd_device *)s->ptr, der, len);
+    if (rc != LICD_OK) {
+        fail_status(s->ctx, rc, "licd_write_auth_rotate");
+    }
+}
+
 static const char *k_record_fields[] = {"name", "size"};
 
 static void cmd_record_list(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
@@ -655,7 +665,8 @@ static void cmd_record_list(int nlhs, mxArray *plhs[], int nrhs, const mxArray *
     if (rc != LICD_OK) {
         fail_status(s->ctx, rc, "licd_record_list");
     }
-    mxArray *out = mxCreateStructMatrix(count == 0 ? 0 : 1, (mwSize)count, 2, k_record_fields);
+    mxArray *out = mxCreateStructMatrix(count == 0 ? 0 : 1, (mwSize)count, NFIELDS(k_record_fields),
+                                        k_record_fields);
     for (size_t i = 0; i < count; i++) {
         mxSetField(out, (mwIndex)i, "name",
                    mxCreateString(names[i] != NULL ? names[i] : ""));
@@ -802,27 +813,6 @@ static void cmd_app_decrypt(int nlhs, mxArray *plhs[], int nrhs, const mxArray *
     plhs[0] = result;
 }
 
-#ifdef LICD_MEX_ENABLE_SIM
-static void cmd_open_simulated(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-    (void)nlhs; (void)nrhs;
-    slot_t *s = arg_ctx_slot(prhs[1]);
-    licd_device *dev = NULL;
-    int rc = licd_open_simulated((licd_ctx *)s->ptr, &dev);
-    if (rc != LICD_OK) {
-        fail_status(s->ctx, rc, "licd_open_simulated");
-    }
-    finish_open(s, dev, plhs);
-}
-
-static void cmd_test_master_key(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-    (void)nlhs; (void)nrhs; (void)prhs;
-    const uint8_t *der = NULL;
-    uint32_t len = 0;
-    licd_test_get_master_key_der(&der, &len);
-    plhs[0] = out_bytes(der, len);
-}
-#endif
-
 // ============================================================================
 // Dispatch
 // ============================================================================
@@ -852,6 +842,7 @@ static const command_t k_commands[] = {
     {"session_open",      cmd_session_open,      2, 2},
     {"session_close",     cmd_session_close,     2, 2},
     {"write_auth",        cmd_write_auth,        3, 3},
+    {"write_auth_rotate", cmd_write_auth_rotate, 3, 3},
     {"record_list",       cmd_record_list,       2, 2},
     {"record_read",       cmd_record_read,       3, 4},
     {"record_write",      cmd_record_write,      4, 5},
@@ -860,10 +851,6 @@ static const command_t k_commands[] = {
     {"counter_increment", cmd_counter_increment, 3, 3},
     {"app_encrypt",       cmd_app_encrypt,       4, 4},
     {"app_decrypt",       cmd_app_decrypt,       3, 3},
-#ifdef LICD_MEX_ENABLE_SIM
-    {"open_simulated",    cmd_open_simulated,    2, 2},
-    {"test_master_key",   cmd_test_master_key,   1, 1},
-#endif
 };
 
 #define LICD_MEX_COMMAND_COUNT ((int)(sizeof(k_commands) / sizeof(k_commands[0])))

@@ -30,7 +30,7 @@ final class Native
         typedef struct licd_device licd_device;
 
         typedef struct {
-            char serial[19];
+            char serial[15];
             char path[512];
             uint16_t vendor_id;
             uint16_t product_id;
@@ -48,12 +48,12 @@ final class Native
             uint32_t data_free;
             int watchdog_reboot;
             int isolated;
+            int writeauth_rotated;
         } licd_info;
 
         typedef struct {
             int genuine;
-            char serial[19];
-            char batch[64];
+            char serial[15];
             char provisioned_date[11];
         } licd_genuine_result;
 
@@ -77,6 +77,7 @@ final class Native
         int licd_session_open(licd_device *dev);
         int licd_session_close(licd_device *dev);
         int licd_write_auth(licd_device *dev, const uint8_t *master_key_der, size_t len);
+        int licd_write_auth_rotate(licd_device *dev, const uint8_t *new_key_der, size_t len);
 
         int licd_record_list(licd_device *dev, char ***out_names, uint32_t **out_sizes,
                              size_t *out_count);
@@ -146,9 +147,29 @@ final class Native
         $here = __DIR__;
         return [
             $here . '/../vendor-native/' . $name, // shipped inside the package
+            // The prebuilt library a checkout of the SDK carries, per platform:
+            // what makes a clone runnable with nothing set.
+            $here . '/../../../natives/' . self::repoRid() . '/' . $name,
             $here . '/' . $name,
             $name,                               // system search path
         ];
+    }
+
+    /** The natives/<rid> directory name for this build of PHP. */
+    public static function repoRid(): string
+    {
+        $os = match (\PHP_OS_FAMILY) {
+            'Windows' => 'win',
+            'Darwin' => 'osx',
+            default => 'linux',
+        };
+        $arch = match (\strtolower(\php_uname('m'))) {
+            'amd64', 'x86_64' => 'x64',
+            'i386', 'i586', 'i686', 'x86' => 'x86',
+            'arm64', 'aarch64' => 'arm64',
+            default => 'unknown',
+        };
+        return $os . '-' . $arch;
     }
 
     /**

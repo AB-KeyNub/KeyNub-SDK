@@ -221,10 +221,9 @@ def cmd_verify(args, out: Out) -> int:
                      lines=[f"NOT GENUINE: {exc}"])
             return 2
         data = {"genuine": res.is_genuine, "serial": res.serial,
-                "batch": res.batch, "provisioned_date": res.provisioned_date}
+                "provisioned_date": res.provisioned_date}
         out.emit(data, lines=[
             f"GENUINE           {res.serial}",
-            f"batch             {res.batch or '(none)'}",
             f"provisioned       {res.provisioned_date or '(none)'}",
         ])
         return 0 if res.is_genuine else 2
@@ -414,7 +413,7 @@ def build_parser() -> argparse.ArgumentParser:
     a_enc.add_argument("input", help="file to encrypt, or '-' for stdin")
     a_enc.add_argument("-o", "--output", help="envelope output (default: stdout)")
     a_enc.add_argument("--scope", choices=("device", "developer"), default="device",
-                       help="device = only this dongle; developer = any of your batch")
+                       help="device = only this dongle; developer = any of your own dongles")
     a_enc.set_defaults(func=cmd_appcrypto_encrypt)
 
     a_dec = app.add_parser("decrypt", help="decrypt an envelope")

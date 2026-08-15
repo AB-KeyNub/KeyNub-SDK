@@ -3,8 +3,8 @@ classdef Session < handle
 %
 %   Obtained from keynub.Dongle.openSession. Reads need a session; writes,
 %   erases and counter increments additionally need the write role, granted by
-%   authorizeWrite with the developer master key (vendor tooling only — never
-%   ship that key in an application).
+%   authorizeWrite with the developer master key — which belongs in your
+%   licence-issuing tooling, never in the application your users run.
 %
 %   See also keynub.Dongle, keynub.Scope.
 
@@ -42,6 +42,13 @@ classdef Session < handle
         function authorizeWrite(obj, masterKeyDer)
             %AUTHORIZEWRITE Elevates to the write role with the developer master key.
             keynub.internal.call('write_auth', obj.checkedHandle(), masterKeyDer);
+        end
+
+        function rotateWriteKey(obj, newKeyDer)
+            %ROTATEWRITEKEY Replaces the dongle's write-auth key with your own.
+            %   Call authorizeWrite with the current key first. From the next
+            %   session on, only the new key elevates.
+            keynub.internal.call('write_auth_rotate', obj.checkedHandle(), newKeyDer);
         end
 
         function records = listRecords(obj)

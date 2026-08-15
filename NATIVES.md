@@ -1,15 +1,41 @@
 # Getting the native library
 
-Every binding in this repository is a thin layer over one native library. That
-library is distributed as a **prebuilt binary** — download it from the
-[latest release](https://github.com/AB-KeyNub/KeyNub-SDK/releases/latest) rather than
-building it yourself.
+Every binding in this repository is a thin layer over one native library, and it is
+a **prebuilt binary** — you do not build it yourself.
 
-Later releases will also publish through the package registries (NuGet, PyPI, npm,
-crates.io), at which point the managed-language bindings will pull the native
-automatically and you can skip this page.
+## It is already here
+
+A clone of this repository carries one per platform:
+
+```
+natives/win-x64/      keynub_licdongle.dll   keynub_licdongle_flat.dll   + .lib
+natives/win-x86/                          "                              + .lib
+natives/win-arm64/                        "                              + .lib
+natives/linux-x64/    libkeynub_licdongle.so      libkeynub_licdongle_flat.so
+natives/linux-arm64/                      "
+natives/osx-x64/      libkeynub_licdongle.dylib   libkeynub_licdongle_flat.dylib
+natives/osx-arm64/                        "        (one universal binary, both slices)
+natives/MANIFEST.txt  the version, and a SHA-256 for every file above
+```
+
+Every binding that loads its library at run time finds this directory by itself, so
+the samples run from a clone with nothing set. The bindings that link at build time
+find it too, where their build system can: point other toolchains at
+`natives/<platform>` with the usual flag — `-Lnatives/linux-x64`, and so on.
+
+`KEYNUB_LICDONGLE_LIBRARY` still overrides it everywhere, and still takes an
+absolute path to one specific library.
+
+The prebuilt libraries are under [`BINARY-LICENSE.txt`](BINARY-LICENSE.txt), not the
+Apache-2.0 licence that covers the source in this repository.
 
 ## Which download
+
+The [release archives](https://github.com/AB-KeyNub/KeyNub-SDK/releases/latest) are
+the other way to get them, and the only source for the static libraries and the COM
+server. Later releases will also publish through the package registries (NuGet,
+PyPI, npm, crates.io), at which point the managed-language bindings pull the native
+automatically.
 
 One archive per platform, each self-contained — headers, libraries, licences, a
 README and a `SHA256SUMS` covering its own contents:
@@ -74,8 +100,15 @@ Julia, Nim, Go. Put the shared library where the runtime will find it:
 
 **Compiled against** — C, C++, Rust, Fortran, COBOL, Zig, LabVIEW, and the flat
 API. These need [`include/licdongle.h`](include/licdongle.h) (in this repository)
-at compile time and the library at link time. Point your build at the extracted
-`include/` and library directory in the usual way for your toolchain.
+at compile time and the library at link time: `-Iinclude -Lnatives/<platform>`, or
+the equivalent for your toolchain. The Rust crate looks in `natives/` on its own
+when it is built from a checkout.
+
+One thing carries over from linking anywhere else: the finished executable loads
+the shared library at **startup**, by name, from the operating system's search
+path. Building against `natives/` does not put it there, so copy the library next
+to the executable or add that directory to `PATH` / `LD_LIBRARY_PATH` /
+`DYLD_LIBRARY_PATH` before running.
 
 ## The COM server
 

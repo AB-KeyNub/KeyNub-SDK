@@ -45,7 +45,8 @@ interface LicdLibrary extends Library {
 
     @Structure.FieldOrder({"proto_version_major", "proto_version_minor", "fw_version_major",
             "fw_version_minor", "fw_version_patch", "se_ready", "provisioned",
-            "data_capacity", "data_free", "watchdog_reboot", "isolated"})
+            "data_capacity", "data_free", "watchdog_reboot", "isolated",
+            "writeauth_rotated"})
     class LicdInfo extends Structure {
         public byte proto_version_major;
         public byte proto_version_minor;
@@ -58,19 +59,19 @@ interface LicdLibrary extends Library {
         public int data_free;
         public int watchdog_reboot;
         public int isolated;
+        public int writeauth_rotated;
     }
 
-    @Structure.FieldOrder({"genuine", "serial", "batch", "provisioned_date"})
+    @Structure.FieldOrder({"genuine", "serial", "provisioned_date"})
     class LicdGenuineResult extends Structure {
         public int genuine;
-        public byte[] serial = new byte[19];
-        public byte[] batch = new byte[64];
+        public byte[] serial = new byte[15];
         public byte[] provisioned_date = new byte[11];
     }
 
     @Structure.FieldOrder({"serial", "path", "vendor_id", "product_id"})
     class LicdDeviceInfo extends Structure {
-        public byte[] serial = new byte[19];
+        public byte[] serial = new byte[15];
         public byte[] path = new byte[512];
         public short vendor_id;
         public short product_id;
@@ -112,6 +113,8 @@ interface LicdLibrary extends Library {
     int licd_session_open(Pointer dev);
     int licd_session_close(Pointer dev);
     int licd_write_auth(Pointer dev, byte[] der, SizeT len);
+
+    int licd_write_auth_rotate(Pointer dev, byte[] der, SizeT len);
 
     int licd_record_list(Pointer dev, PointerByReference outNames, PointerByReference outSizes,
                          SizeTByReference outCount);

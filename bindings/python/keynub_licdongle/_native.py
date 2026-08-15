@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import ctypes
 import os
+import platform
 import sys
 from ctypes import POINTER, c_char, c_char_p, c_int, c_size_t, c_uint8, c_uint16, c_uint32, c_void_p
 
@@ -21,6 +22,19 @@ _LIB_BASENAMES = {
 _DEFAULT_LIB = _LIB_BASENAMES.get(sys.platform, "libkeynub_licdongle.so")
 
 
+def _repo_rid() -> str:
+    """The natives/<rid> directory name for this interpreter, or "" if unknown."""
+    machine = platform.machine().lower()
+    if sys.platform == "win32":
+        return {"amd64": "win-x64", "x86": "win-x86",
+                "arm64": "win-arm64"}.get(machine, "")
+    if sys.platform == "darwin":
+        return "osx-arm64" if machine in ("arm64", "aarch64") else "osx-x64"
+    if sys.platform.startswith("linux"):
+        return {"x86_64": "linux-x64", "aarch64": "linux-arm64"}.get(machine, "")
+    return ""
+
+
 def _candidate_paths() -> list[str]:
     # 1) explicit override (tests point this at the simulator library)
     override = os.environ.get("KEYNUB_LICDONGLE_LIBRARY")
@@ -30,9 +44,16 @@ def _candidate_paths() -> list[str]:
     # 2) native bundled inside the installed package (wheel layout)
     here = os.path.dirname(os.path.abspath(__file__))
     candidates.append(os.path.join(here, "_libs", _DEFAULT_LIB))
-    # 3) alongside the package
+    # 3) the prebuilt library a checkout of the SDK carries, per platform. This is
+    #    what makes a clone runnable with nothing set; absent from an installed
+    #    wheel, where 2) is the one that hits.
+    rid = _repo_rid()
+    if rid:
+        candidates.append(os.path.join(here, "..", "..", "..", "natives", rid,
+                                       _DEFAULT_LIB))
+    # 4) alongside the package
     candidates.append(os.path.join(here, _DEFAULT_LIB))
-    # 4) system search
+    # 5) system search
     candidates.append(_DEFAULT_LIB)
     return candidates
 
@@ -67,21 +88,21 @@ class LicdInfo(ctypes.Structure):
         ("data_free", c_uint32),
         ("watchdog_reboot", c_int),
         ("isolated", c_int),
+        ("writeauth_rotated", c_int),
     ]
 
 
 class LicdGenuineResult(ctypes.Structure):
     _fields_ = [
         ("genuine", c_int),
-        ("serial", c_char * 19),
-        ("batch", c_char * 64),
+        ("serial", c_char * 15),
         ("provisioned_date", c_char * 11),
     ]
 
 
 class LicdDeviceInfo(ctypes.Structure):
     _fields_ = [
-        ("serial", c_char * 19),
+        ("serial", c_char * 15),
         ("path", c_char * 512),
         ("vendor_id", c_uint16),
         ("product_id", c_uint16),
@@ -121,6 +142,7 @@ licd_verify_genuine = _decl("licd_verify_genuine", c_int, [c_void_p, POINTER(Lic
 licd_session_open = _decl("licd_session_open", c_int, [c_void_p])
 licd_session_close = _decl("licd_session_close", c_int, [c_void_p])
 licd_write_auth = _decl("licd_write_auth", c_int, [c_void_p, c_char_p, c_size_t])
+licd_write_auth_rotate = _decl("licd_write_auth_rotate", c_int, [c_void_p, c_char_p, c_size_t])
 
 licd_record_list = _decl(
     "licd_record_list", c_int, [c_void_p, POINTER(c_void_p), POINTER(c_void_p), POINTER(c_size_t)]

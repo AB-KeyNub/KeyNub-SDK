@@ -68,12 +68,16 @@ extern "C" {
 #define LICDF_FLAG_PROVISIONED 0x02
 #define LICDF_FLAG_WATCHDOG_REBOOT 0x04
 #define LICDF_FLAG_ISOLATED 0x08
+// The write-auth key has been rotated away from the one installed at the
+// factory. That key is public, so a dongle without this bit takes writes from
+// anyone holding it. Check it before shipping a dongle on.
+#define LICDF_FLAG_WRITEAUTH_ROTATED 0x10
 
 // Buffer sizes worth naming, so a caller in a language without sizeof can size
 // its arrays.
-#define LICDF_SERIAL_SIZE 19 // LICD_SERIAL_HEX_LEN + 1
+#define LICDF_SERIAL_SIZE 15 // LICD_SERIAL_HEX_LEN + 1
+#define LICDF_DATE_SIZE 11   // "YYYY-MM-DD" + NUL
 #define LICDF_PATH_SIZE 512
-#define LICDF_BATCH_SIZE 64
 #define LICDF_ERROR_SIZE 256
 
 // --- version ---------------------------------------------------------------
@@ -109,14 +113,24 @@ LICDF_API int32_t licdf_get_info(int32_t handle, int32_t *out_proto_major,
 
 // Proves authenticity: certificate chain to the trusted root plus a live
 // challenge-response. Returns LICD_OK only when the dongle is genuine.
+//
+// `out_provisioned_date` receives "YYYY-MM-DD", the day the unit was personalised,
+// or an empty string when it reports none. Pass NULL and 0 if you do not want it;
+// it is informational, and no licensing decision should turn on it.
 LICDF_API int32_t licdf_verify_genuine(int32_t handle, int32_t *out_genuine, char *out_serial,
-                                       int32_t serial_size, char *out_batch, int32_t batch_size);
+                                       int32_t serial_size, char *out_provisioned_date,
+                                       int32_t date_size);
 
 // --- session ---------------------------------------------------------------
 LICDF_API int32_t licdf_session_open(int32_t handle);
 LICDF_API int32_t licdf_session_close(int32_t handle);
-// Elevates to the write role with the developer master key. Vendor tooling only.
+// Elevates to the write role with the developer master key. Belongs in your
+// licence-issuing tooling, never in the application your users run.
 LICDF_API int32_t licdf_write_auth(int32_t handle, const uint8_t *der, int32_t der_len);
+// Replaces the dongle's write-auth key with the one in `der` (P-256 PKCS#8).
+// Call licdf_write_auth first. From the next session on, only the new key
+// elevates.
+LICDF_API int32_t licdf_write_auth_rotate(int32_t handle, const uint8_t *der, int32_t der_len);
 
 // --- records ---------------------------------------------------------------
 // Records are addressed by index for listing, because this API cannot return an
@@ -135,14 +149,17 @@ LICDF_API int32_t licdf_record_erase(int32_t handle, const char *name);
 LICDF_API int32_t licdf_record_erase_all(int32_t handle);
 
 // --- counters --------------------------------------------------------------
-// Hardware monotonic counters. The secure element's counters top out well below
-// 2^31, so a signed int32 is a safe carrier.
+// Hardware monotonic counters. The element's counters are a full 32 bits, so a
+// signed int32 cannot represent the top half of the range; it is used anyway
+// because this ABI targets languages with no unsigned type, and a counter that
+// reached 2^31 would have been incremented every second for 68 years. Use the C
+// API if the full range matters.
 LICDF_API int32_t licdf_counter_read(int32_t handle, int32_t counter_id, int32_t *out_value);
 LICDF_API int32_t licdf_counter_increment(int32_t handle, int32_t counter_id,
                                           int32_t *out_value);
 
 // --- app-data envelope encryption -----------------------------------------
-// scope: 0 = this dongle only, 1 = any dongle from the same developer batch.
+// scope: 0 = this dongle only, 1 = any dongle issued by the same developer.
 // This is the pair to build a licence check on: put something the program needs
 // through it, so removing the check removes the data.
 LICDF_API int32_t licdf_app_encrypt(int32_t handle, int32_t scope, const uint8_t *plaintext,

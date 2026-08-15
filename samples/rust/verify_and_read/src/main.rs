@@ -35,8 +35,8 @@ fn report(dongle: &Dongle) -> Result<(), Error> {
 
     let result = dongle.verify_genuine()?;
     println!(
-        "Genuine: {} (serial {}, batch {}, provisioned {})",
-        result.genuine, result.serial, result.batch, result.provisioned_date
+        "Genuine: {} (serial {}, provisioned {})",
+        result.genuine, result.serial, result.provisioned_date
     );
     Ok(())
 }
@@ -60,7 +60,7 @@ fn read_records(session: &Session) -> Result<(), Error> {
 /// The part that actually protects something. At licence-issue time you would call
 /// `app_encrypt` once, with a developer dongle, and ship only the blob; the
 /// application then cannot proceed without a dongle, because it holds no other copy
-/// of the data. `Scope::Developer` lets any dongle from your batch decrypt it, so one
+/// of the data. `Scope::Developer` lets any dongle you have issued decrypt it, so one
 /// file serves every customer; `Scope::Device` locks it to one dongle.
 fn protect_something(session: &Session) -> Result<(), Error> {
     let needed = b"the data this program cannot run without";

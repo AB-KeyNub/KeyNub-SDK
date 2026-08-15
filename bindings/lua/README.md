@@ -45,14 +45,3 @@ Put what the add-on needs through `appEncrypt`/`appDecrypt` instead.
   machine-code trampoline per `ffi.cast` of a function and they are a finite
   resource, so a long-running host that forgot would eventually run out.
 
-## Testing
-
-```
-KEYNUB_SIM_PATH=../../build/keynub_licdongle_sim.dll luajit test/test_end_to_end.lua
-```
-
-46 assertions against an in-process software dongle — **no hardware** — covering
-the full protocol stack plus the struct layout across the FFI boundary (a mistake
-shows up as a garbage value, not a wrong boolean), the progress bridge with
-cancellation and an error thrown from inside a callback, and a session outliving
-its dongle. A plain assertion harness, so no rocks are needed.

@@ -30,18 +30,12 @@ immediately, which makes it a useful canary for the others.
 
 ```
 zig build                              # type-check the binding
-zig build test -Dkeynub-lib-name=keynub_licdongle_sim -Dkeynub-lib-dir=../../build
 ```
-
-| Option | Meaning |
-| --- | --- |
-| `-Dkeynub-lib-dir` | directory holding the native library |
-| `-Dkeynub-lib-name` | library to link; `keynub_licdongle_sim` for the tests |
 
 As a dependency, the module is exported as `keynub_licdongle`; add
 `../../include` to your include path so `@cImport` can find the header.
 
-Verified with **Zig 0.16** and built on every CI run. Zig makes no source
+Requires **Zig 0.16**. Zig makes no source
 compatibility promise between releases, so the binding tracks the current one;
 0.15 and earlier need `callconv(.C)` where this uses `callconv(.c)`, and the
 `build.zig` here uses the `root_module` form introduced in 0.15. `FixedString`
@@ -66,11 +60,3 @@ upgrade.
 > before writing the check. `if (dongle.isGenuine())` compiles to a conditional
 > jump, and patching one of those in a release binary is a beginner exercise.
 > Route something the program needs through `appEncrypt`/`appDecrypt`.
-
-## Testing
-
-`zig build test` runs 8 tests against an in-process software dongle — **no
-hardware** — covering the full protocol stack plus what is specific here:
-allocation and ownership, the error mapping, the progress bridge with
-cancellation, and a session outliving its dongle. `std.testing.allocator` fails
-the test on a leak, so ownership mistakes are caught rather than tolerated.

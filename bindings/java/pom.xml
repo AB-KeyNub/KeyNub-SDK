@@ -6,7 +6,7 @@
 
   <groupId>com.keynub</groupId>
   <artifactId>keynub-licdongle</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
 
   <name>KeyNub License Dongle SDK</name>
@@ -25,6 +25,21 @@
     <name>KeyNub</name>
     <url>https://github.com/AB-KeyNub/KeyNub-SDK</url>
   </organization>
+
+  <developers>
+    <developer>
+      <name>KeyNub</name>
+      <organization>KeyNub</organization>
+      <organizationUrl>https://www.keynub.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/AB-KeyNub/KeyNub-SDK.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/AB-KeyNub/KeyNub-SDK.git</developerConnection>
+    <url>https://github.com/AB-KeyNub/KeyNub-SDK</url>
+    <tag>HEAD</tag>
+  </scm>
 
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
@@ -53,8 +68,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
-        <!-- The forked test JVM inherits the environment (KEYNUB_SIM_PATH) from Maven;
-             the test also falls back to the standard native/ path if it is unset. -->
       </plugin>
 
       <!-- Copy the SDK's license and attribution files into META-INF/ so they are
@@ -91,5 +104,68 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- Everything Maven Central requires on top of an ordinary build: signatures, a
+       sources jar and a javadoc jar. Kept in a profile so a normal `mvn test` neither
+       slows down nor asks for a signing key. Activate with `mvn -P release deploy`.
+
+       Publishing goes through the Central Portal; OSSRH is being retired. The
+       namespace com.keynub has to be verified there first, which needs a DNS TXT
+       record on keynub.com and is the long-lead item; start it before the rest. -->
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals><goal>jar-no-fork</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.6.3</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals><goal>jar</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.5.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <!-- Leave the upload manual: a Central deployment is immutable, so the
+                   last look happens in the Portal, not in a build log. -->
+              <autoPublish>false</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

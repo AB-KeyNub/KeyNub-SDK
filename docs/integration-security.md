@@ -1,5 +1,7 @@
 # Integrating KeyNub securely
 
+**Document version 1.1 · Applies to firmware 1.1.x, protocol version 1, SDK 1.1.0**
+
 **Read this before you write your licensing check.** The dongle is strong hardware,
 but hardware cannot fix a weak integration — and the most common integration is a
 weak one. This document is normative guidance for developers building KeyNub into
@@ -84,7 +86,7 @@ Pick the scope deliberately:
 | Scope | Who can decrypt | Use for |
 | --- | --- | --- |
 | `LICD_SCOPE_DEVICE` | only that one physical dongle | per-customer data, node-locked content |
-| `LICD_SCOPE_DEVELOPER` | any dongle from your batch | data shipped once to all customers |
+| `LICD_SCOPE_DEVELOPER` | any dongle you have issued | data shipped once to all customers |
 
 `LICD_SCOPE_DEVELOPER` is the right default for content you ship in the installer;
 `LICD_SCOPE_DEVICE` for anything issued to one customer. Both require only the read
@@ -115,10 +117,21 @@ Ordered by how much they buy you:
    happens when a user unplugs a dongle or a USB hub resets. Report it clearly and
    let the user re-plug; do not crash, and do not silently continue in a degraded
    mode that turns out to be the full product.
-7. **Keep the developer master key out of your application.** `licd_write_auth`
+7. **Keep your developer master key out of your application.** `licd_write_auth`
    elevates a session to the write role and belongs only in your licence-issuing
-   tool. A master key shipped to customers is the one mistake that compromises your
-   whole product line rather than one seat.
+   tool. A master key shipped to customers is the one mistake that compromises every
+   dongle you have issued, not one seat.
+8. **Rotate every dongle before you write to it or pass it on.** A dongle arrives
+   holding KeyNub's factory write-auth key, and that key is **published** — it is
+   in this SDK, at `keys/`, because every customer needs it to perform
+   their first rotation. Until you rotate, anyone with the dongle in their hand can
+   write to it, erase its records, increment its counters, or rotate it to a key
+   *you* do not have, which is not recoverable. `rotate_write_key` does it in one
+   call and there is a sample in every language.
+9. **Check the rotation happened, across the whole delivery.** `licd_get_info` reports
+   `writeauth_rotated`. Make your licence-issuing tool refuse a dongle that reports
+   false, so a unit that slipped through cannot be shipped with the factory key
+   still in place.
 
 ## 5. What KeyNub protects, and what it does not
 
@@ -171,10 +184,9 @@ code execution in a world that can talk to USB and cannot read a key.
 calls it). The firmware does not derive that flag from its own build configuration;
 at boot it asks the hardware how an access from the isolated world *would* be
 attributed, for the keys, the storage and its own memory, and reports what the
-hardware answered. A build whose containment is not what it claims does not set it.
-Note that the software simulator reports `false`, deliberately — it has no hardware
-to fence anything off, and a test double able to claim the property could satisfy a
-check that only real containment should pass.
+hardware answered. A build whose containment is not what it claims does not set it, and anything that
+is not a dongle reports `false` — the flag is only ever set by asking real
+hardware, so a check gated on it cannot be satisfied by a stand-in.
 
 **What this does not do.** It does not make your licence check harder to bypass. Both
 attacks in §2 are entirely unaffected, because they happen on the host, inside your
@@ -182,19 +194,6 @@ process, where the dongle has no reach. Device-side containment is about the don
 keeping the promise in §1 — *this key never leaves the secure element* — even if its
 own firmware turns out to be defective. It is not a substitute for §3, and if you take
 one thing from this document it should still be §3.
-
-## 7. Note on the simulator
-
-The SDK ships an in-process software dongle (`keynub_licdongle_sim`) so you can
-develop and run your full test suite before hardware arrives, and evaluate the
-integration before buying anything. It is a test double: it fakes a genuine device
-using fixture keys.
-
-It is deliberately kept out of the production library — the released
-`keynub_licdongle` exports none of its entry points — and it must never be shipped
-in an application. Note also what its existence demonstrates: a fake dongle is easy
-to build, which is exactly why §3 matters. An integration that the simulator can
-satisfy is an integration an attacker can satisfy.
 
 ## 8. Reporting a vulnerability
 

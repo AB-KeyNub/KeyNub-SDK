@@ -40,12 +40,12 @@ public final class Dongle implements AutoCloseable {
                 info.fw_version_major & 0xFF, info.fw_version_minor & 0xFF, info.fw_version_patch & 0xFF,
                 info.se_ready != 0, info.provisioned != 0,
                 info.data_capacity & 0xFFFFFFFFL, info.data_free & 0xFFFFFFFFL,
-                info.watchdog_reboot != 0, info.isolated != 0);
+                info.watchdog_reboot != 0, info.isolated != 0, info.writeauth_rotated != 0);
     }
 
-    /** Read the dongle serial as hex (e.g. {@code 0123456789ABCDEFEE}). */
+    /** Read the dongle serial as hex (e.g. {@code 04A1B2C3D4E5F6}). */
     public String getSerial() {
-        byte[] buf = new byte[19]; // LICD_SERIAL_HEX_LEN + 1
+        byte[] buf = new byte[15]; // LICD_SERIAL_HEX_LEN + 1
         Errors.check(LicdLibrary.INSTANCE.licd_get_serial(handle(), buf, new LicdLibrary.SizeT(buf.length)),
                 ctxHandle(), "licd_get_serial");
         return Util.cstr(buf);
@@ -55,7 +55,7 @@ public final class Dongle implements AutoCloseable {
     public GenuineResult verifyGenuine() {
         LicdLibrary.LicdGenuineResult res = new LicdLibrary.LicdGenuineResult();
         Errors.check(LicdLibrary.INSTANCE.licd_verify_genuine(handle(), res), ctxHandle(), "licd_verify_genuine");
-        return new GenuineResult(res.genuine != 0, Util.cstr(res.serial), Util.cstr(res.batch),
+        return new GenuineResult(res.genuine != 0, Util.cstr(res.serial),
                 Util.cstr(res.provisioned_date));
     }
 

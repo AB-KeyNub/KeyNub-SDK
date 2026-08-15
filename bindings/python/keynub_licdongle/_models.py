@@ -10,7 +10,7 @@ class Scope(enum.IntEnum):
     """Scope for app-data envelope encryption (:meth:`Session.app_encrypt`)."""
 
     DEVICE = 0     #: Only this physical dongle can decrypt (node-locking).
-    DEVELOPER = 1  #: Any dongle from the same developer batch can decrypt.
+    DEVELOPER = 1  #: Any dongle issued by the same developer can decrypt.
 
 
 class LogLevel(enum.IntEnum):
@@ -48,8 +48,11 @@ class DongleInfo:
     #: field hang leaves behind. Cleared by a power cycle.
     watchdog_reboot: bool = False
     #: Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-    #: from keys and storage. The software simulator reports false.
+    #: from keys and storage. Anything that is not a dongle reports false.
     isolated: bool = False
+    #: Whether the write-auth key has been rotated away from the factory one. That key
+    #: is public, so a dongle reporting false accepts writes from anyone holding it.
+    writeauth_rotated: bool = False
 
 
 @dataclass(frozen=True)
@@ -58,7 +61,6 @@ class GenuineResult:
 
     is_genuine: bool
     serial: str
-    batch: str
     provisioned_date: str
 
 

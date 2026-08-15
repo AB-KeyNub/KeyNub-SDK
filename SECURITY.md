@@ -28,9 +28,6 @@ Out of scope — these are known, documented properties rather than vulnerabilit
   licence check.** Host code runs on hardware the attacker controls; this cannot be
   prevented by the dongle. See [`docs/integration-security.md`](docs/integration-security.md),
   which explains the integration pattern that makes such bypasses ineffective.
-- The test simulator (`keynub_licdongle_sim`) impersonating a genuine dongle. That
-  is its purpose. It is excluded from the released library.
-
 Findings that let an attacker clone a dongle, extract a device key, forge a
 certificate chain, decrypt or tamper with session traffic, roll back a monotonic
 counter, or elevate to the write role without the developer master key are very much

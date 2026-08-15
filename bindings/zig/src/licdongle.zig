@@ -22,7 +22,7 @@
 //! other bindings each need a test to guard against — and it is why the tests
 //! here concentrate on the wrapper's own behaviour instead.
 //!
-//! Read SDK/docs/integration-security.md before writing the check.
+//! Read docs/integration-security.md before writing the check.
 //! `if (dongle.isGenuine())` compiles to a conditional jump, and patching one of
 //! those in a release binary is a beginner exercise. Route something the program
 //! needs through appEncrypt/appDecrypt, so removing the check removes the data.
@@ -146,14 +146,16 @@ pub const Info = struct {
     /// power cycle clears it — worth logging.
     watchdog_reboot: bool,
     /// Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-    /// from keys and storage. The software simulator reports false.
+    /// from keys and storage. Anything that is not a dongle reports false.
     isolated: bool,
+    /// Whether the write-auth key has been rotated away from the factory one. That key
+    /// is public, so a dongle reporting false accepts writes from anyone holding it.
+    writeauth_rotated: bool,
 };
 
 pub const GenuineResult = struct {
     genuine: bool,
     serial: FixedString,
-    batch: FixedString,
     /// "YYYY-MM-DD", or empty.
     provisioned_date: FixedString,
 };
@@ -166,7 +168,7 @@ pub const RecordInfo = struct {
 pub const Scope = enum(c_int) {
     /// Only this one physical dongle can decrypt.
     device = c.LICD_SCOPE_DEVICE,
-    /// Any dongle from the same developer batch.
+    /// Any dongle issued by the same developer.
     developer = c.LICD_SCOPE_DEVELOPER,
 };
 
@@ -308,6 +310,7 @@ pub const Dongle = struct {
             .data_free = raw.data_free,
             .watchdog_reboot = raw.watchdog_reboot != 0,
             .isolated = raw.isolated != 0,
+            .writeauth_rotated = raw.writeauth_rotated != 0,
         };
     }
 
@@ -325,7 +328,6 @@ pub const Dongle = struct {
         return .{
             .genuine = raw.genuine != 0,
             .serial = FixedString.fromC(&raw.serial),
-            .batch = FixedString.fromC(&raw.batch),
             .provisioned_date = FixedString.fromC(&raw.provisioned_date),
         };
     }
@@ -370,10 +372,18 @@ pub const Session = struct {
         return self.dongle.ctx;
     }
 
-    /// Elevates to the write role with the developer master key. Vendor tooling
-    /// only — never ship that key in an application.
+    /// Elevates to the write role with the developer master key. This belongs in
+    /// your licence-issuing tooling; never ship that key in the application your
+    /// users run.
     pub fn authorizeWrite(self: *Session, master_key_der: []const u8) Error!void {
         try self.ctx().check(c.licd_write_auth(try self.device(), master_key_der.ptr, master_key_der.len));
+    }
+
+    /// Replaces the dongle's write-auth key with your own (a DER EC private key).
+    /// Call `authorizeWrite` with the current key first. From the next session on,
+    /// only the new key elevates.
+    pub fn rotateWriteKey(self: *Session, new_key_der: []const u8) Error!void {
+        try self.ctx().check(c.licd_write_auth_rotate(try self.device(), new_key_der.ptr, new_key_der.len));
     }
 
     /// Records stored on the dongle. Free with `freeRecords`.

@@ -38,16 +38,6 @@
 #include "KeyNub_h.h" // MIDL-generated from KeyNub.idl
 #include "licd_flat.h"
 
-#ifdef KEYNUB_COM_SIM
-// Test-only build. Exported by the sim build of the flat library, and the reason a
-// COM test can run on a machine with no dongle: Open("SIM") attaches to the
-// in-process software dongle instead of enumerating USB. Guarded by a compile
-// definition that the shipping target never sets, so a released DLL has no way to
-// reach it — grep for KEYNUB_COM_SIM before a release to confirm.
-extern "C" int32_t licdf_open_simulated(void);
-static const char kSimSerial[] = "SIM";
-#endif
-
 // ---------------------------------------------------------------------------
 // Module state
 // ---------------------------------------------------------------------------
@@ -212,7 +202,9 @@ static HRESULT SafeArrayFromBytes(const uint8_t *data, size_t len, SAFEARRAY **o
 
 class Dongle final : public IDongle, public ISupportErrorInfo {
   public:
-    Dongle() : m_ref(1), m_handle(0) { InterlockedIncrement(&g_objectCount); }
+    Dongle() : m_ref(1), m_handle(0), m_provisionedDate{} {
+        InterlockedIncrement(&g_objectCount);
+    }
 
     // --- IUnknown ---------------------------------------------------------
     STDMETHODIMP QueryInterface(REFIID riid, void **ppv) override {
@@ -334,17 +326,11 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
             licdf_close(m_handle); // reopening is not an error; the old one is done
             m_handle = 0;
         }
-#ifdef KEYNUB_COM_SIM
-        const int32_t rc = (wanted == kSimSerial) ? licdf_open_simulated()
-                                                  : licdf_open(wanted.c_str());
-#else
         const int32_t rc = licdf_open(wanted.c_str());
-#endif
         if (rc < 0) {
             return FailNoHandle(rc, "no KeyNub dongle could be opened");
         }
         m_handle = rc;
-        m_batch.clear();
         return S_OK;
     }
 
@@ -366,7 +352,6 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
             return FailNoHandle(rc, "no KeyNub dongle at that path");
         }
         m_handle = rc;
-        m_batch.clear();
         return S_OK;
     }
 
@@ -375,7 +360,6 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
             licdf_close(m_handle);
             m_handle = 0;
         }
-        m_batch.clear();
         return S_OK; // idempotent on purpose: it belongs in an error handler
     }
 
@@ -475,12 +459,10 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
         }
         int32_t genuine = 0;
         char serial[LICDF_SERIAL_SIZE] = {0};
-        char batch[LICDF_BATCH_SIZE] = {0};
         const int32_t st = licdf_verify_genuine(m_handle, &genuine, serial, sizeof(serial),
-                                                batch, sizeof(batch));
+                                                nullptr, 0);
         if (st == LICD_OK && genuine != 0) {
             *value = VARIANT_TRUE;
-            m_batch.assign(batch);
         }
         return S_OK;
     }
@@ -497,20 +479,17 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
         }
         int32_t genuine = 0;
         char serial[LICDF_SERIAL_SIZE] = {0};
-        char batch[LICDF_BATCH_SIZE] = {0};
-        const int32_t st =
-            licdf_verify_genuine(h, &genuine, serial, sizeof(serial), batch, sizeof(batch));
+        const int32_t st = licdf_verify_genuine(h, &genuine, serial, sizeof(serial),
+                                                m_provisionedDate, sizeof(m_provisionedDate));
         if (st != LICD_OK) {
             return Fail(st, "the dongle's identity could not be verified");
         }
         if (genuine == 0) {
             return Fail(LICD_E_NOT_GENUINE, "this dongle is not a genuine KeyNub dongle");
         }
-        m_batch.assign(batch);
         return BstrFromUtf8(serial, certificateSerial);
     }
 
-    STDMETHODIMP get_Batch(BSTR *value) override { return BstrFromUtf8(m_batch.c_str(), value); }
 
     // --- session ----------------------------------------------------------
     STDMETHODIMP SessionOpen() override {
@@ -549,6 +528,24 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
         }
         const int32_t st = licdf_write_auth(h, key.data(), (int32_t)key.size());
         return (st == LICD_OK) ? S_OK : Fail(st, "the developer key was not accepted");
+    }
+
+    STDMETHODIMP RotateWriteKey(SAFEARRAY *der) override {
+        int32_t h = 0;
+        HRESULT hr = RequireOpen(&h);
+        if (FAILED(hr)) {
+            return hr;
+        }
+        std::vector<uint8_t> key;
+        hr = BytesFromSafeArray(der, key);
+        if (FAILED(hr)) {
+            return hr;
+        }
+        if (key.empty()) {
+            return Fail(LICD_E_INVALID_ARG, "RotateWriteKey needs the replacement key");
+        }
+        const int32_t st = licdf_write_auth_rotate(h, key.data(), (int32_t)key.size());
+        return (st == LICD_OK) ? S_OK : Fail(st, "the replacement key was not accepted");
     }
 
     // --- records ----------------------------------------------------------
@@ -793,6 +790,24 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
         return (st == LICD_OK) ? S_OK : Fail(st, "that trust root was not accepted");
     }
 
+    // "YYYY-MM-DD" for the dongle VerifyGenuine last confirmed, or "" when it
+    // reported none or has not been called. Informational: no licensing decision
+    // should turn on it.
+    STDMETHODIMP get_ProvisionedDate(BSTR *value) override {
+        if (value == nullptr) {
+            return E_POINTER;
+        }
+        return StringOut(value, [&](char *buf, int32_t cap) {
+            // Same convention as the flat layer's copy_string: RANGE when the
+            // buffer cannot hold the value, rather than a truncated date.
+            if (cap < (int32_t)sizeof(m_provisionedDate)) {
+                return (int32_t)LICD_E_RANGE;
+            }
+            memcpy(buf, m_provisionedDate, sizeof(m_provisionedDate));
+            return (int32_t)LICD_OK;
+        }, LICDF_DATE_SIZE, "could not read the personalisation date");
+    }
+
     STDMETHODIMP get_LastError(BSTR *value) override {
         char detail[LICDF_ERROR_SIZE] = {0};
         if (m_handle > 0) {
@@ -956,7 +971,11 @@ class Dongle final : public IDongle, public ISupportErrorInfo {
 
     LONG m_ref;
     int32_t m_handle;
-    std::string m_batch;
+    // Filled by VerifyGenuine, read by get_ProvisionedDate. Cached rather than
+    // re-fetched because the property must not silently perform a full identity
+    // check -- a caller reading a date should not pay for a round trip it did
+    // not ask for, nor get a different answer than the VerifyGenuine it just ran.
+    char m_provisionedDate[LICDF_DATE_SIZE];
 };
 
 // ---------------------------------------------------------------------------
@@ -1161,8 +1180,14 @@ extern "C" HRESULT __stdcall DllUnregisterServer(void) {
         RegCloseKey(user);
     }
 
-    UnRegisterTypeLib(LIBID_KeyNubLib, 1, 0, LOCALE_NEUTRAL, SYS_WIN32);
-    UnRegisterTypeLibForUser(LIBID_KeyNubLib, 1, 0, LOCALE_NEUTRAL, SYS_WIN32);
+    // Both SYSKINDs, because the 64-bit server registers its typelib as SYS_WIN64
+    // and asking for SYS_WIN32 removes nothing. The one that was never there
+    // returns an error that is correctly ignored; leaving the key behind is the
+    // failure that matters, since the next client binds to it.
+    for (SYSKIND kind : {SYS_WIN32, SYS_WIN64}) {
+        UnRegisterTypeLib(LIBID_KeyNubLib, 1, 0, LOCALE_NEUTRAL, kind);
+        UnRegisterTypeLibForUser(LIBID_KeyNubLib, 1, 0, LOCALE_NEUTRAL, kind);
+    }
     return S_OK;
 }
 

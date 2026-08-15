@@ -8,7 +8,7 @@ namespace KeyNub.LicenseDongle
     {
         /// <summary>Only this physical dongle can decrypt (node-locking).</summary>
         Device = 0,
-        /// <summary>Any dongle from the same developer batch can decrypt.</summary>
+        /// <summary>Any dongle issued by the same developer can decrypt.</summary>
         Developer = 1,
     }
 

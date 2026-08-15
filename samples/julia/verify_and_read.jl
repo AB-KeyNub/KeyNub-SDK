@@ -16,6 +16,10 @@
 # because the valuable part is normally data: a correlation set, fitted parameters,
 # a proprietary model's coefficients.
 
+if Base.find_package("KeyNubLicDongle") === nothing
+    # Running from a checkout, where the package is not installed.
+    push!(LOAD_PATH, joinpath(@__DIR__, "..", "..", "bindings", "julia"))
+end
 using KeyNubLicDongle
 
 function report(dongle)
@@ -31,7 +35,7 @@ function report(dongle)
     end
 
     r = verify_genuine(dongle)
-    println("Genuine: $(r.genuine) (serial $(r.serial), batch $(r.batch), " *
+    println("Genuine: $(r.genuine) (serial $(r.serial), " *
             "provisioned $(r.provisioned_date))")
 end
 
@@ -52,7 +56,7 @@ end
 # The part that actually protects something. At licence-issue time you would call
 # app_encrypt once, with a developer dongle, and ship only the blob; the package
 # then cannot proceed without a dongle, because it holds no other copy of the data.
-# DEVELOPER lets any dongle from your batch decrypt it, so one file serves every
+# DEVELOPER lets any dongle you have issued decrypt it, so one file serves every
 # customer; DEVICE locks it to one dongle.
 function protect_something(s)
     needed = Vector{UInt8}("the data this program cannot run without")

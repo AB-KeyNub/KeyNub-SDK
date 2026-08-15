@@ -53,27 +53,6 @@ bundled `keynub_licdongle/_libs/<lib>`, a copy next to the package, then the
 system search path. Linux additionally needs the shipped udev rule (a permission
 rule, not a driver).
 
-## Test & build (no hardware required)
-
-The test suite runs the whole binding against the in-process software dongle
-(`keynub_licdongle_sim`, shipped as a prebuilt binary), driven through the same simulator entry
-points as the C and .NET suites:
-
-```
-see NATIVES.md for the prebuilt library
-cd bindings/python
-KEYNUB_SIM_PATH=../../build/libkeynub_licdongle_sim.so PYTHONPATH=. python the binding's end-to-end test
-```
-
-Building the wheel needs the license files staged in first — PEP 639 cannot reach
-outside the project directory, so they are copied from the SDK root (the build fails
-loudly rather than producing a wheel with no attribution):
-
-```
-
-python -m build           # produces a wheel (CI bundles the native per platform)
-```
-
 ## `licd-tool` — the command line
 
 Installing the wheel also installs **`licd-tool`**, which drives the same

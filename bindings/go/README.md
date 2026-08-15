@@ -73,21 +73,6 @@ A progress callback that panics does not unwind through the cgo frame (that is
 undefined behaviour). The panic is captured at the boundary, the transfer is
 cancelled, and it is re-raised in your goroutine once C is off the stack.
 
-## Testing
-
-```
-CGO_LDFLAGS="-L../../build" go test -tags keynub_sim
-```
-
-The `keynub_sim` tag links `keynub_licdongle_sim` — the whole ABI plus
-`licd_open_simulated` — so the suite drives the full protocol stack with **no
-hardware**. A build tag rather than a separate module, so the code under test is
-the code that ships: nothing is stubbed. The simulator entry points live in
-`simulator.go` rather than in the test file, because cgo is not supported inside
-`_test.go` files.
-
-Never ship a build with `-tags keynub_sim`.
-
 ## License
 
 Apache-2.0, like the rest of the SDK — see

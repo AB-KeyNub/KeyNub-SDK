@@ -14,11 +14,8 @@
 ## No dependencies: `importc` is part of the language. The library is resolved at
 ## run time through `dynlib`, so nothing needs to be linked.
 ##
-## The library name is a compile-time define, so a test build can point at the
-## device simulator without the shipping code knowing about it:
-##
-## .. code-block::
-##   nim c -d:keynubLib=keynub_licdongle_sim -r the binding's end-to-end test
+## The library name is a compile-time define (`-d:keynubLib=...`), so a build can
+## be pointed at a specific library without the source knowing about it.
 ##
 ## Read docs/integration-security.md before writing the check. `if not
 ## dongle.isGenuine(): quit()` compiles to a conditional jump, and patching one of
@@ -28,8 +25,7 @@
 import std/[strutils, strformat]
 
 const keynubLib* {.strdefine.} = "keynub_licdongle"
-  ## The native library, resolved at run time. Override with
-  ## `-d:keynubLib=keynub_licdongle_sim` for the test build.
+  ## The native library, resolved at run time. Override with `-d:keynubLib=...`.
 
 {.push dynlib: keynubLib, cdecl.}
 
@@ -62,7 +58,7 @@ type Status* = enum
 type Scope* = enum
   ## Who can decrypt data produced by `appEncrypt`.
   scopeDevice = 0    ## only this one physical dongle
-  scopeDeveloper = 1 ## any dongle from the same developer batch
+  scopeDeveloper = 1 ## any dongle issued by the same developer
 
 # --- opaque handles and structs ----------------------------------------------
 
@@ -79,15 +75,15 @@ type
     dataCapacity, dataFree: uint32
     watchdogReboot: cint
     isolated: cint
+    writeauthRotated: cint
 
   LicdGenuineResult {.bycopy.} = object
     genuine: cint
-    serial: array[19, char]
-    batch: array[64, char]
+    serial: array[15, char]
     provisionedDate: array[11, char]
 
   LicdDeviceInfo {.bycopy.} = object
-    serial: array[19, char]
+    serial: array[15, char]
     path: array[512, char]
     vendorId, productId: uint16
 
@@ -114,6 +110,7 @@ proc licd_verify_genuine(dev: DevicePtr; outResult: var LicdGenuineResult): cint
 proc licd_session_open(dev: DevicePtr): cint {.importc.}
 proc licd_session_close(dev: DevicePtr): cint {.importc.}
 proc licd_write_auth(dev: DevicePtr; der: ptr uint8; len: csize_t): cint {.importc.}
+proc licd_write_auth_rotate(dev: DevicePtr; der: ptr uint8; len: csize_t): cint {.importc.}
 
 proc licd_record_list(dev: DevicePtr; outNames: var ptr cstring;
                       outSizes: var ptr uint32; outCount: var csize_t): cint {.importc.}
@@ -206,12 +203,14 @@ type
       ## power cycle clears it — worth logging.
     isolated*: bool
       ## Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-      ## from keys and storage. The software simulator reports false.
+      ## from keys and storage. Anything that is not a dongle reports false.
+    writeauthRotated*: bool
+      ## Whether the write-auth key has been rotated away from the factory one. That key
+      ## is public, so a dongle reporting false accepts writes from anyone holding it.
 
   GenuineResult* = object
     genuine*: bool
     serial*: string
-    batch*: string
     provisionedDate*: string
 
   RecordInfo* = object
@@ -355,11 +354,12 @@ proc getInfo*(dongle: Dongle): Info =
     dataCapacity: raw.dataCapacity,
     dataFree: raw.dataFree,
     watchdogReboot: raw.watchdogReboot != 0,
-    isolated: raw.isolated != 0)
+    isolated: raw.isolated != 0,
+    writeauthRotated: raw.writeauthRotated != 0)
 
 proc getSerial*(dongle: Dongle): string =
   ## Reads the dongle serial as hex.
-  var buffer: array[19, char]
+  var buffer: array[15, char]
   dongle.ctx.check(
     licd_get_serial(dongle.checkedHandle(), addr buffer[0], buffer.len.csize_t),
     "licd_get_serial")
@@ -373,7 +373,6 @@ proc verifyGenuine*(dongle: Dongle): GenuineResult =
   GenuineResult(
     genuine: raw.genuine != 0,
     serial: fromFixed(raw.serial),
-    batch: fromFixed(raw.batch),
     provisionedDate: fromFixed(raw.provisionedDate))
 
 proc isGenuine*(dongle: Dongle): bool =
@@ -413,9 +412,18 @@ proc requireName(name: string) =
 
 proc authorizeWrite*(s: Session; masterKeyDer: openArray[uint8]) =
   ## Elevates to the write role with the developer master key (a DER EC private
-  ## key). Vendor tooling only — never ship that key in an application.
+  ## key). This belongs in your licence-issuing tooling; never ship
+  ## that key in the application your users run.
   let p = if masterKeyDer.len > 0: cast[ptr uint8](masterKeyDer[0].unsafeAddr) else: nil
   s.check(licd_write_auth(s.device(), p, masterKeyDer.len.csize_t), "licd_write_auth")
+
+proc rotateWriteKey*(s: Session; newKeyDer: openArray[uint8]) =
+  ## Replaces the dongle's write-auth key with your own (a DER EC private key).
+  ## Call `authorizeWrite` with the current key first. From the next session on,
+  ## only the new key elevates.
+  let p = if newKeyDer.len > 0: cast[ptr uint8](newKeyDer[0].unsafeAddr) else: nil
+  s.check(licd_write_auth_rotate(s.device(), p, newKeyDer.len.csize_t),
+          "licd_write_auth_rotate")
 
 proc listRecords*(s: Session): seq[RecordInfo] =
   ## Records stored on the dongle.

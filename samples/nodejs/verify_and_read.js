@@ -14,7 +14,16 @@
 // line away from nothing. The last section shows the shape that actually protects
 // something. See docs/integration-security.md.
 
-const { Context, Scope, DeviceNotFoundError } = require('@keynub/licdongle');
+// The package name is what an application uses; the fallback is for running
+// from a checkout, where it is not installed (`npm install` there first, for the
+// FFI dependency).
+let binding;
+try {
+  binding = require('@keynub/licdongle');
+} catch {
+  binding = require('../../bindings/nodejs');
+}
+const { Context, Scope, DeviceNotFoundError } = binding;
 
 function main() {
   const version = Context.libraryVersion();
@@ -51,7 +60,7 @@ function main() {
 
       const result = dongle.verifyGenuine();
       console.log(
-        `Genuine: ${result.genuine} (serial ${result.serial}, batch ${result.batch}, ` +
+        `Genuine: ${result.genuine} (serial ${result.serial}, ` +
           `provisioned ${result.provisionedDate || 'unknown'})`
       );
 

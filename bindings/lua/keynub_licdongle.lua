@@ -19,8 +19,7 @@
 -- line of a script the customer can read and edit. Put something the program
 -- needs through appEncrypt/appDecrypt instead.
 --
--- Set KEYNUB_LICDONGLE_LIBRARY to point at a specific library; the test suite
--- uses it for the device simulator.
+-- Set KEYNUB_LICDONGLE_LIBRARY to point at a specific library.
 
 local ffi = require('ffi')
 
@@ -31,7 +30,7 @@ typedef struct licd_ctx licd_ctx;
 typedef struct licd_device licd_device;
 
 typedef struct {
-    char serial[19];
+    char serial[15];
     char path[512];
     uint16_t vendor_id;
     uint16_t product_id;
@@ -49,12 +48,12 @@ typedef struct {
     uint32_t data_free;
     int watchdog_reboot;
     int isolated;
+    int writeauth_rotated;
 } licd_info;
 
 typedef struct {
     int genuine;
-    char serial[19];
-    char batch[64];
+    char serial[15];
     char provisioned_date[11];
 } licd_genuine_result;
 
@@ -78,6 +77,7 @@ int licd_verify_genuine(licd_device *dev, licd_genuine_result *out_result);
 int licd_session_open(licd_device *dev);
 int licd_session_close(licd_device *dev);
 int licd_write_auth(licd_device *dev, const uint8_t *master_key_der, size_t len);
+int licd_write_auth_rotate(licd_device *dev, const uint8_t *new_key_der, size_t len);
 
 int licd_record_list(licd_device *dev, char ***out_names, uint32_t **out_sizes,
                      size_t *out_count);
@@ -132,7 +132,7 @@ M.Status = {
 --- Who can decrypt data produced by Session:appEncrypt.
 M.Scope = {
   DEVICE = 0,    -- only this one physical dongle
-  DEVELOPER = 1, -- any dongle from the same developer batch
+  DEVELOPER = 1, -- any dongle issued by the same developer
 }
 
 -- --- library discovery ------------------------------------------------------
@@ -146,9 +146,26 @@ local function defaultName()
   return 'libkeynub_licdongle.so'
 end
 
+-- The natives/<rid> directory a checkout of the SDK carries, if this file is
+-- being required from one. Nothing to set: the path is derived from this file.
+local function repoNative()
+  local source = debug.getinfo(1, 'S').source
+  local dir = source and source:match('^@(.*)[/\\][^/\\]*$')
+  if not dir then
+    return nil
+  end
+  local os_name = ffi.os == 'Windows' and 'win' or (ffi.os == 'OSX' and 'osx' or 'linux')
+  local arch = ({ x64 = 'x64', x86 = 'x86', arm64 = 'arm64' })[ffi.arch]
+  if not arch then
+    return nil
+  end
+  return dir .. '/../../natives/' .. os_name .. '-' .. arch .. '/' .. defaultName()
+end
+
 local function loadLibrary()
   local override = os.getenv('KEYNUB_LICDONGLE_LIBRARY')
-  local candidates = override and override ~= '' and { override } or { defaultName() }
+  local candidates = override and override ~= '' and { override }
+      or { repoNative(), defaultName() }
   local errors = {}
   for _, path in ipairs(candidates) do
     local ok, lib = pcall(ffi.load, path)
@@ -363,13 +380,14 @@ function Dongle:getInfo()
     dataFree = raw.data_free,
     watchdogReboot = raw.watchdog_reboot ~= 0,
     isolated = raw.isolated ~= 0,
+    writeauthRotated = raw.writeauth_rotated ~= 0,
   }
 end
 
 --- The dongle serial as hex.
 function Dongle:getSerial()
-  local buffer = ffi.new('char[19]')
-  self.context:check(lib.licd_get_serial(self:checkedHandle(), buffer, 19), 'licd_get_serial')
+  local buffer = ffi.new('char[15]')
+  self.context:check(lib.licd_get_serial(self:checkedHandle(), buffer, 15), 'licd_get_serial')
   return ffi.string(buffer)
 end
 
@@ -381,7 +399,6 @@ function Dongle:verifyGenuine()
   return {
     genuine = raw.genuine ~= 0,
     serial = fixedString(raw.serial),
-    batch = fixedString(raw.batch),
     provisionedDate = fixedString(raw.provisioned_date),
   }
 end
@@ -440,10 +457,20 @@ local function requireName(name)
 end
 
 --- Elevates to the write role with the developer master key (a DER EC private
---- key). Vendor tooling only — never ship that key in an application.
+--- key). This belongs in your licence-issuing tooling; never ship
+--- that key in the application your users run.
 function Session:authorizeWrite(masterKeyDer)
   local buffer = ffi.new('uint8_t[?]', math.max(#masterKeyDer, 1), masterKeyDer)
   self:check(lib.licd_write_auth(self:device(), buffer, #masterKeyDer), 'licd_write_auth')
+end
+
+--- Replaces the dongle's write-auth key with your own (a DER EC private key).
+--- Call authorizeWrite with the current key first. From the next session on, only
+--- the new key elevates.
+function Session:rotateWriteKey(newKeyDer)
+  local buffer = ffi.new('uint8_t[?]', math.max(#newKeyDer, 1), newKeyDer)
+  self:check(lib.licd_write_auth_rotate(self:device(), buffer, #newKeyDer),
+             'licd_write_auth_rotate')
 end
 
 --- Records stored on the dongle, as a list of { name, size }.

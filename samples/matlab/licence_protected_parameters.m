@@ -30,7 +30,7 @@ session = dongle.openSession();
 % =========================================================================
 % Step 1 - at licence-issue time, on YOUR machine (vendor side)
 % =========================================================================
-% Scope.Developer so that any dongle from your batch can decrypt it: you ship one
+% Scope.Developer so that any dongle you have issued can decrypt it: you ship one
 % encrypted file to every customer. Scope.Device would lock it to this one dongle,
 % which is what you want for per-customer data.
 coefficients = [0.9835 -1.2044 0.3311; 1.0 -0.7654 0.1234];

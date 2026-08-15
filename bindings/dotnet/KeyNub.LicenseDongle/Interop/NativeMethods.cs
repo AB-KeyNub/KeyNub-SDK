@@ -76,6 +76,9 @@ namespace KeyNub.LicenseDongle.Interop
         [DllImport(Lib, CallingConvention = Cc, ExactSpelling = true)]
         internal static extern int licd_write_auth(LicdDeviceHandle dev, byte[] masterKeyDer, UIntPtr len);
 
+        [DllImport(Lib, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int licd_write_auth_rotate(LicdDeviceHandle dev, byte[] newKeyDer, UIntPtr len);
+
         // --- Records -----------------------------------------------------------
         [DllImport(Lib, CallingConvention = Cc, ExactSpelling = true)]
         internal static extern int licd_record_list(LicdDeviceHandle dev, out IntPtr names, out IntPtr sizes, out UIntPtr count);

@@ -50,8 +50,11 @@ exceptions, so an uninitialised variable is the ordinary kind of mistake:
 - **`licdf_record_erase` refuses an empty name.** In the core, a null name means
   "erase every record". Here that is a separate function,
   `licdf_record_erase_all`, so an empty string cannot wipe a customer's dongle.
-- **Counter values are `int32`.** The secure element's counters top out well below
-  2³¹, so nothing is lost, and every caller can hold the result.
+- **Counter values are `int32`.** The secure element's counters are 32-bit, so a
+  value above 2³¹ would not fit a signed carrier. In practice it cannot arise: a
+  licence counter incremented once a second would take 68 years to get there, and
+  the flat ABI exists for languages whose only integer type is signed. Callers
+  that need the full range should use the C API, where the value is `uint32_t`.
 
 ## Threading
 
@@ -79,15 +82,4 @@ see NATIVES.md for the prebuilt library
 ```
 
 It exports **only** `licdf_*`. The core's `licd_*` symbols are compiled in but
-hidden, so the two ABIs cannot be confused for one another, and the simulator entry
-point used by tests is not present at all.
-
-## Testing
-
-the SDK test suite drives every function in CI against an
-in-process software dongle, with no hardware — including the parts that only exist
-for this layer: bad and stale handles, the two-call size protocol, buffers one byte
-too small, the flags bitmask, the erase guard, and exhausting the handle table.
-
-That matters more here than elsewhere: the callers this API serves cannot be run in
-CI, so if it is not pinned by this test it is not pinned at all.
+hidden, so the two ABIs cannot be confused for one another.

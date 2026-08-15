@@ -29,7 +29,7 @@ const
     {$ENDIF}
   {$ENDIF}
 
-  LICD_SERIAL_HEX_LEN = 18;
+  LICD_SERIAL_HEX_LEN = 14;
 
   // Status codes (licd_status). 0 = success; all errors are negative.
   LICD_OK                 = 0;
@@ -72,7 +72,7 @@ type
   // One discovered dongle (licd_device_info).
   PLicdDeviceInfo = ^TLicdDeviceInfo;
   TLicdDeviceInfo = record
-    serial: array[0..18] of AnsiChar;  // NUL-terminated
+    serial: array[0..14] of AnsiChar;  // NUL-terminated
     path: array[0..511] of AnsiChar;   // NUL-terminated platform path
     vendor_id: Word;
     product_id: Word;
@@ -94,16 +94,18 @@ type
     // hung and reset itself). Cleared by a power cycle.
     watchdog_reboot: Integer;
     // Nonzero if the dongle confirmed at boot that its USB and parsing code
-    // is fenced off from keys and storage. The simulator reports zero.
+    // is fenced off from keys and storage. Anything that is not a dongle reports zero.
     isolated: Integer;
+    // 0 means the dongle still answers to the factory write-auth key, which is
+    // public: anyone holding such a dongle can write to it.
+    writeauth_rotated: Integer;
   end;
 
   // Result of licd_verify_genuine (licd_genuine_result).
   PLicdGenuineResult = ^TLicdGenuineResult;
   TLicdGenuineResult = record
     genuine: Integer;
-    serial: array[0..18] of AnsiChar;
-    batch: array[0..63] of AnsiChar;
+    serial: array[0..14] of AnsiChar;
     provisioned_date: array[0..10] of AnsiChar;
   end;
 
@@ -168,6 +170,10 @@ function licd_session_close(dev: TLicdDevice): Integer; cdecl;
 // Elevate the session to the write role using the developer master key (DER).
 function licd_write_auth(dev: TLicdDevice; master_key_der: PByte; len: NativeUInt): Integer; cdecl;
   external LICD_LIB name 'licd_write_auth';
+// Replaces the dongle's write-auth key. Call licd_write_auth with the current
+// key first. From the next session on, only the new key elevates.
+function licd_write_auth_rotate(dev: TLicdDevice; new_key_der: PByte; len: NativeUInt): Integer; cdecl;
+  external LICD_LIB name 'licd_write_auth_rotate';
 
 // ============================================================================
 // License data records (session required; write/erase need the write role)

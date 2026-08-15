@@ -19,7 +19,7 @@
   <!-- NuGet package metadata -->
   <PropertyGroup>
     <PackageId>KeyNub.LicenseDongle</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>KeyNub</Authors>
     <Company>KeyNub</Company>
     <Product>KeyNub License Dongle SDK</Product>
@@ -59,7 +59,7 @@
   </ItemGroup>
 
   <!-- Package the native runtimes tree (runtimes/<rid>/native/...), staged by the
-       build/CI under bindings/dotnet/runtimes/. Missing on a fresh checkout: the
+       the packaging step under bindings/dotnet/runtimes/. Missing on a fresh checkout: the
        glob then matches nothing and the package ships managed-only. -->
   <ItemGroup>
     <None Include="../runtimes/**/*" Pack="true" PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)" Visible="false" />

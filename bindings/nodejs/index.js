@@ -28,12 +28,12 @@ const { Status, check, fail } = errors;
 
 const Scope = Object.freeze({
   DEVICE: 0, // only this one physical dongle can decrypt
-  DEVELOPER: 1, // any dongle from the same developer batch
+  DEVELOPER: 1, // any dongle issued by the same developer
 });
 
 const LogLevel = Object.freeze({ ERROR: 0, WARN: 1, INFO: 2, DEBUG: 3 });
 
-const SERIAL_BUFFER = 19; // LICD_SERIAL_HEX_LEN + 1
+const SERIAL_BUFFER = 15; // LICD_SERIAL_HEX_LEN + 1
 
 /** Coerces user input to a Buffer without silently mangling it. */
 function toBuffer(value, what) {
@@ -251,6 +251,7 @@ class Dongle {
       // and reset itself. The only trace a field hang leaves, so log it.
       watchdogReboot: info.watchdog_reboot !== 0,
       isolated: info.isolated !== 0,
+      writeAuthRotated: info.writeauth_rotated !== 0,
     };
   }
 
@@ -267,7 +268,6 @@ class Dongle {
     return {
       genuine: result.genuine !== 0,
       serial: result.serial,
-      batch: result.batch,
       provisionedDate: result.provisioned_date,
     };
   }
@@ -333,10 +333,22 @@ class Session {
     return name;
   }
 
-  /** Elevates to the write role with the developer master key. Vendor tooling only. */
+  /**
+   * Elevates to the write role with the developer master key. This belongs in your
+   * licence-issuing tooling; never ship that key in the application your users run.
+   */
   authorizeWrite(masterKeyDer) {
     const buf = toBuffer(masterKeyDer, 'the master key');
     check(fn.writeAuth(this._dev, buf, buf.length), this._ctx, 'licd_write_auth');
+  }
+
+  /**
+   * Replaces the dongle's write-auth key with your own. Call authorizeWrite with
+   * the current key first. From the next session on, only the new key elevates.
+   */
+  rotateWriteKey(newKeyDer) {
+    const buf = toBuffer(newKeyDer, 'the replacement key');
+    check(fn.writeAuthRotate(this._dev, buf, buf.length), this._ctx, 'licd_write_auth_rotate');
   }
 
   listRecords() {

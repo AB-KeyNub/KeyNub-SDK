@@ -1,5 +1,3 @@
-//go:build !keynub_sim
-
 package keynub
 
 // Links the shipping library. Its directory is not knowable at compile time, so

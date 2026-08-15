@@ -9,7 +9,7 @@
 # dependency in the path of the check.
 #
 # The cost is that these signatures are strings no compiler verifies, which is why
-# the test suite exercises every one of them.
+# so every one of them is written out by hand.
 
 require 'fiddle'
 require 'fiddle/import'
@@ -33,18 +33,18 @@ module KeyNubLicDongle
       'unsigned int data_capacity',
       'unsigned int data_free',
       'int watchdog_reboot',
-      'int isolated'
+      'int isolated',
+      'int writeauth_rotated'
     ]
 
     GenuineResult = struct [
       'int genuine',
-      'char serial[19]',
-      'char batch[64]',
+      'char serial[15]',
       'char provisioned_date[11]'
     ]
 
     DeviceInfo = struct [
-      'char serial[19]',
+      'char serial[15]',
       'char path[512]',
       'unsigned short vendor_id',
       'unsigned short product_id'
@@ -66,7 +66,7 @@ module KeyNubLicDongle
       'libkeynub_licdongle.so'
     end
 
-    # Where to look, in order. The environment override is what the test suite uses
+    # Where to look, in order. The environment override names a specific library
     # to point at the simulator library.
     def self.candidate_paths
       override = ENV['KEYNUB_LICDONGLE_LIBRARY']
@@ -75,9 +75,32 @@ module KeyNubLicDongle
       here = File.dirname(__FILE__)
       [
         File.expand_path(File.join(here, '..', '..', 'vendor', default_basename)),
+        # The prebuilt library a checkout of the SDK carries, per platform: what
+        # makes a clone runnable with nothing set.
+        File.expand_path(File.join(here, '..', '..', '..', '..', 'natives',
+                                   repo_rid, default_basename)),
         File.expand_path(File.join(here, default_basename)),
         default_basename # system search path
       ]
+    end
+
+    # The natives/<rid> directory name for this Ruby.
+    def self.repo_rid
+      host = RbConfig::CONFIG['host_os']
+      os = if host.include?('mswin') || host.include?('mingw') || host.include?('cygwin')
+             'win'
+           elsif host.include?('darwin')
+             'osx'
+           else
+             'linux'
+           end
+      arch = case RbConfig::CONFIG['host_cpu']
+             when 'x86_64', 'x64', 'amd64' then 'x64'
+             when 'i386', 'i486', 'i586', 'i686', 'x86' then 'x86'
+             when 'aarch64', 'arm64' then 'arm64'
+             else 'unknown'
+             end
+      "#{os}-#{arch}"
     end
 
     def self.load_library
@@ -118,6 +141,7 @@ module KeyNubLicDongle
       licd_session_open: [INT, [VOIDP]],
       licd_session_close: [INT, [VOIDP]],
       licd_write_auth: [INT, [VOIDP, VOIDP, SIZE_T]],
+      licd_write_auth_rotate: [INT, [VOIDP, VOIDP, SIZE_T]],
 
       licd_record_list: [INT, [VOIDP, VOIDP, VOIDP, VOIDP]],
       licd_free_record_list: [VOID, [VOIDP, VOIDP, SIZE_T]],

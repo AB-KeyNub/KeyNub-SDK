@@ -55,13 +55,3 @@ The path is resolved once, when the module is first loaded.
 > first. `if is_genuine(dongle)` is one line to delete, and Julia ships as source
 > — a sysimage only raises the effort.
 
-## Testing
-
-```
-KEYNUB_SIM_PATH=../../build/libkeynub_licdongle_sim.so julia --project=. test/runtests.jl
-```
-
-46 assertions against an in-process software dongle, so **no hardware** — the full
-protocol stack, plus the struct layout across `ccall` (a mistake shows up as a
-garbage value, not a wrong boolean), the progress bridge, and lifetimes. `Test` is
-a stdlib, so the tests need no packages either.

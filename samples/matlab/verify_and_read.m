@@ -40,8 +40,8 @@ if info.watchdogReboot
 end
 
 result = dongle.verifyGenuine();
-fprintf('Genuine: %d (serial %s, batch %s, provisioned %s)\n', ...
-    result.genuine, result.serial, result.batch, result.provisionedDate);
+fprintf('Genuine: %d (serial %s, provisioned %s)\n', ...
+    result.genuine, result.serial, result.provisionedDate);
 
 session = dongle.openSession();
 records = session.listRecords();

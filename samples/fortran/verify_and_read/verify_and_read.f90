@@ -67,15 +67,21 @@ contains
         integer(c_int32_t) :: st
         logical :: genuine
         character(len=KEYNUB_SERIAL_LEN) :: dev_serial
-        character(len=KEYNUB_BATCH_LEN)  :: batch
+        character(len=KEYNUB_DATE_LEN) :: prov_date
 
-        st = keynub_verify_genuine(h, genuine, dev_serial, batch)
+        st = keynub_verify_genuine(h, genuine, dev_serial, prov_date)
         if (st /= LICD_OK) then
             call fail(h, 'verify_genuine', st)
             return
         end if
         write (*, '(A,L1,A,A,A,A,A)') 'Genuine: ', genuine, &
-            ' (serial ', trim(dev_serial), ', batch ', trim(batch), ')'
+            ' (serial ', trim(dev_serial), ')'
+        ! Informational only. Blank on a dongle that reports no date.
+        if (len_trim(prov_date) > 0) then
+            write (*, '(A,A)') 'Personalised: ', trim(prov_date)
+        else
+            write (*, '(A)') 'Personalised: (not reported)'
+        end if
     end subroutine report
 
     subroutine read_records(h)
@@ -107,7 +113,7 @@ contains
     ! the data. For a Fortran code that data is usually the material properties,
     ! empirical coefficients or validated constants read at start-up -- the part a
     ! competitor cannot regenerate. Scope 1 (developer) lets any dongle from your
-    ! batch decrypt it; scope 0 locks it to one physical dongle.
+    ! issued decrypt it; scope 0 locks it to one physical dongle.
     subroutine protect_something(h)
         integer(c_int32_t), intent(in) :: h
         integer(c_int8_t), allocatable :: needed(:), blob(:), recovered(:)

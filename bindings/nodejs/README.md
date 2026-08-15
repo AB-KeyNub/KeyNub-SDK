@@ -42,7 +42,7 @@ version your app upgrades to; an FFI binding does not.
 
 The trade is that the C signatures live in
 [`lib/native.js`](lib/native.js) as strings that no compiler checks, which is
-exactly why the test suite drives every single one of them against a software
+exactly why every single one of them is written out by hand against a software
 dongle.
 
 ## Everything is synchronous
@@ -88,7 +88,7 @@ invalid certificate all report `genuine: false`, with `code` telling them apart.
 
 The binding looks for the core library, in order:
 
-1. `KEYNUB_LICDONGLE_LIBRARY` (an absolute path — the test suite uses this)
+1. `KEYNUB_LICDONGLE_LIBRARY` (an absolute path to a specific library)
 2. `prebuilds/<platform>-<arch>/` inside the package
 3. alongside the package
 4. next to the application executable — where an Electron build puts it
@@ -97,22 +97,6 @@ The binding looks for the core library, in order:
 For Electron, put the platform's native in `prebuilds/` and mark the package as
 unpacked (`asarUnpack`), because a shared library cannot be loaded from inside an
 asar archive.
-
-## Testing
-
-```
-npm install
-see NATIVES.md for the prebuilt library
-npm test
-```
-
-The suite runs the full protocol stack — verify, session handshake, records,
-counters, app-crypto — against `keynub_licdongle_sim`, an in-process software
-dongle, so **no hardware is needed**. It also covers the parts specific to this
-binding: struct layout across the FFI (a mistake shows up as a garbage value, not
-a wrong boolean), the progress-callback bridge including cancellation and an
-exception thrown from inside a callback, and the hazard that a session can outlive
-the dongle it came from.
 
 ## License
 

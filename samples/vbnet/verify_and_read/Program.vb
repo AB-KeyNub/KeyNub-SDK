@@ -78,7 +78,7 @@ Module Program
 
         Dim result As GenuineResult = dongle.VerifyGenuine()
         Console.WriteLine($"Genuine: {result.IsGenuine} (serial {result.Serial}, " &
-                          $"batch {result.Batch}, provisioned {result.ProvisionedDate})")
+                          $"provisioned {result.ProvisionedDate})")
     End Sub
 
     Private Sub ReadRecords(session As Session)
@@ -100,7 +100,7 @@ Module Program
     ' The part that actually protects something. At licence-issue time you would
     ' call AppEncrypt once, with a developer dongle, and ship only the blob; the
     ' application then cannot proceed without a dongle, because it holds no other
-    ' copy of the data. Scope.Developer lets any dongle from your batch decrypt it,
+    ' copy of the data. Scope.Developer lets any dongle you have issued decrypt it,
     ' so one file serves every customer; Scope.Device locks it to one dongle.
     Private Sub ProtectSomething(session As Session)
         Dim needed As Byte() = Encoding.UTF8.GetBytes("the data this program cannot run without")

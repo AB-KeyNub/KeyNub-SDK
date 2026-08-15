@@ -17,6 +17,7 @@ namespace KeyNub.LicenseDongle.Interop
         public uint data_free;
         public int watchdog_reboot;
         public int isolated;
+        public int writeauth_rotated;
     }
 
     // Mirror of licd_genuine_result. ByValTStr copies each NUL-terminated field.
@@ -25,11 +26,8 @@ namespace KeyNub.LicenseDongle.Interop
     {
         public int genuine;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 19)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 15)]
         public string serial;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        public string batch;
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 11)]
         public string provisioned_date;
@@ -40,7 +38,7 @@ namespace KeyNub.LicenseDongle.Interop
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     internal struct LicdDeviceInfoNative
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 19)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 15)]
         public string serial;
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]

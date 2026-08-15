@@ -1,0 +1,197 @@
+# Build output, per language. Everything in this repository is source except the
+# prebuilt libraries under natives/, which are tracked deliberately — see
+# NATIVES.md. Those are re-listed at the bottom so that no pattern here can
+# quietly stop them being tracked.
+
+# --- editors, IDEs, operating systems ---------------------------------------
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- .NET (C#, VB.NET, F#) ---------------------------------------------------
+bin/
+obj/
+*.nupkg
+*.snupkg
+BenchmarkDotNet.Artifacts/
+TestResults/
+
+# --- C, C++, CMake -----------------------------------------------------------
+build/
+build-*/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+CMakeUserPresets.json
+*.o
+*.obj
+*.lo
+*.slo
+*.gch
+*.pch
+*.ilk
+*.pdb
+*.idb
+*.exp
+*.map
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+bindings/python/keynub_licdongle/_libs/
+# Licence and attribution files staged into the wheel by the packaging step. The
+# copies at the repository root are the real ones.
+bindings/python/LICENSE
+bindings/python/BINARY-LICENSE.txt
+bindings/python/NOTICE
+bindings/python/THIRD-PARTY-NOTICES.txt
+
+# --- Node.js -----------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.npm/
+*.tgz
+bindings/nodejs/prebuilds/
+bindings/nodejs/LICENSE
+bindings/nodejs/BINARY-LICENSE.txt
+bindings/nodejs/NOTICE
+bindings/nodejs/THIRD-PARTY-NOTICES.txt
+
+# --- Ruby --------------------------------------------------------------------
+*.gem
+.bundle/
+vendor/bundle/
+bindings/ruby/vendor/
+bindings/ruby/LICENSE
+bindings/ruby/BINARY-LICENSE.txt
+bindings/ruby/NOTICE
+bindings/ruby/THIRD-PARTY-NOTICES.txt
+
+# --- PHP ---------------------------------------------------------------------
+vendor/
+composer.lock
+bindings/php/vendor-native/
+.phpunit.result.cache
+
+# --- Rust --------------------------------------------------------------------
+target/
+Cargo.lock
+
+# --- Go ----------------------------------------------------------------------
+# Go leaves the built binary beside main.go, named for its directory.
+samples/go/*/verify_and_read
+samples/go/*/verify_and_read.exe
+samples/go/*/rotate_write_key
+samples/go/*/rotate_write_key.exe
+*.test
+*.test.exe
+
+# --- Java, Maven -------------------------------------------------------------
+target/
+*.class
+*.jar
+!bindings/java/**/src/**/*.jar
+.mvn/wrapper/maven-wrapper.jar
+dependency-reduced-pom.xml
+
+# --- Julia -------------------------------------------------------------------
+Manifest.toml
+*.jl.cov
+*.jl.mem
+
+# --- Lua ---------------------------------------------------------------------
+bindings/lua/vendor-native/
+*.rock
+luac.out
+
+# --- Nim ---------------------------------------------------------------------
+nimcache/
+nimblecache/
+samples/nim/verify_and_read
+samples/nim/verify_and_read.exe
+samples/nim/rotate_write_key
+samples/nim/rotate_write_key.exe
+
+# --- Perl --------------------------------------------------------------------
+blib/
+pm_to_blib
+MYMETA.*
+Makefile.old
+*.bs
+
+# --- Zig ---------------------------------------------------------------------
+.zig-cache/
+zig-cache/
+zig-out/
+
+# --- Delphi, Free Pascal -----------------------------------------------------
+*.ppu
+*.dcu
+*.dcp
+*.rsm
+*.local
+*.identcache
+*.dproj.local
+__history/
+__recovery/
+
+# --- Fortran -----------------------------------------------------------------
+*.mod
+*.smod
+# The Go sample's go.mod is source, and matches *.mod above.
+!samples/go/*/go.mod
+!bindings/go/go.mod
+
+# --- COBOL -------------------------------------------------------------------
+bindings/cobol/*.c
+bindings/cobol/*.so
+bindings/cobol/*.dll
+samples/cobol/*.c
+samples/cobol/*.so
+samples/cobol/*.exe
+
+# --- MATLAB, Simulink --------------------------------------------------------
+*.mex*
+*.asv
+*.slxc
+slprj/
+codegen/
+!samples/matlab/codegen/
+
+# --- LabVIEW, VB6, twinBASIC -------------------------------------------------
+*.lvlps
+*.aliases
+*.lvproj.bak
+*.vbw
+*.tbproj.bak
+
+# --- executables and archives that a build leaves behind ---------------------
+*.exe
+*.out
+*.zip
+*.tar.gz
+
+# --- the tracked prebuilt libraries ------------------------------------------
+# Last word, deliberately: these are the one binary thing this repository does
+# track, and a broad pattern above must not be able to drop them.
+!natives/
+!natives/**

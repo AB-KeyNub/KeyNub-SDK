@@ -1,6 +1,6 @@
 {
   "name": "@keynub/licdongle",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Node.js and Electron binding for the KeyNub USB-C license dongle",
   "license": "SEE LICENSE IN BINARY-LICENSE.txt",
   "author": "KeyNub",

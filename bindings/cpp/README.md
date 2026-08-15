@@ -21,7 +21,7 @@ that forces a compiler upgrade does not get adopted.
 
 Link the same way you would for the C API:
 
-```the native build
+```cmake
 target_link_libraries(myapp PRIVATE keynub::licdongle)          # or _static
 target_include_directories(myapp PRIVATE ${KEYNUB_SDK}/bindings/cpp)
 ```
@@ -61,14 +61,3 @@ Move-only throughout: a dongle handle is not a value to copy.
 `Dongle::adopt(device, ctx)` takes ownership of a device opened through
 `licd_open` directly — so an existing codebase can adopt this wrapper a function at
 a time rather than all at once.
-
-## Testing
-
-the SDK test suite runs in CI on every push, against an
-in-process software dongle (no hardware). It covers the full protocol stack plus
-the things specific to C++: RAII, move semantics, exception mapping, the
-exception-safety of the callback bridge, and the session-outliving-its-dongle case
-above.
-
-A header-only binding that nothing instantiates is a header-only binding that does
-not compile, which is why that test exists at all.

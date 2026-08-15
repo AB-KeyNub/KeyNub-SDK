@@ -19,7 +19,7 @@ pub fn build(b: *std.Build) void {
     const lib_name = b.option(
         []const u8,
         "keynub-lib-name",
-        "Library to link (keynub_licdongle, or keynub_licdongle_sim to run without hardware)",
+        "Library to link",
     ) orelse "keynub_licdongle";
 
     // @cImport compiles the real header, so this include path is what keeps the
@@ -34,24 +34,44 @@ pub fn build(b: *std.Build) void {
     binding.addIncludePath(include_path);
     binding.link_libc = true;
 
-    const exe_module = b.createModule(.{
-        .root_source_file = b.path("verify_and_read.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-    exe_module.addImport("keynub_licdongle", binding);
-    exe_module.addIncludePath(include_path);
-    exe_module.addLibraryPath(.{ .cwd_relative = lib_dir });
-    exe_module.linkSystemLibrary(lib_name, .{});
-    exe_module.link_libc = true;
+    const Sample = struct { name: []const u8, source: []const u8, step: []const u8, help: []const u8 };
+    const samples = [_]Sample{
+        .{
+            .name = "verify_and_read",
+            .source = "verify_and_read.zig",
+            .step = "run",
+            .help = "Build and run the sample",
+        },
+        .{
+            .name = "rotate_write_key",
+            .source = "rotate_write_key.zig",
+            .step = "rotate",
+            .help = "Build and run the write-key rotation sample",
+        },
+    };
 
-    const exe = b.addExecutable(.{
-        .name = "verify_and_read",
-        .root_module = exe_module,
-    });
-    b.installArtifact(exe);
+    for (samples) |sample| {
+        const exe_module = b.createModule(.{
+            .root_source_file = b.path(sample.source),
+            .target = target,
+            .optimize = optimize,
+        });
+        exe_module.addImport("keynub_licdongle", binding);
+        exe_module.addIncludePath(include_path);
+        exe_module.addLibraryPath(.{ .cwd_relative = lib_dir });
+        exe_module.linkSystemLibrary(lib_name, .{});
+        exe_module.link_libc = true;
 
-    const run_cmd = b.addRunArtifact(exe);
-    run_cmd.step.dependOn(b.getInstallStep());
-    b.step("run", "Build and run the sample").dependOn(&run_cmd.step);
+        const exe = b.addExecutable(.{
+            .name = sample.name,
+            .root_module = exe_module,
+        });
+        b.installArtifact(exe);
+
+        const run_cmd = b.addRunArtifact(exe);
+        run_cmd.step.dependOn(b.getInstallStep());
+        // Arguments after `--` reach the sample; the rotation one needs two.
+        if (b.args) |args| run_cmd.addArgs(args);
+        b.step(sample.step, sample.help).dependOn(&run_cmd.step);
+    }
 }

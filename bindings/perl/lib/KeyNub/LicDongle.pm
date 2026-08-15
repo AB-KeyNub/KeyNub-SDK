@@ -7,7 +7,7 @@ use FFI::Platypus 2.00;
 use FFI::Platypus::Buffer qw(scalar_to_buffer);
 use Exporter qw(import);
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.1.0';
 
 =head1 NAME
 
@@ -79,14 +79,17 @@ our $FLAG_SE_READY     = 1;
 our $FLAG_PROVISIONED     = 2;
 our $FLAG_WATCHDOG_REBOOT = 4;
 our $FLAG_ISOLATED        = 8;
+# The write-auth key has been rotated away from the factory one, which is
+# public: a dongle without this bit takes writes from anyone holding it.
+our $FLAG_WRITEAUTH_ROTATED = 16;
 
 # Who can decrypt data produced by app_encrypt.
 our $SCOPE_DEVICE    = 0;    # only this one physical dongle
-our $SCOPE_DEVELOPER = 1;    # any dongle from the same developer batch
+our $SCOPE_DEVELOPER = 1;    # any dongle issued by the same developer
 
 our @EXPORT_OK = qw(
     %STATUS $FLAG_SE_READY $FLAG_PROVISIONED $FLAG_WATCHDOG_REBOOT
-    $FLAG_ISOLATED
+    $FLAG_ISOLATED $FLAG_WRITEAUTH_ROTATED
     $SCOPE_DEVICE $SCOPE_DEVELOPER
 );
 
@@ -129,6 +132,7 @@ sub _ffi {
     $ffi->attach(licdf_session_open  => ['sint32'] => 'sint32');
     $ffi->attach(licdf_session_close => ['sint32'] => 'sint32');
     $ffi->attach(licdf_write_auth    => ['sint32','opaque','sint32'] => 'sint32');
+    $ffi->attach(licdf_write_auth_rotate => ['sint32','opaque','sint32'] => 'sint32');
 
     $ffi->attach(licdf_record_count => ['sint32','sint32*'] => 'sint32');
     $ffi->attach(licdf_record_name  =>
@@ -245,7 +249,7 @@ sub device_count {
 sub device_serial {
     my ($index) = @_;
     _ffi();
-    my $buffer = "\0" x 19;
+    my $buffer = "\0" x 15;
     my ($ptr, $size) = scalar_to_buffer $buffer;
     _check(undef, licdf_device_serial($index, $ptr, $size), 'licdf_device_serial');
     return unpack 'Z*', $buffer;
@@ -274,7 +278,7 @@ sub open {
 
 Opens a dongle backed by the in-process software simulator. Present only when the
 loaded library was built with the simulator compiled in, which the shipping
-library is not — this is for the test suite.
+library is not.
 
 =cut
 
@@ -359,7 +363,7 @@ The dongle serial as hex.
 
 sub serial {
     my ($self) = @_;
-    my $buffer = "\0" x 19;
+    my $buffer = "\0" x 15;
     my ($ptr, $size) = scalar_to_buffer $buffer;
     $self->_check(licdf_get_serial($self->_handle, $ptr, $size), 'licdf_get_serial');
     return unpack 'Z*', $buffer;
@@ -389,6 +393,7 @@ sub info {
         provisioned      => ($flags & $FLAG_PROVISIONED)     ? 1 : 0,
         watchdog_reboot  => ($flags & $FLAG_WATCHDOG_REBOOT) ? 1 : 0,
         isolated         => ($flags & $FLAG_ISOLATED)        ? 1 : 0,
+        writeauth_rotated => ($flags & $FLAG_WRITEAUTH_ROTATED) ? 1 : 0,
         data_capacity    => $capacity,
         data_free        => $free,
     };
@@ -398,26 +403,26 @@ sub info {
 
 Proves authenticity: the certificate chain to the trusted root plus a live ECDSA
 challenge-response. Dies unless the dongle is genuine; returns a hashref with
-C<genuine>, C<serial> and C<batch>.
+C<genuine> and C<serial>.
 
 =cut
 
 sub verify_genuine {
     my ($self) = @_;
     my $genuine = 0;
-    my $serial = "\0" x 19;
-    my $batch  = "\0" x 64;
+    my $serial = "\0" x 15;
     my ($sptr, $ssize) = scalar_to_buffer $serial;
-    my ($bptr, $bsize) = scalar_to_buffer $batch;
+    my $date = "\0" x 11;
+    my ($dptr, $dsize) = scalar_to_buffer $date;
     $self->_check(
-        licdf_verify_genuine($self->_handle, \$genuine, $sptr, $ssize, $bptr, $bsize),
+        licdf_verify_genuine($self->_handle, \$genuine, $sptr, $ssize, $dptr, $dsize),
         'licdf_verify_genuine'
     );
     _throw($STATUS{NOT_GENUINE}, 'licdf_verify_genuine') unless $genuine;
     return {
-        genuine => 1,
-        serial  => unpack('Z*', $serial),
-        batch   => unpack('Z*', $batch),
+        genuine          => 1,
+        serial           => unpack('Z*', $serial),
+        provisioned_date => unpack('Z*', $date),
     };
 }
 
@@ -467,7 +472,8 @@ sub _in_session {
 =head2 authorize_write
 
 Elevates to the write role with the developer master key (a DER EC private key).
-Vendor tooling only — never ship that key in an application.
+This belongs in your licence-issuing tooling; never ship that key
+in the application your users run.
 
 =cut
 
@@ -476,6 +482,23 @@ sub authorize_write {
     my $copy = $der;
     my ($ptr, $size) = scalar_to_buffer $copy;
     $self->_check(licdf_write_auth($self->_in_session, $ptr, $size), 'licdf_write_auth');
+    return;
+}
+
+=head2 rotate_write_key($new_key_der)
+
+Replaces the dongle's write-auth key with your own (a DER EC private key). Call
+C<authorize_write> with the current key first. From the next session on, only the
+new key elevates.
+
+=cut
+
+sub rotate_write_key {
+    my ($self, $der) = @_;
+    my $copy = $der;
+    my ($ptr, $size) = scalar_to_buffer $copy;
+    $self->_check(licdf_write_auth_rotate($self->_in_session, $ptr, $size),
+                  'licdf_write_auth_rotate');
     return;
 }
 
@@ -603,7 +626,7 @@ sub increment_counter {
 
 The pair to build a licence check on: put something the program genuinely needs
 through it, so removing the check removes the data. C<$SCOPE_DEVELOPER> lets any
-dongle from your batch decrypt, so one blob ships to every customer;
+dongle you have issued decrypt, so one blob ships to every customer;
 C<$SCOPE_DEVICE> locks it to one dongle.
 
 =cut

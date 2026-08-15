@@ -184,12 +184,12 @@ class Dongle:
             (info.fw_version_major, info.fw_version_minor, info.fw_version_patch),
             bool(info.se_ready), bool(info.provisioned),
             info.data_capacity, info.data_free, bool(info.watchdog_reboot),
-            bool(info.isolated))
+            bool(info.isolated), bool(info.writeauth_rotated))
 
     def get_serial(self) -> str:
-        """Read the dongle serial as hex (e.g. ``0123456789ABCDEFEE``)."""
-        buf = ctypes.create_string_buffer(19)  # LICD_SERIAL_HEX_LEN + 1
-        check(_native.licd_get_serial(self._h, buf, 19), self._ch, "licd_get_serial")
+        """Read the dongle serial as hex (e.g. ``04A1B2C3D4E5F6``)."""
+        buf = ctypes.create_string_buffer(15)  # LICD_SERIAL_HEX_LEN + 1
+        check(_native.licd_get_serial(self._h, buf, 15), self._ch, "licd_get_serial")
         return buf.value.decode("utf-8", "replace")
 
     def verify_genuine(self) -> GenuineResult:
@@ -199,7 +199,6 @@ class Dongle:
         return GenuineResult(
             bool(res.genuine),
             res.serial.decode("utf-8", "replace"),
-            res.batch.decode("utf-8", "replace"),
             res.provisioned_date.decode("utf-8", "replace"))
 
     def open_session(self) -> "Session":
@@ -255,6 +254,16 @@ class Session:
         self._guard()
         check(_native.licd_write_auth(self._h, bytes(master_key_der), len(master_key_der)),
               self._ch, "licd_write_auth")
+
+    def rotate_write_key(self, new_key_der: bytes) -> None:
+        """Replace the dongle's write-auth key with your own (DER EC private key).
+
+        Call authorize_write with the current key first. From the next session on,
+        only the new key elevates.
+        """
+        self._guard()
+        check(_native.licd_write_auth_rotate(self._h, bytes(new_key_der), len(new_key_der)),
+              self._ch, "licd_write_auth_rotate")
 
     def list_records(self) -> List[RecordInfo]:
         """List the record names and sizes stored on the dongle."""

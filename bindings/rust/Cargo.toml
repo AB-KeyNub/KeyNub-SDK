@@ -1,6 +1,6 @@
 [package]
 name = "keynub-licdongle"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 rust-version = "1.70"
 description = "Rust binding for the KeyNub USB-C license dongle"
@@ -19,6 +19,3 @@ exclude = ["/target"]
 
 [features]
 default = []
-# Links keynub_licdongle_sim instead of the production library, which additionally
-# exports licd_open_simulated. For this crate's own tests only — never ship it.
-simulator = []

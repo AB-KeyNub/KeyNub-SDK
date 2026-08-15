@@ -30,12 +30,11 @@ declarations are exactly right in 64-bit Office. In a **32-bit** process the two
 conventions genuinely differ in who pops the arguments, and a mismatch of that kind
 does not fail cleanly: it leaves the stack pointer displaced on every call.
 
-We have not been able to measure this on a 32-bit Office install (none is available
-on the machine this SDK is built on), so it is stated as the risk it is rather than
-either dismissed or asserted. If you are targeting a 32-bit host, use
+This has not been measured on a 32-bit Office install, so it is stated as the risk
+it is rather than either dismissed or asserted. If you are targeting a 32-bit host,
+use
 [the COM binding](../com/README.md) instead — it reaches the same library through an
-object, where the calling convention is not the caller's problem, and it is tested on
-both architectures.
+object, where the calling convention is not the caller's problem.
 
 Requires **VBA7 (Office 2010 or newer)**. The declarations use `PtrSafe`, which is
 required in 64-bit Office and a syntax error in VBA6; supporting Office 2007 would
@@ -77,7 +76,7 @@ raising, for use in a gate, and fails closed on every kind of failure.
 | `KeyNubRecordRead/Write/Erase` | `Byte()` in and out |
 | `KeyNubCounterRead/Increment` | monotonic hardware counters |
 | `KeyNubAppEncrypt/Decrypt` | **the one that matters** — see below |
-| `KeyNubAuthorizeWrite h, der` | vendor tooling only; never ship that key |
+| `KeyNubAuthorizeWrite h, der` | your licence-issuing workbook; never ship that key |
 
 Strings are marshalled by VBA as ANSI, which is exactly right for serials and
 record names (both ASCII). Do not use non-ASCII record names from VBA.
@@ -106,7 +105,7 @@ rates = KeyNubAppDecrypt(h, blob)      ' no dongle -> no rates -> no workbook
 
 Put the thing your product is actually *for* through that pair: rate tables,
 correction factors, a material database, the coefficients of your calculation.
-`KEYNUB_SCOPE_DEVELOPER` lets any dongle from your batch decrypt it, so one
+`KEYNUB_SCOPE_DEVELOPER` lets any dongle you have issued decrypt it, so one
 encrypted blob ships to every customer; `KEYNUB_SCOPE_DEVICE` locks it to one
 physical dongle, for per-customer data.
 
@@ -115,15 +114,3 @@ tampered blob fails to decrypt rather than yielding different numbers.
 
 [`../../docs/integration-security.md`](../../docs/integration-security.md) makes
 the full argument.
-
-## Status of this binding
-
-The DLL and every function in it are tested in CI: the SDK test suite
-drives the whole surface against an in-process software dongle with no hardware.
-
-Checked on every push is the thing that actually breaks:
-the SDK build checks parses these `Declare` statements and
-compares them to the real C prototypes — every function present and spelled
-correctly, parameter counts equal, and each parameter's `ByVal`/`ByRef` and type
-matching what the C side expects. That is the mistake class that corrupts a stack
-at a customer site, and it is caught here rather than there.

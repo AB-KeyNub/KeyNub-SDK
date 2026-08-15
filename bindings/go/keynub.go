@@ -63,7 +63,7 @@ type Scope int
 const (
 	// ScopeDevice: only this one physical dongle can decrypt.
 	ScopeDevice Scope = 0
-	// ScopeDeveloper: any dongle from the same developer batch, so one encrypted
+	// ScopeDeveloper: any dongle issued by the same developer, so one encrypted
 	// blob ships to every customer.
 	ScopeDeveloper Scope = 1
 )
@@ -224,15 +224,18 @@ type Info struct {
 	// a field hang leaves behind, and a power cycle clears it, so log it.
 	WatchdogReboot bool
 	// Isolated reports that the dongle confirmed at boot that its USB and parsing code is fenced off
-	// from keys and storage. The software simulator reports false.
+	// from keys and storage. Anything that is not a dongle reports false.
 	Isolated bool
+	// WriteAuthRotated reports that the write-auth key has been rotated away from the
+	// factory one. That key is public, so a dongle reporting false accepts writes from
+	// anyone holding it.
+	WriteAuthRotated bool
 }
 
 // GenuineResult is the verified identity from Dongle.VerifyGenuine.
 type GenuineResult struct {
 	Genuine         bool
 	Serial          string
-	Batch           string
 	ProvisionedDate string // "YYYY-MM-DD", or empty
 }
 
@@ -280,6 +283,7 @@ func (d *Dongle) Info() (Info, error) {
 		DataFree:       uint32(raw.data_free),
 		WatchdogReboot: raw.watchdog_reboot != 0,
 		Isolated:       raw.isolated != 0,
+		WriteAuthRotated: raw.writeauth_rotated != 0,
 	}, nil
 }
 
@@ -304,7 +308,6 @@ func (d *Dongle) VerifyGenuine() (GenuineResult, error) {
 	return GenuineResult{
 		Genuine:         raw.genuine != 0,
 		Serial:          C.GoString(&raw.serial[0]),
-		Batch:           C.GoString(&raw.batch[0]),
 		ProvisionedDate: C.GoString(&raw.provisioned_date[0]),
 	}, nil
 }
@@ -355,7 +358,8 @@ func (s *Session) dev() (*C.licd_device, error) {
 func (s *Session) check(rc C.int, op string) error { return s.dongle.check(rc, op) }
 
 // AuthorizeWrite elevates to the write role with the developer master key (a DER
-// EC private key). Vendor tooling only — never ship that key in an application.
+// EC private key). This belongs in your licence-issuing tooling; never ship
+// that key in the application your users run.
 func (s *Session) AuthorizeWrite(masterKeyDER []byte) error {
 	dev, err := s.dev()
 	if err != nil {
@@ -363,6 +367,18 @@ func (s *Session) AuthorizeWrite(masterKeyDER []byte) error {
 	}
 	rc := C.licd_write_auth(dev, (*C.uint8_t)(bytePtr(masterKeyDER)), C.size_t(len(masterKeyDER)))
 	return s.check(rc, "licd_write_auth")
+}
+
+// RotateWriteKey replaces the dongle's write-auth key with your own (a DER EC
+// private key). Call AuthorizeWrite with the current key first. From the next
+// session on, only the new key elevates.
+func (s *Session) RotateWriteKey(newKeyDER []byte) error {
+	dev, err := s.dev()
+	if err != nil {
+		return err
+	}
+	rc := C.licd_write_auth_rotate(dev, (*C.uint8_t)(bytePtr(newKeyDER)), C.size_t(len(newKeyDER)))
+	return s.check(rc, "licd_write_auth_rotate")
 }
 
 // ListRecords lists the records stored on the dongle.

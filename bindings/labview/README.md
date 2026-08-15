@@ -21,7 +21,7 @@ system — the core, Mbed TLS and hidapi are all compiled into it.
 exists for this purpose: it declares the same functions as the SDK's
 [`../flat/licd_flat.h`](../flat/licd_flat.h) but with no `#include`, no
 `__declspec` and no macros inside the signatures, all of which the wizard has to
-guess at otherwise. The two are kept in step by a test that runs in CI.
+guess at otherwise. The two declare the same signatures.
 
 The generated VIs are a starting point. The wizard cannot know that `out_size` is
 the capacity of `out`, so review the string and array parameters against the table
@@ -101,7 +101,7 @@ limit. Put `licdf_close` where your error path reaches it too.
 Calls into the library are serialized internally, so it is safe to call from
 several VIs at once — but two of them will not talk to two dongles simultaneously.
 If you genuinely need parallel access to several dongles, use the core C ABI
-([`../../include/licdongle.h`](../../include/licdongle.h)) instead.
+([`../../core/include/licdongle.h`](../../core/include/licdongle.h)) instead.
 
 Configure the node as **"Run in any thread"** only if your VI does not also touch
 the dongle from the UI thread; the safe default in LabVIEW remains **"Run in UI
@@ -128,17 +128,3 @@ nothing usable.
 the full argument, and
 [`../../samples/matlab/licence_protected_parameters.m`](../../samples/matlab/licence_protected_parameters.m)
 shows the shape in a language where it is easy to read.
-
-## Status of this binding
-
-The library and its whole surface are tested in CI
-(the SDK test suite drives every function against an in-process
-software dongle, with no hardware). The **`.vi` files are not provided**: authoring
-them requires LabVIEW, which is not available on the machine this SDK is built on,
-and a broken VI would be worse than none. What is here — the import header and the
-node configuration — is what the wizard needs to generate them, and it is checked
-against the library's real signatures by
-the SDK build checks
-on every push.
-
-If you build a VI library on top of this, we would like to ship it.

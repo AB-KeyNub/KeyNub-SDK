@@ -45,7 +45,7 @@ void report(keynub::Dongle &dongle) {
 
     const keynub::GenuineResult result = dongle.verifyGenuine();
     std::cout << "Genuine: " << std::boolalpha << result.genuine
-              << " (serial " << result.serial << ", batch " << result.batch << ")\n";
+              << " (serial " << result.serial << ")\n";
 }
 
 void readRecords(keynub::Session &session) {
@@ -68,7 +68,7 @@ void readRecords(keynub::Session &session) {
 // The part that actually protects something. At licence-issue time you would call
 // appEncrypt once, with a developer dongle, and ship only the blob; the application
 // then cannot proceed without a dongle, because it holds no other copy of the data.
-// Scope::Developer lets any dongle from your batch decrypt it, so one file serves
+// Scope::Developer lets any dongle you have issued decrypt it, so one file serves
 // every customer; Scope::Device locks it to one dongle.
 void protectSomething(keynub::Session &session) {
     const std::string text = "the data this program cannot run without";

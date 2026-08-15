@@ -34,7 +34,7 @@ export const Status: {
 export const Scope: {
   /** Only this one physical dongle. */
   readonly DEVICE: 0;
-  /** Any dongle from the same developer batch — one blob for every customer. */
+  /** Any dongle issued by the same developer — one blob for every customer. */
   readonly DEVELOPER: 1;
 };
 
@@ -107,15 +107,16 @@ export interface DongleInfo {
   watchdogReboot: boolean;
   /**
    * Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-   * from keys and storage. The software simulator reports false.
+   * from keys and storage. Anything that is not a dongle reports false.
    */
   isolated: boolean;
+  /** Whether the write-auth key has been rotated away from the factory one. That key is public, so a dongle reporting false accepts writes from anyone holding it. */
+  writeAuthRotated: boolean;
 }
 
 export interface GenuineResult {
   genuine: boolean;
   serial: string;
-  batch: string;
   /** "YYYY-MM-DD", or empty. */
   provisionedDate: string;
 }
@@ -171,8 +172,10 @@ export class Session implements Disposable {
   readonly closed: boolean;
   close(): void;
   [Symbol.dispose](): void;
-  /** Vendor tooling only — never ship the developer master key in an app. */
+  /** For your licence-issuing tooling; never ship the master key in your app. */
   authorizeWrite(masterKeyDer: BytesLike): void;
+  /** Replaces the write-auth key. Needs authorizeWrite with the current key first. */
+  rotateWriteKey(newKeyDer: BytesLike): void;
   listRecords(): RecordInfo[];
   readRecord(name: string, progress?: ProgressCallback): Buffer;
   writeRecord(name: string, data: BytesLike, progress?: ProgressCallback): void;

@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "keynub-licdongle"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python binding for the KeyNub USB-C license dongle (ctypes; driverless on Windows/Linux/macOS)."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -44,7 +44,7 @@ licd-tool = "keynub_licdongle.cli:main"
 [tool.setuptools]
 packages = ["keynub_licdongle"]
 
-# Native binaries are staged under keynub_licdongle/_libs/<lib> by the build/CI
+# Native binaries are staged under keynub_licdongle/_libs/<lib> by the packaging step
 # (one per platform wheel); absent from a source checkout.
 [tool.setuptools.package-data]
 keynub_licdongle = ["_libs/*", "py.typed"]

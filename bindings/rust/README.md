@@ -67,24 +67,6 @@ At run time the shared library must be findable as usual (`PATH` on Windows,
 rpath or `LD_LIBRARY_PATH` elsewhere). `KEYNUB_STATIC=1` avoids that entirely and
 produces a single binary, which is usually what you want for a licensed product.
 
-## Testing
-
-```
-KEYNUB_LIB_DIR=../../build cargo test --features simulator
-```
-
-The `simulator` feature links `keynub_licdongle_sim` — the whole ABI plus
-`licd_open_simulated` — so the suite drives the full protocol stack with **no
-hardware**: verify, session handshake, records, counters, app-crypto, progress
-and cancellation, and that a panic in a callback still reaches the caller.
-
-`.cargo/config.toml` pins `RUST_TEST_THREADS=1`, because the in-process simulator
-keeps some state in C statics and two simulated dongles at once interfere. That
-affects this crate's tests only, not anything that depends on it.
-
-Never ship a build with `--features simulator`: it exposes test entry points the
-shipping library does not have.
-
 ## `unsafe`
 
 The safe API contains no `unsafe` that a caller can reach. Four functions are

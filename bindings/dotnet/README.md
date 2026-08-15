@@ -46,29 +46,6 @@ byte[] plain  = session.AppDecrypt(sealed);
 - Failures throw `LicenseDongleException` (with a `LicdStatus`); common cases have
   subclasses (`NotGenuineException`, `WriteAuthorizationRequiredException`, …).
 
-## Build & test — no hardware required
-
-The tests run the whole managed API against an **in-process software dongle**: the
-the native build target `keynub_licdongle_sim` is the full core ABI plus a `licd_open_simulated`
-entry point backed by the C device simulator and the committed X.509/key fixtures.
-A `DllImportResolver` in the test project loads that library in place of the
-production DLL, so every marshaling path, the crypto handshake, and the record /
-counter / app-crypto operations are exercised end-to-end.
-
-```powershell
-# 1) Build the native simulator (see README.md for the MSVC/Ninja recipe):
-see NATIVES.md for the prebuilt library
-see NATIVES.md for the prebuilt library
-
-# 2) Point the tests at it and run:
-$sim = "native//keynub_licdongle_sim.dll"
-$env:KEYNUB_SIM_PATH = $sim
-dotnet test bindings/dotnet/KeyNub.LicenseDongle.Tests -p:KeynubSimNative=$sim
-```
-
-The production package never contains the simulator — it is a test-only artifact
-(configure with `-DLICD_BUILD_SIM=OFF` to skip building it).
-
 ## Security
 
 Read [`docs/integration-security.md`](../../docs/integration-security.md) before

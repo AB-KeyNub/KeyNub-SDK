@@ -20,7 +20,7 @@ end
 
 No packages: `ccall` is part of the language, so this has no dependencies outside
 `Base` and the stdlib. Set `ENV["KEYNUB_LICDONGLE_LIBRARY"]` before `using` to
-point at a specific library (the test suite uses it for the device simulator).
+point at a specific library.
 
 Read `docs/integration-security.md` before writing the check. `if
 is_genuine(dongle)` is one line to delete, and Julia ships as source — even a
@@ -37,7 +37,7 @@ export LicenseDongleError, NotGenuineError, CertificateInvalidError,
        RecordNotFoundError, OperationCancelledError
 export library_version, enumerate_dongles, open_dongle, open_path, set_trust_root!,
        last_error_detail, info, serial, verify_genuine, is_genuine, session,
-       authorize_write, list_records, read_record, write_record, erase_record,
+       authorize_write, rotate_write_key, list_records, read_record, write_record, erase_record,
        erase_all_records, read_counter, increment_counter, app_encrypt, app_decrypt
 
 # --- library discovery -------------------------------------------------------
@@ -48,9 +48,34 @@ function _default_basename()
     return "libkeynub_licdongle.so"
 end
 
-"""The native library this binding calls. Resolved once, at load time."""
+"""The natives/<rid> directory name for this Julia process."""
+function _repo_rid()
+    os = Sys.iswindows() ? "win" : (Sys.isapple() ? "osx" : "linux")
+    arch = if Sys.ARCH === :x86_64
+        "x64"
+    elseif Sys.ARCH === :i686
+        "x86"
+    elseif Sys.ARCH === :aarch64
+        "arm64"
+    else
+        "unknown"
+    end
+    return string(os, "-", arch)
+end
+
+"""The native library this binding calls. Resolved once, at load time.
+
+A checkout of the SDK carries a prebuilt library per platform under `natives/`,
+which is what makes a clone runnable with nothing set. Otherwise the bare name,
+resolved by the system loader."""
 const LIB = let override = get(ENV, "KEYNUB_LICDONGLE_LIBRARY", "")
-    isempty(override) ? _default_basename() : override
+    if !isempty(override)
+        override
+    else
+        candidate = joinpath(@__DIR__, "..", "..", "..", "natives", _repo_rid(),
+                             _default_basename())
+        isfile(candidate) ? candidate : _default_basename()
+    end
 end
 
 # --- status codes and errors -------------------------------------------------
@@ -145,17 +170,17 @@ struct CInfo
     data_free::UInt32
     watchdog_reboot::Cint
     isolated::Cint
+    writeauth_rotated::Cint
 end
 
 struct CGenuineResult
     genuine::Cint
-    serial::NTuple{19,UInt8}
-    batch::NTuple{64,UInt8}
+    serial::NTuple{15,UInt8}
     provisioned_date::NTuple{11,UInt8}
 end
 
 struct CDeviceInfo
-    serial::NTuple{19,UInt8}
+    serial::NTuple{15,UInt8}
     path::NTuple{512,UInt8}
     vendor_id::UInt16
     product_id::UInt16
@@ -186,7 +211,7 @@ in a watchdog timeout — the firmware hung and reset itself. It is the only tra
 field hang leaves behind, and a power cycle clears it, so log it.
 
 `isolated` means the dongle confirmed at boot that its USB and parsing code is fenced off
-from keys and storage. The software simulator reports false.
+from keys and storage. Anything that is not a dongle reports false.
 """
 struct Info
     protocol_version::Tuple{Int,Int}
@@ -197,12 +222,12 @@ struct Info
     data_free::UInt32
     watchdog_reboot::Bool
     isolated::Bool
+    writeauth_rotated::Bool
 end
 
 struct GenuineResult
     genuine::Bool
     serial::String
-    batch::String
     provisioned_date::String
 end
 
@@ -362,12 +387,13 @@ function info(dongle::Dongle)
                 (Int(v.fw_major), Int(v.fw_minor), Int(v.fw_patch)),
                 v.se_ready != 0, v.provisioned != 0,
                 v.data_capacity, v.data_free, v.watchdog_reboot != 0,
-                v.isolated != 0)
+                v.isolated != 0,
+                v.writeauth_rotated != 0)
 end
 
 """Reads the dongle serial as hex."""
 function serial(dongle::Dongle)
-    buffer = zeros(UInt8, 19)
+    buffer = zeros(UInt8, 15)
     rc = ccall((:licd_get_serial, LIB), Cint, (Ptr{Cvoid}, Ptr{UInt8}, Csize_t),
                _handle(dongle), buffer, length(buffer))
     _check(dongle.ctx, rc, "licd_get_serial")
@@ -387,7 +413,7 @@ function verify_genuine(dongle::Dongle)
                _handle(dongle), raw)
     _check(dongle.ctx, rc, "licd_verify_genuine")
     v = raw[]
-    return GenuineResult(v.genuine != 0, _from_c(v.serial), _from_c(v.batch),
+    return GenuineResult(v.genuine != 0, _from_c(v.serial),
                          _from_c(v.provisioned_date))
 end
 
@@ -460,12 +486,24 @@ end
 
 """
 Elevates to the write role with the developer master key (a DER EC private key).
-Vendor tooling only — never ship that key in an application.
+This belongs in your licence-issuing tooling; never ship that key
+in the application your users run.
 """
 function authorize_write(s::Session, master_key_der::AbstractVector{UInt8})
     rc = ccall((:licd_write_auth, LIB), Cint, (Ptr{Cvoid}, Ptr{UInt8}, Csize_t),
                _device(s), master_key_der, length(master_key_der))
     _check(s, rc, "licd_write_auth")
+end
+
+"""
+Replaces the dongle's write-auth key with your own (a DER EC private key). Call
+`authorize_write` with the current key first. From the next session on, only the
+new key elevates.
+"""
+function rotate_write_key(s::Session, new_key_der::AbstractVector{UInt8})
+    rc = ccall((:licd_write_auth_rotate, LIB), Cint, (Ptr{Cvoid}, Ptr{UInt8}, Csize_t),
+               _device(s), new_key_der, length(new_key_der))
+    _check(s, rc, "licd_write_auth_rotate")
 end
 
 """Records stored on the dongle."""

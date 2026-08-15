@@ -1,13 +1,13 @@
 'use strict';
 // FFI layer: locates the native core and declares the C ABI
-// (`include/licdongle.h`). The object model in index.js works only in
+// (include/licdongle.h). The object model in index.js works only in
 // terms of what this module exports.
 //
 // koffi rather than a compiled N-API addon: the whole point of this binding is
 // that an Electron app can depend on it without a node-gyp toolchain on every
 // developer's machine and without rebuilding per Electron ABI. The cost is that
 // the C signatures live here as strings rather than being checked by a compiler,
-// which is why the test suite drives every one of them.
+// which is why every one of them matters.
 
 const path = require('path');
 const fs = require('fs');
@@ -21,8 +21,20 @@ const BASENAMES = {
 };
 const DEFAULT_LIB = BASENAMES[process.platform] || 'libkeynub_licdongle.so';
 
+function repoRid() {
+  const os = { win32: 'win', darwin: 'osx', linux: 'linux' }[process.platform];
+  const arch = { x64: 'x64', ia32: 'x86', arm64: 'arm64' }[process.arch];
+  return os && arch ? `${os}-${arch}` : 'unknown';
+}
+
+function repoRid() {
+  const os = { win32: 'win', darwin: 'osx', linux: 'linux' }[process.platform];
+  const arch = { x64: 'x64', ia32: 'x86', arm64: 'arm64' }[process.arch];
+  return os && arch ? `${os}-${arch}` : 'unknown';
+}
+
 function candidatePaths() {
-  // 1) explicit override (the test suite points this at the simulator library)
+  // 1) explicit override, an absolute path to a specific library
   const override = process.env.KEYNUB_LICDONGLE_LIBRARY;
   if (override) {
     return [override];
@@ -31,11 +43,14 @@ function candidatePaths() {
   return [
     // 2) native shipped inside the package, per platform+arch
     path.join(here, '..', 'prebuilds', `${process.platform}-${process.arch}`, DEFAULT_LIB),
-    // 3) alongside the package
+    // 3) the prebuilt library a checkout of the SDK carries, per platform. Makes a
+    //    clone runnable with nothing set; an installed package hits 2) instead.
+    path.join(here, '..', '..', '..', 'natives', repoRid(), DEFAULT_LIB),
+    // 4) alongside the package
     path.join(here, '..', DEFAULT_LIB),
-    // 4) next to the application executable — where an Electron build puts it
+    // 5) next to the application executable — where an Electron build puts it
     path.join(path.dirname(process.execPath), DEFAULT_LIB),
-    // 5) system search path
+    // 6) system search path
     DEFAULT_LIB,
   ];
 }
@@ -72,17 +87,17 @@ const LicdInfo = koffi.struct('licd_info', {
   data_free: 'uint32_t',
   watchdog_reboot: 'int',
   isolated: 'int',
+  writeauth_rotated: 'int',
 });
 
 const LicdGenuineResult = koffi.struct('licd_genuine_result', {
   genuine: 'int',
-  serial: koffi.array('char', 19, 'String'),
-  batch: koffi.array('char', 64, 'String'),
+  serial: koffi.array('char', 15, 'String'),
   provisioned_date: koffi.array('char', 11, 'String'),
 });
 
 const LicdDeviceInfo = koffi.struct('licd_device_info', {
-  serial: koffi.array('char', 19, 'String'),
+  serial: koffi.array('char', 15, 'String'),
   path: koffi.array('char', 512, 'String'),
   vendor_id: 'uint16_t',
   product_id: 'uint16_t',
@@ -114,6 +129,7 @@ const fn = {
   sessionOpen: lib.func('int licd_session_open(void *dev)'),
   sessionClose: lib.func('int licd_session_close(void *dev)'),
   writeAuth: lib.func('int licd_write_auth(void *dev, const void *der, size_t len)'),
+  writeAuthRotate: lib.func('int licd_write_auth_rotate(void *dev, const void *der, size_t len)'),
 
   recordList: lib.func(
     'int licd_record_list(void *dev, _Out_ void **names, _Out_ void **sizes, _Out_ size_t *count)'

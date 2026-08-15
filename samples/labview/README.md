@@ -1,4 +1,4 @@
-# LabVIEW sample — verify and read
+# LabVIEW samples — verify and read, and take ownership
 
 This folder holds **wiring instructions rather than a `.vi`**, deliberately. A VI is
 a binary file: it cannot be reviewed in a diff, and it pins you to one LabVIEW
@@ -47,8 +47,7 @@ Every function returns `0` on success and a negative status otherwise —
    empty string for "first dongle found". Keep the handle in a shift register for
    the rest of the VI's life.
 3. **`licdf_verify_genuine`** → `handle`, `int32_t *out_genuine`,
-   `char *out_serial` (19 bytes), `int32_t serial_size`, `char *out_batch`
-   (64 bytes), `int32_t batch_size`.
+   `char *out_serial` (15 bytes), `int32_t serial_size`.
 4. **`licdf_session_open`** → `handle`. Required before any record or app-crypto
    call.
 5. **`licdf_record_read`** → `handle`, `const char *name`, `uint8_t *out`,
@@ -62,6 +61,40 @@ On any failure, **`licdf_last_error`** (`handle`, `char *out` 256 bytes,
 `int32_t out_size`) returns the SDK's own diagnostic text. That string is what
 distinguishes "no dongle" from "certificate rejected"; wire it into your error
 cluster's description rather than reporting the status number alone.
+
+## Taking ownership of a new dongle
+
+A dongle ships holding KeyNub's write-auth key. Replace it with yours when the
+delivery arrives, after which only your key can write records, erase them or
+increment counters. This is a one-off per dongle, so it belongs in a small
+maintenance VI rather than in the application.
+
+Both keys are P-256 private keys in PKCS#8 DER, read into a `uint8_t` array
+(**Array Data Pointer**) exactly like record data. Generate yours with:
+
+```
+openssl ecparam -name prime256v1 -genkey -noout |
+  openssl pkcs8 -topk8 -nocrypt -outform DER -out my-key.der
+```
+
+1. **`licdf_open`**, then **`licdf_session_open`**.
+2. **`licdf_write_auth`** → `handle`, `uint8_t *der` (the key the dongle holds
+   now), `int32_t der_len`. This is what proves the outgoing key is yours.
+3. **`licdf_write_auth_rotate`** → `handle`, `uint8_t *der` (your replacement),
+   `int32_t der_len`.
+4. **`licdf_session_close`**, then **`licdf_session_open`** again. The rotation is
+   only observable on a fresh session, because the one above keeps the role it was
+   already granted.
+5. **`licdf_write_auth`** with the *old* key — it must now fail. If it returns `0`,
+   stop and do not ship the unit.
+6. **`licdf_write_auth`** with your key — it must now succeed.
+
+Steps 5 and 6 are the ones worth wiring. A rotation that returned success and
+changed nothing looks identical without them.
+
+**Keep the replacement key off the test rig.** It cannot be recovered from a
+dongle, and a unit rotated to a key you have lost has to come back to be
+re-provisioned.
 
 ## Where the licence check belongs
 
@@ -77,7 +110,7 @@ the VI need something only the dongle can produce:
 1. At licence-issue time, run `licdf_app_encrypt` once against a developer dongle,
    over the data your VI genuinely cannot compute — calibration constants, limit
    tables, instrument coefficients, a filter's parameters. Scope `1` lets any dongle
-   from your batch decrypt it; scope `0` locks it to one dongle.
+   you have issued decrypt it; scope `0` locks it to one dongle.
 2. Ship the encrypted blob alongside the VI.
 3. At run time, call `licdf_app_decrypt` and feed the result into the computation.
 

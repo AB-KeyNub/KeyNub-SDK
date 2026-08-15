@@ -27,7 +27,7 @@ proc report(dongle: Dongle) =
     echo "WARNING: this dongle's previous boot ended in a watchdog reset."
 
   let r = dongle.verifyGenuine()
-  echo &"Genuine: {r.genuine} (serial {r.serial}, batch {r.batch})"
+  echo &"Genuine: {r.genuine} (serial {r.serial})"
 
 proc readRecords(s: Session) =
   let records = s.listRecords()
@@ -45,7 +45,7 @@ proc readRecords(s: Session) =
 ## The part that actually protects something. At licence-issue time you would call
 ## appEncrypt once, with a developer dongle, and ship only the blob; the program then
 ## cannot proceed without a dongle, because it holds no other copy of the data.
-## Developer scope lets any dongle from your batch decrypt it, so one file serves
+## Developer scope lets any dongle you have issued decrypt it, so one file serves
 ## every customer; Device scope locks it to one dongle.
 proc protectSomething(s: Session) =
   const text = "the data this program cannot run without"

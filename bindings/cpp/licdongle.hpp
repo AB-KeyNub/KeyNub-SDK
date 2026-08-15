@@ -69,7 +69,7 @@ enum class Status : int {
 
 enum class Scope : int {
     Device = LICD_SCOPE_DEVICE,       // only this one physical dongle can decrypt
-    Developer = LICD_SCOPE_DEVELOPER, // any dongle from the same developer batch
+    Developer = LICD_SCOPE_DEVELOPER, // any dongle issued by the same developer
 };
 
 /// Thrown by every operation that fails. Catch this, or one of the subclasses
@@ -141,14 +141,16 @@ struct Info {
     /// behind, and a power cycle clears it.
     bool watchdogReboot = false;
     /// Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-    /// from keys and storage. The software simulator reports false.
+    /// from keys and storage. Anything that is not a dongle reports false.
     bool isolated = false;
+    /// Whether the write-auth key has been rotated away from the factory one. That key
+    /// is public, so a dongle reporting false accepts writes from anyone holding it.
+    bool writeAuthRotated = false;
 };
 
 struct GenuineResult {
     bool genuine = false;
     std::string serial;
-    std::string batch;
     std::string provisionedDate; ///< "YYYY-MM-DD", or empty
 };
 
@@ -333,12 +335,23 @@ public:
     }
 
     /// Elevates to the write role with the developer master key (DER EC private
-    /// key). Vendor tooling only — never ship that key in an application.
+    /// key). This belongs in your licence-issuing tooling; never ship
+    /// that key in the application your users run.
     void authorizeWrite(const Bytes &masterKeyDer) {
         licd_device *dev = device();
         detail::check(ctx(), licd_write_auth(dev, masterKeyDer.data(),
                                             masterKeyDer.size()),
                       "licd_write_auth");
+    }
+
+    /// Replaces the dongle's write-auth key with your own (DER EC private key).
+    /// Call authorizeWrite with the current key first. From the next session on,
+    /// only the new key elevates.
+    void rotateWriteKey(const Bytes &newKeyDer) {
+        licd_device *dev = device();
+        detail::check(ctx(), licd_write_auth_rotate(dev, newKeyDer.data(),
+                                                   newKeyDer.size()),
+                      "licd_write_auth_rotate");
     }
 
     std::vector<RecordInfo> listRecords() {
@@ -521,6 +534,7 @@ public:
         info.dataFree = raw.data_free;
         info.watchdogReboot = raw.watchdog_reboot != 0;
         info.isolated = raw.isolated != 0;
+        info.writeAuthRotated = raw.writeauth_rotated != 0;
         return info;
     }
 
@@ -539,7 +553,6 @@ public:
         GenuineResult result;
         result.genuine = raw.genuine != 0;
         result.serial = raw.serial;
-        result.batch = raw.batch;
         result.provisionedDate = raw.provisioned_date;
         return result;
     }

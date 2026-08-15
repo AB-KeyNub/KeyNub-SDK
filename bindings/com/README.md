@@ -110,15 +110,14 @@ Everything raises on failure except `IsGenuine`.
 | `Flags` | bitmask of `keynubFlag*` |
 | `Capacity` / `FreeBytes` | user storage, bytes |
 | `IsGenuine` | `Boolean`, fails closed, **never raises** |
-| `VerifyGenuine` | raises unless genuine; returns the certificate serial; fills `Batch` |
-| `Batch` | batch name from the last successful `VerifyGenuine` |
+| `VerifyGenuine` | raises unless genuine; returns the certificate serial |
 | `SessionOpen` / `SessionClose` | required before records, counters and app-crypto |
 | `RecordCount` / `RecordName(i)` / `RecordSize(name)` | |
 | `RecordRead(name)` / `RecordWrite(name, bytes)` | `Byte()` in and out |
 | `RecordErase(name)` / `RecordEraseAll` | an empty name is refused, not treated as "all" |
 | `CounterRead(id)` / `CounterIncrement(id)` | monotonic; increments cannot be undone |
 | `AppEncrypt(scope, bytes)` / `AppDecrypt(bytes)` | **the pair that matters** — see below |
-| `AuthorizeWrite(der)` | vendor tooling only; never ship that key |
+| `AuthorizeWrite(der)` | your licence-issuing tooling; never ship that key |
 | `SetTrustRoot(der)` | not needed; a release build embeds the KeyNub root |
 | `LastError` | diagnostic detail for logging (`Err.Description` already has it) |
 | `Version` | SDK version |
@@ -146,7 +145,7 @@ rates = dongle.AppDecrypt(envelope)   ' no dongle -> no rates -> no product
 
 Put the thing your product is actually *for* through that pair: rate tables,
 correction factors, a material database, the coefficients of your calculation.
-`keynubScopeDeveloper` lets any dongle from your batch decrypt it, so one blob ships
+`keynubScopeDeveloper` lets any dongle you have issued decrypt it, so one blob ships
 to every customer; `keynubScopeDevice` locks it to one physical dongle.
 
 The envelope is authenticated, so a customer cannot edit the values either — a
@@ -154,28 +153,3 @@ tampered envelope fails to decrypt rather than yielding different numbers.
 
 [`../../docs/integration-security.md`](../../docs/integration-security.md) makes the
 full argument.
-
-## Status of this binding
-
-The server and every member of the interface are tested in CI, on both
-architectures:
-
-- **The SDK's COM test suite** drives the
-  whole surface against an in-process software dongle, with no hardware. It runs
-  every call **twice** — once through the vtable (what `Dim As New` compiles to) and
-  once through `IDispatch::Invoke` by name (what `CreateObject` uses) — because those
-  are two different code paths and a type library that had drifted from the interface
-  would work in one and fail in the other. It also pins the `Err.Number` values, so
-  changing one fails a test rather than a customer's error handler.
-- **the SDK build checks**
-  covers what the first suite deliberately cannot: it runs `regsvr32`, checks the
-  keys land where a client looks for them, activates via
-  `CreateObject("KeyNub.Dongle")`, and unregisters cleanly.
-
-The contract the samples depend on — the interface, the type library, the
-marshalling and the error numbering — is verified on every push, on both 32- and
-64-bit, through both the vtable and `IDispatch`.
-
-One host-specific quirk worth knowing if you script against this from PowerShell:
-PowerShell's COM binder swallows a failed **property** getter and yields `$null`
-instead of throwing. Methods raise normally. VB6 raises on both.

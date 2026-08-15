@@ -16,7 +16,13 @@
 -- usually ships as readable source alongside the application, so
 -- `if not licensed then os.exit() end` is one line of a file the customer can edit.
 
-local keynub = require('keynub_licdongle')
+local ok, keynub = pcall(require, 'keynub_licdongle')
+if not ok then
+  -- Running from a checkout, where the rock is not installed.
+  local dir = debug.getinfo(1, 'S').source:match('^@(.*)[/\\][^/\\]*$') or '.'
+  package.path = dir .. '/../../bindings/lua/?.lua;' .. package.path
+  keynub = require('keynub_licdongle')
+end
 
 local function report(dongle)
     local info = dongle:getInfo()
@@ -31,8 +37,8 @@ local function report(dongle)
     end
 
     local result = dongle:verifyGenuine()
-    print(string.format('Genuine: %s (serial %s, batch %s)',
-        tostring(result.genuine), result.serial, result.batch))
+    print(string.format('Genuine: %s (serial %s)',
+        tostring(result.genuine), result.serial))
 end
 
 local function readRecords(session)
@@ -55,7 +61,7 @@ end
 -- The part that actually protects something. At licence-issue time you would call
 -- appEncrypt once, with a developer dongle, and ship only the blob; the add-on then
 -- cannot proceed without a dongle, because it holds no other copy of the data.
--- Scope.DEVELOPER lets any dongle from your batch decrypt it, so one file serves
+-- Scope.DEVELOPER lets any dongle you have issued decrypt it, so one file serves
 -- every customer; Scope.DEVICE locks it to one dongle.
 local function protectSomething(session)
     local needed = 'the data this program cannot run without'

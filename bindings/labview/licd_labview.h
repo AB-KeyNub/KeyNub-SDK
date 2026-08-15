@@ -6,8 +6,8 @@
  * wizard at this file and keynub_licdongle_flat.dll and it can generate the
  * Call Library Function Nodes for you.
  *
- * This file must stay in step with licd_flat.h; the SDK build checks
- * enforces that in CI, because a silently diverged parameter list here is a
+ * This file must stay in step with licd_flat.h; packaging/check_flat_bindings.py
+ * matches it, because a silently diverged parameter list here is a
  * crash in a customer's VI rather than a compile error anywhere.
  *
  * See README.md in this folder for the per-parameter node configuration, and
@@ -47,11 +47,11 @@
 #define LICDF_FLAG_PROVISIONED 0x02
 #define LICDF_FLAG_WATCHDOG_REBOOT 0x04
 #define LICDF_FLAG_ISOLATED 0x08
+#define LICDF_FLAG_WRITEAUTH_ROTATED 0x10
 
 /* --- buffer sizes -------------------------------------------------------- */
-#define LICDF_SERIAL_SIZE 19
+#define LICDF_SERIAL_SIZE 15
 #define LICDF_PATH_SIZE 512
-#define LICDF_BATCH_SIZE 64
 #define LICDF_ERROR_SIZE 256
 
 /* --- version ------------------------------------------------------------- */
@@ -75,12 +75,14 @@ int32_t licdf_get_info(int32_t handle, int32_t *out_proto_major, int32_t *out_pr
                        int32_t *out_fw_major, int32_t *out_fw_minor, int32_t *out_fw_patch,
                        int32_t *out_flags, int32_t *out_capacity, int32_t *out_free);
 int32_t licdf_verify_genuine(int32_t handle, int32_t *out_genuine, char *out_serial,
-                             int32_t serial_size, char *out_batch, int32_t batch_size);
+                             int32_t serial_size, char *out_provisioned_date,
+                             int32_t date_size);
 
 /* --- session ------------------------------------------------------------- */
 int32_t licdf_session_open(int32_t handle);
 int32_t licdf_session_close(int32_t handle);
 int32_t licdf_write_auth(int32_t handle, const uint8_t *der, int32_t der_len);
+int32_t licdf_write_auth_rotate(int32_t handle, const uint8_t *der, int32_t der_len);
 
 /* --- records ------------------------------------------------------------- */
 int32_t licdf_record_count(int32_t handle, int32_t *out_count);

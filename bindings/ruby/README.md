@@ -32,7 +32,7 @@ the load path but Ruby itself.
 
 The cost is that the C signatures live in
 [`lib/keynub_licdongle/native.rb`](lib/keynub_licdongle/native.rb) as data no
-compiler verifies — which is why the test suite drives every one of them. Struct
+compiler verifies — which is why every one of them is written out by hand. Struct
 layouts go through `Fiddle::Importer`, so the padding is computed rather than
 hand-maintained; a hand-written offset that is wrong reads a neighbouring field
 and produces a plausible wrong value rather than a crash.
@@ -77,24 +77,10 @@ end
 
 The binding looks for the core library, in order:
 
-1. `KEYNUB_LICDONGLE_LIBRARY` — an absolute path; the test suite uses this
+1. `KEYNUB_LICDONGLE_LIBRARY` — an absolute path to a specific library
 2. `vendor/` inside the gem
 3. beside `lib/keynub_licdongle/`
 4. the system search path
-
-## Testing
-
-```
-see NATIVES.md for the prebuilt library
-KEYNUB_SIM_PATH=../../build/libkeynub_licdongle_sim.so ruby test/test_end_to_end.rb
-```
-
-minitest ships with Ruby, so the tests need no gems either. The suite runs the
-full protocol stack — verify, session handshake, records, counters, app-crypto —
-against an in-process software dongle, so **no hardware is needed**, plus the
-parts specific to this binding: struct layout across Fiddle (a mistake shows up as
-a garbage value, not a wrong boolean), the progress bridge with cancellation and
-an exception thrown from inside a callback, and a session outliving its dongle.
 
 ## License
 

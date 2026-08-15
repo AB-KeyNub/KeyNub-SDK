@@ -48,7 +48,8 @@ namespace KeyNub.LicenseDongle
         /// Elevates the session to the write role by proving possession of the developer master key
         /// (a DER-encoded EC private key). Required before <see cref="WriteRecord"/>,
         /// <see cref="EraseRecord"/>, <see cref="EraseAllRecords"/>, and <see cref="IncrementCounter"/>.
-        /// Vendor/provisioning tools only.
+        /// This belongs in your licence-issuing tooling; never ship that key in the application
+        /// your users run.
         /// </summary>
         public void AuthorizeWrite(byte[] masterKeyDer)
         {
@@ -59,6 +60,22 @@ namespace KeyNub.LicenseDongle
             }
             int rc = NativeMethods.licd_write_auth(_dongle.Handle, masterKeyDer, new UIntPtr((uint)masterKeyDer.Length));
             Errors.Check(rc, Ctx, "licd_write_auth");
+        }
+
+        /// <summary>
+        /// Replaces the dongle's write-auth key with your own (a DER EC private key).
+        /// Call <see cref="AuthorizeWrite"/> with the current key first. From the next
+        /// session on, only the new key elevates.
+        /// </summary>
+        public void RotateWriteKey(byte[] newKeyDer)
+        {
+            EnsureOpen();
+            if (newKeyDer == null)
+            {
+                throw new ArgumentNullException(nameof(newKeyDer));
+            }
+            int rc = NativeMethods.licd_write_auth_rotate(_dongle.Handle, newKeyDer, new UIntPtr((uint)newKeyDer.Length));
+            Errors.Check(rc, Ctx, "licd_write_auth_rotate");
         }
 
         /// <summary>Lists the record names and sizes stored on the dongle.</summary>

@@ -4,7 +4,7 @@ package com.keynub.licdongle;
 public enum Scope {
     /** Only this physical dongle can decrypt (node-locking). */
     DEVICE(0),
-    /** Any dongle from the same developer batch can decrypt. */
+    /** Any dongle issued by the same developer can decrypt. */
     DEVELOPER(1);
 
     private final int code;

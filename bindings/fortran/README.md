@@ -80,18 +80,6 @@ to delete.
 
 See [`../../docs/integration-security.md`](../../docs/integration-security.md).
 
-## Testing
-
-the SDK test suite runs in CI as `licd_fortran_tests`
-in CI.
-run under GCC and on Linux CI). It drives the whole surface against an in-process
-software dongle with **no hardware**: info, verify, session, records, counters,
-app-crypto with a tamper check, and the empty-name erase guard.
-
-Verified here with gfortran 16.1 (MinGW-w64) against a GCC build of the SDK. As a
-negative control the NUL terminator in `keynub_c_string` was removed on purpose;
-the suite failed, as it should.
-
 ## License
 
 Apache-2.0, like the rest of the SDK — see [`../../LICENSE`](../../LICENSE) and

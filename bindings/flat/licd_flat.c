@@ -330,6 +330,9 @@ int32_t licdf_get_info(int32_t handle, int32_t *out_proto_major, int32_t *out_pr
             if (info.isolated) {
                 flags |= LICDF_FLAG_ISOLATED;
             }
+            if (info.writeauth_rotated) {
+                flags |= LICDF_FLAG_WRITEAUTH_ROTATED;
+            }
             set_int(out_flags, flags);
             set_int(out_capacity, (int32_t)info.data_capacity);
             set_int(out_free, (int32_t)info.data_free);
@@ -338,7 +341,8 @@ int32_t licdf_get_info(int32_t handle, int32_t *out_proto_major, int32_t *out_pr
 }
 
 int32_t licdf_verify_genuine(int32_t handle, int32_t *out_genuine, char *out_serial,
-                             int32_t serial_size, char *out_batch, int32_t batch_size) {
+                             int32_t serial_size, char *out_provisioned_date,
+                             int32_t date_size) {
     set_int(out_genuine, 0);
     WITH_SLOT(handle, {
         licd_genuine_result result;
@@ -349,8 +353,11 @@ int32_t licdf_verify_genuine(int32_t handle, int32_t *out_genuine, char *out_ser
             if (out_serial != NULL) {
                 rc = copy_string(result.serial, out_serial, serial_size);
             }
-            if (rc == LICD_OK && out_batch != NULL) {
-                rc = copy_string(result.batch, out_batch, batch_size);
+            // Only if the caller asked, and never at the cost of the verdict: a
+            // buffer too small for the date must not turn a genuine dongle into
+            // a failure, so its status is taken only when nothing else failed.
+            if (rc == LICD_OK && out_provisioned_date != NULL) {
+                rc = copy_string(result.provisioned_date, out_provisioned_date, date_size);
             }
         }
     });
@@ -373,6 +380,15 @@ int32_t licdf_write_auth(int32_t handle, const uint8_t *der, int32_t der_len) {
         rc = require_len(der_len);
         if (rc == LICD_OK) {
             rc = (int32_t)licd_write_auth(s->dev, der, (size_t)der_len);
+        }
+    });
+}
+
+int32_t licdf_write_auth_rotate(int32_t handle, const uint8_t *der, int32_t der_len) {
+    WITH_SLOT(handle, {
+        rc = require_len(der_len);
+        if (rc == LICD_OK) {
+            rc = (int32_t)licd_write_auth_rotate(s->dev, der, (size_t)der_len);
         }
     });
 }
@@ -578,30 +594,3 @@ int32_t licdf_app_decrypt(int32_t handle, const uint8_t *packed, int32_t packed_
     });
 }
 
-#ifdef LICDF_ENABLE_SIM
-// Test-only: opens a handle backed by the in-process device simulator. Compiled
-// into the test build only; the shipping flat library does not export it, exactly
-// as the core library does not export licd_open_simulated.
-extern int licd_open_simulated(licd_ctx *ctx, licd_device **out_dev);
-
-LICDF_API int32_t licdf_open_simulated(void) {
-    LOCK();
-    slot_t *s = claim_slot();
-    if (s == NULL) {
-        UNLOCK();
-        return LICD_E_BUSY;
-    }
-    int32_t rc = (int32_t)licd_init(&s->ctx);
-    if (rc == LICD_OK) {
-        rc = (int32_t)licd_open_simulated(s->ctx, &s->dev);
-    }
-    if (rc != LICD_OK) {
-        release_slot(s);
-        UNLOCK();
-        return rc;
-    }
-    int32_t handle = s->id;
-    UNLOCK();
-    return handle;
-}
-#endif

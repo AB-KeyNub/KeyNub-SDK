@@ -104,14 +104,4 @@ POSSIBILITY OF SUCH DAMAGE.
     in writing. Licensed under the Apache License, Version 2.0 - full text in
     the accompanying LICENSE file.
 
---------------------------------------------------------------------------------
- Not part of this SDK
---------------------------------------------------------------------------------
-
-    The KeyNub dongle firmware links further third-party components (notably
-    Microchip CryptoAuthLib and littlefs) under their own separate terms. The
-    firmware is a distinct licensing unit and is not distributed as part of this
-    SDK; those components are not present in, and their terms do not apply to,
-    any SDK artifact.
-
 ================================================================================

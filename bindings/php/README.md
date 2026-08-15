@@ -51,20 +51,7 @@ in a binding that restates the ABI in another notation.
    `$ffi->new('licd_ctx*[1]')` plus `FFI::addr($out[0])`.
 3. **Types from two different `FFI::cdef` instances are distinct** even when the C
    text is identical, so handles must be `cast()` when they cross between them
-   (which the test suite has to do for the simulator entry points).
+   when mixing this binding with FFI declarations of your own.
 
 Static `FFI::new()` is also deprecated as of PHP 8.3; allocate through the
 instance.
-
-## Testing
-
-```
-KEYNUB_SIM_PATH=../../build/keynub_licdongle_sim.dll php test/test_end_to_end.php
-```
-
-47 assertions against an in-process software dongle — **no hardware** — with a
-plain assertion harness rather than PHPUnit, so it needs no Composer install
-either. The harness prints each section to STDERR unbuffered: a mistake in an FFI
-binding is an access violation rather than an exception, and PHP's buffered stdout
-is lost when the process dies, so without that a crash tells you nothing about
-where it happened.

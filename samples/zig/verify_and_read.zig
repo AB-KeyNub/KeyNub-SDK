@@ -33,8 +33,8 @@ fn report(dongle: *keynub.Dongle) !void {
     }
 
     const result = try dongle.verifyGenuine();
-    std.debug.print("Genuine: {} (serial {s}, batch {s})\n", .{
-        result.genuine, result.serial.slice(), result.batch.slice(),
+    std.debug.print("Genuine: {} (serial {s})\n", .{
+        result.genuine, result.serial.slice(),
     });
 }
 
@@ -61,7 +61,7 @@ fn readRecords(session: *keynub.Session, allocator: std.mem.Allocator) !void {
 /// The part that actually protects something. At licence-issue time you would call
 /// appEncrypt once, with a developer dongle, and ship only the blob; the program
 /// then cannot proceed without a dongle, because it holds no other copy of the data.
-/// `.developer` lets any dongle from your batch decrypt it, so one file serves every
+/// `.developer` lets any dongle you have issued decrypt it, so one file serves every
 /// customer; `.device` locks it to one dongle.
 fn protectSomething(session: *keynub.Session, allocator: std.mem.Allocator) !void {
     const needed = "the data this program cannot run without";

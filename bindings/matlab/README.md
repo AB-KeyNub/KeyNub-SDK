@@ -36,6 +36,7 @@ session.close();
 +keynub/+internal/       not API
 src/licd_mex.c           the MEX gateway (all validation and marshalling)
 mex/                     built gateway: licd_mex.<mexext>
+tests/tKeyNub.m          matlab.unittest suite
 ```
 
 Results are plain structs, which is what MATLAB code expects — `info.dataFree`,
@@ -51,11 +52,10 @@ per status code — so `catch err; switch err.identifier` works.
 ## Building the gateway
 
 A release ships `mex/licd_mex.<mexext>` prebuilt, so **customers need no
-compiler**. Building from source needs one command after the prebuilt native package:
+compiler**. Building from source needs one command after the SDK's CMake build:
 
 ```matlab
-keynub.build('native/')                 % production gateway
-keynub.build('native/', 'Sim', true)    % + device simulator, for the tests
+keynub.build('<SDK>/build')
 ```
 
 It links the SDK **statically**, so the gateway is one self-contained file. That
@@ -63,9 +63,6 @@ is not just tidiness: Windows resolves a MEX file's DLL dependencies against the
 MATLAB executable's directory, not the MEX file's own, so a gateway that depended
 on `keynub_licdongle.dll` would need that DLL on the system `PATH` at every
 customer site.
-
-Never ship a `'Sim'` gateway — it exposes test entry points the shipping library
-deliberately does not export.
 
 ### Why MEX and not `loadlibrary`
 
@@ -98,34 +95,6 @@ code, and the MATLAB Coder configuration that links it.
 | A MATLAB Compiler standalone / web app | same, with `mex/licd_mex.*` added via `mcc -a` |
 | A Simulink model or blockset | `keynub.LicenseCheck`, plus `appDecrypt` for parameters |
 | Generated C from Coder / Simulink Coder | `samples/matlab/codegen` (`keynub_gate.c`) |
-
-## Testing
-
-The binding is tested from two directions, because MATLAB cannot be installed on
-the machines that run the automated tests:
-
-1. **The SDK's own test suite, on every push.** All of
-   the binding's logic lives in `src/licd_mex.c`: dispatch and arity, type and
-   range checks, handle validation and lifetime, struct field names, the
-   progress-callback bridge with its cancel and rethrow paths, and the
-   reentrancy guard. The test drives `mexFunction` through a minimal
-   implementation of the `mx`/`mex` API
-   (a stand-in `mex.h` that ships with the SDK's test suite) that also
-   reproduces MATLAB's memory rules, so a leaked `mxArray` fails the build. That
-   header documents exactly what this does and does not prove.
-
-2. **the binding's MATLAB test class — needs MATLAB.** The `+keynub` classes against the
-   in-process device simulator: the full protocol stack with no hardware, plus
-   the things only MATLAB can execute (object lifetimes, `delete` ordering,
-   progress callbacks as real function handles).
-
-```matlab
-keynub.build('native/', 'Sim', true)
-runtests('tests')
-```
-
-The classes are deliberately thin: the gateway they call is covered as above, so
-there is as little logic as possible between MATLAB and the tested ABI.
 
 ## License
 

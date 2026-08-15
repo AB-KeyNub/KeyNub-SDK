@@ -14,7 +14,13 @@
 # the one thing a real licence check must not do. The last section shows the shape
 # that actually protects something. See docs/integration-security.md.
 
-require 'keynub_licdongle'
+begin
+  require 'keynub_licdongle'
+rescue LoadError
+  # Running from a checkout, where the gem is not installed.
+  $LOAD_PATH.unshift(File.expand_path('../../bindings/ruby/lib', __dir__))
+  require 'keynub_licdongle'
+end
 
 def main
   major, minor, patch = KeyNubLicDongle::Context.library_version
@@ -45,7 +51,7 @@ def main
 
       result = dongle.verify_genuine!
       puts "Genuine: #{result[:genuine]} (serial #{result[:serial]}, " \
-           "batch #{result[:batch]}, provisioned #{result[:provisioned_date]})"
+           "provisioned #{result[:provisioned_date]})"
 
       dongle.session do |session|
         records = session.list_records

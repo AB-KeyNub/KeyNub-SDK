@@ -65,7 +65,7 @@ typedef enum {
 // App-data encryption scope (see licd_app_encrypt).
 typedef enum {
     LICD_SCOPE_DEVICE = 0,    // only this physical dongle can decrypt
-    LICD_SCOPE_DEVELOPER = 1, // any dongle from the same developer batch
+    LICD_SCOPE_DEVELOPER = 1, // any dongle issued by the same developer
 } licd_scope;
 
 // Log levels for the optional diagnostic callback.
@@ -81,7 +81,7 @@ typedef struct licd_ctx licd_ctx;       // library context (thread-safe)
 typedef struct licd_device licd_device; // an open dongle connection
 
 // --- Plain data structures ---------------------------------------------------
-#define LICD_SERIAL_HEX_LEN 18 // secure element 9-byte serial as hex, no NUL
+#define LICD_SERIAL_HEX_LEN 14 // secure element 7-byte UID as hex, no NUL
 
 // One discovered dongle (from licd_enumerate). `path` is an opaque,
 // platform-specific string accepted by licd_open_path.
@@ -108,13 +108,32 @@ typedef struct {
     // both leave this clear, so a set flag is worth reporting: it is the only
     // trace a field hang leaves behind. Cleared by a power cycle.
     int watchdog_reboot;
+    // Nonzero if the dongle confirmed at boot that its USB and protocol-parsing
+    // code is fenced off from keys and storage — the isolation described in
+    // docs/integration-security.md §6. The firmware does not assert this from its
+    // build configuration; it asks the hardware how an access from the isolated
+    // world *would* be attributed and reports the answer, so a set flag is
+    // measured rather than claimed.
+    //
+    // Anything that is not a dongle reports 0, because the flag is only ever set
+    // by asking real hardware. A check gated on this therefore cannot be satisfied
+    // by something standing in for a device.
+    int isolated;
+    // Nonzero once this dongle's write-auth key has been rotated away from the
+    // one installed at the factory.
+    //
+    // The factory key is public — it ships with the SDK so that you can perform
+    // the first rotation — so a dongle reporting 0 here accepts writes, erases
+    // and counter increments from anyone who has it in their hand, and can be
+    // rotated by them to a key you do not hold. Rotate on receipt, and check this
+    // before you ship a dongle to anyone.
+    int writeauth_rotated;
 } licd_info;
 
 // Result of licd_verify_genuine (populated from the verified device cert).
 typedef struct {
     int genuine;                          // nonzero if authenticity proven
     char serial[LICD_SERIAL_HEX_LEN + 1]; // device serial from the certificate
-    char batch[64];                       // batch/issuer label (NUL-terminated)
     char provisioned_date[11];            // "YYYY-MM-DD" or "" (NUL-terminated)
 } licd_genuine_result;
 
@@ -188,8 +207,22 @@ LICD_API int licd_verify_genuine(licd_device *dev, licd_genuine_result *out_resu
 LICD_API int licd_session_open(licd_device *dev);
 LICD_API int licd_session_close(licd_device *dev);
 // Elevate the session to the write role using the developer master key
-// (DER-encoded EC private key). Vendor/provisioning tools only.
+// (DER-encoded EC private key). This belongs in your licence-issuing tooling;
+// never ship that key in the application your users run.
 LICD_API int licd_write_auth(licd_device *dev, const uint8_t *master_key_der, size_t len);
+
+// Replace the dongle's write-auth key with `new_key_der`, a P-256 private key in
+// PKCS#8 DER. Both halves are used: the public one is installed, the private one
+// signs a proof of possession, so the replacement must be a key you hold.
+//
+// Requires a session already elevated with licd_write_auth. That session keeps
+// the write role; from the next session onward only the new key elevates, and
+// the key it replaced no longer works on this dongle.
+//
+// LICD_E_AUTH_REQUIRED without the write role, LICD_E_INVALID_ARG if the key is
+// not P-256 PKCS#8, LICD_E_NOT_GENUINE if the dongle rejects the proof,
+// LICD_E_INTERNAL if it has no room for another rotation.
+LICD_API int licd_write_auth_rotate(licd_device *dev, const uint8_t *new_key_der, size_t len);
 
 // ============================================================================
 // License data records  (session required; write/erase need the write role)

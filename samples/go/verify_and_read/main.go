@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"os"
 
-	keynub "github.com/AB-KeyNub/KeyNub-bindings/go"
+	keynub "github.com/AB-KeyNub/KeyNub-SDK/bindings/go"
 )
 
 func report(d *keynub.Dongle) error {
@@ -43,8 +43,8 @@ func report(d *keynub.Dongle) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Genuine: %t (serial %s, batch %s, provisioned %s)\n",
-		result.Genuine, result.Serial, result.Batch, result.ProvisionedDate)
+	fmt.Printf("Genuine: %t (serial %s, provisioned %s)\n",
+		result.Genuine, result.Serial, result.ProvisionedDate)
 	return nil
 }
 
@@ -74,7 +74,7 @@ func readRecords(s *keynub.Session) error {
 // The part that actually protects something. At licence-issue time you would call
 // AppEncrypt once, with a developer dongle, and ship only the blob; the application
 // then cannot proceed without a dongle, because it holds no other copy of the data.
-// ScopeDeveloper lets any dongle from your batch decrypt it, so one file serves
+// ScopeDeveloper lets any dongle you have issued decrypt it, so one file serves
 // every customer; ScopeDevice locks it to one dongle.
 func protectSomething(s *keynub.Session) error {
 	needed := []byte("the data this program cannot run without")

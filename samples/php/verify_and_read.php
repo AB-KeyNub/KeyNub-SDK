@@ -43,9 +43,9 @@ function report(Dongle $dongle): void
 
     $result = $dongle->verifyGenuine();
     printf(
-        "Genuine: %s (serial %s, batch %s, provisioned %s)\n",
+        "Genuine: %s (serial %s, provisioned %s)\n",
         $result->genuine ? 'true' : 'false',
-        $result->serial, $result->batch, $result->provisionedDate
+        $result->serial, $result->provisionedDate
     );
 }
 
@@ -69,7 +69,7 @@ function readRecords(Session $session): void
 // The part that actually protects something. At licence-issue time you would call
 // appEncrypt once, with a developer dongle, and ship only the blob; the application
 // then cannot proceed without a dongle, because it holds no other copy of the data.
-// Scope::DEVELOPER lets any dongle from your batch decrypt it, so one file serves
+// Scope::DEVELOPER lets any dongle you have issued decrypt it, so one file serves
 // every customer; Scope::DEVICE locks it to one dongle.
 //
 // Check on boot or on a schedule rather than per request: a USB round trip is fast

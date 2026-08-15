@@ -1,7 +1,8 @@
 node_modules/
-# Staged by the SDK build before `npm pack`.
+# Staged by packaging/stage_license_files.py before `npm pack`; the SDK root copies
 # are authoritative.
 LICENSE
+BINARY-LICENSE.txt
 NOTICE
 THIRD-PARTY-NOTICES.txt
 # Per-platform natives staged for packaging (see README: "Shipping the native

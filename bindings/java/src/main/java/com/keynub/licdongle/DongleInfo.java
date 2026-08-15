@@ -20,7 +20,13 @@ public record DongleInfo(
         boolean watchdogReboot,
         /**
          * Whether the dongle confirmed at boot that its USB and parsing code is fenced off
-         * from keys and storage. The software simulator reports false.
+         * from keys and storage. Anything that is not a dongle reports false.
          */
-        boolean isolated) {
+        boolean isolated,
+
+        /**
+         * Whether the write-auth key has been rotated away from the factory one. That key is
+         * public, so a dongle reporting false accepts writes from anyone holding it.
+         */
+        boolean writeauthRotated) {
 }

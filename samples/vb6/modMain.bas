@@ -145,7 +145,7 @@ Private Sub ShowTheRealGate(ByVal dongle As Object)
     Dim theDataMyProgramNeeds() As Byte
     theDataMyProgramNeeds = StringToBytes("rate=17.4;factor=0.93;limit=2200")
 
-    ' SCOPE_DEVELOPER: any dongle from your batch can decrypt it, so one
+    ' SCOPE_DEVELOPER: any dongle you have issued can decrypt it, so one
     ' encrypted blob ships to every customer. SCOPE_DEVICE locks it to one
     ' physical dongle, for per-customer data.
     Dim envelope() As Byte
@@ -197,9 +197,10 @@ Private Sub ShowRecords(ByVal dongle As Object)
     End If
     On Error GoTo 0
 
-    ' Writing needs the write role, which needs the developer master key --
-    ' vendor tooling only. Never ship that key inside your application; anyone
-    ' holding it can rewrite any dongle in your batch.
+    ' Writing needs the write role, which needs the developer master key. That
+    ' belongs in the tool you issue licences from. Never ship it inside the
+    ' application your users run; anyone holding it can rewrite any dongle
+    ' you have issued.
 End Sub
 
 

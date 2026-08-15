@@ -51,7 +51,6 @@ static void report(int32_t handle) {
     int32_t flags = 0, capacity = 0, freebytes = 0;
     int32_t genuine = 0;
     char serial[LICDF_SERIAL_SIZE] = {0};
-    char batch[LICDF_BATCH_SIZE] = {0};
     int32_t rc;
 
     rc = licdf_get_info(handle, &pmaj, &pmin, &fmaj, &fmin, &fpatch, &flags, &capacity,
@@ -65,13 +64,17 @@ static void report(int32_t handle) {
         }
     }
 
-    rc = licdf_verify_genuine(handle, &genuine, serial, (int32_t)sizeof serial, batch,
-                              (int32_t)sizeof batch);
+    char provisioned[LICDF_DATE_SIZE];
+    rc = licdf_verify_genuine(handle, &genuine, serial, (int32_t)sizeof serial, provisioned,
+                              (int32_t)sizeof provisioned);
     if (rc != LICD_OK) {
         show_error(handle, "verify_genuine", rc);
         return;
     }
-    printf("Genuine: %s (serial %s, batch %s)\n", genuine ? "true" : "false", serial, batch);
+    printf("Genuine: %s (serial %s)\n", genuine ? "true" : "false", serial);
+    /* Informational only. Empty on a dongle that reports no date, so print it
+       that way rather than pretending to a value. */
+    printf("Personalised: %s\n", provisioned[0] != '\0' ? provisioned : "(not reported)");
 }
 
 static void read_records(int32_t handle) {
@@ -109,7 +112,7 @@ static void read_records(int32_t handle) {
 /* The part that actually protects something. At licence-issue time you would call
  * licdf_app_encrypt once, with a developer dongle, and ship only the blob; the
  * application then cannot proceed without a dongle, because it holds no other copy
- * of the data. Developer scope lets any dongle from your batch decrypt it, so one
+ * of the data. Developer scope lets any dongle you have issued decrypt it, so one
  * file serves every customer; device scope locks it to one dongle. */
 static void protect_something(int32_t handle) {
     static const char text[] = "the data this program cannot run without";

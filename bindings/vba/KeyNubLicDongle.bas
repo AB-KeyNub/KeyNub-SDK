@@ -65,14 +65,14 @@ Public Const LICDF_FLAG_SE_READY As Long = 1
 Public Const LICDF_FLAG_PROVISIONED As Long = 2
 Public Const LICDF_FLAG_WATCHDOG_REBOOT As Long = 4
 Public Const LICDF_FLAG_ISOLATED As Long = 8
+Public Const LICDF_FLAG_WRITEAUTH_ROTATED As Long = 16
 
 '--- app-crypto scopes --------------------------------------------------------
 Public Const KEYNUB_SCOPE_DEVICE As Long = 0    ' only this one physical dongle
-Public Const KEYNUB_SCOPE_DEVELOPER As Long = 1 ' any dongle from your batch
+Public Const KEYNUB_SCOPE_DEVELOPER As Long = 1 ' any dongle you have issued
 
 '--- buffer sizes -------------------------------------------------------------
-Private Const SERIAL_SIZE As Long = 19
-Private Const BATCH_SIZE As Long = 64
+Private Const SERIAL_SIZE As Long = 15
 Private Const ERROR_SIZE As Long = 256
 Private Const NAME_SIZE As Long = 64
 
@@ -90,6 +90,9 @@ Public Type KeyNubDeviceInfo
     Provisioned As Boolean
     WatchdogReboot As Boolean
     Isolated As Boolean
+    ' False means the dongle still answers to the factory write-auth key, which is
+    ' public. Anyone holding such a dongle can write to it. Rotate on receipt.
+    WriteAuthRotated As Boolean
     DataCapacity As Long
     DataFree As Long
 End Type
@@ -126,13 +129,15 @@ Private Declare PtrSafe Function licdf_get_info Lib "keynub_licdongle_flat.dll" 
     ByRef outFlags As Long, ByRef outCapacity As Long, ByRef outFree As Long) As Long
 Private Declare PtrSafe Function licdf_verify_genuine Lib "keynub_licdongle_flat.dll" ( _
     ByVal handle As Long, ByRef outGenuine As Long, ByVal outSerial As String, _
-    ByVal serialSize As Long, ByVal outBatch As String, ByVal batchSize As Long) As Long
+    ByVal serialSize As Long, ByVal outDate As String, ByVal dateSize As Long) As Long
 
 Private Declare PtrSafe Function licdf_session_open Lib "keynub_licdongle_flat.dll" ( _
     ByVal handle As Long) As Long
 Private Declare PtrSafe Function licdf_session_close Lib "keynub_licdongle_flat.dll" ( _
     ByVal handle As Long) As Long
 Private Declare PtrSafe Function licdf_write_auth Lib "keynub_licdongle_flat.dll" ( _
+    ByVal handle As Long, ByRef der As Byte, ByVal derLen As Long) As Long
+Private Declare PtrSafe Function licdf_write_auth_rotate Lib "keynub_licdongle_flat.dll" ( _
     ByVal handle As Long, ByRef der As Byte, ByVal derLen As Long) As Long
 
 Private Declare PtrSafe Function licdf_record_count Lib "keynub_licdongle_flat.dll" ( _
@@ -306,6 +311,8 @@ Public Function KeyNubGetInfo(ByVal handle As Long) As KeyNubDeviceInfo
     info.WatchdogReboot = (flags And LICDF_FLAG_WATCHDOG_REBOOT) <> 0
     ' The dongle confirmed its USB/parsing code is fenced off from keys.
     info.Isolated = (flags And LICDF_FLAG_ISOLATED) <> 0
+    ' False = still on the factory write-auth key, which is public.
+    info.WriteAuthRotated = (flags And LICDF_FLAG_WRITEAUTH_ROTATED) <> 0
     info.DataCapacity = capacity
     info.DataFree = freeBytes
     KeyNubGetInfo = info
@@ -315,10 +322,9 @@ End Function
 ' challenge-response). Returns the serial from the certificate.
 Public Function KeyNubVerifyGenuine(ByVal handle As Long) As String
     Dim genuine As Long
-    Dim serial As String, batch As String
+    Dim serial As String
     serial = Buffer(SERIAL_SIZE)
-    batch = Buffer(BATCH_SIZE)
-    Check licdf_verify_genuine(handle, genuine, serial, SERIAL_SIZE, batch, BATCH_SIZE), _
+    Check licdf_verify_genuine(handle, genuine, serial, SERIAL_SIZE, vbNullString, 0), _
           "licdf_verify_genuine", handle
     If genuine = 0 Then Fail LICD_E_NOT_GENUINE, "licdf_verify_genuine", handle
     KeyNubVerifyGenuine = TrimNull(serial)
@@ -343,12 +349,22 @@ Public Sub KeyNubSessionClose(ByVal handle As Long)
     licdf_session_close handle
 End Sub
 
-' Elevates to the write role with the developer master key. Vendor tooling only -
-' never ship a workbook containing that key.
+' Elevates to the write role with the developer master key. This belongs in the
+' workbook you issue licences from, never in one you hand to a customer.
 Public Sub KeyNubAuthorizeWrite(ByVal handle As Long, der() As Byte)
     Dim buf() As Byte
     buf = AsBuffer(der)
     Check licdf_write_auth(handle, buf(LBound(buf)), ByteCount(der)), "licdf_write_auth", handle
+End Sub
+
+' Replaces the dongle's write-auth key with your own. Call KeyNubAuthorizeWrite
+' with the current key first. From the next session on, only the new key
+' elevates.
+Public Sub KeyNubRotateWriteKey(ByVal handle As Long, newDer() As Byte)
+    Dim buf() As Byte
+    buf = AsBuffer(newDer)
+    Check licdf_write_auth_rotate(handle, buf(LBound(buf)), ByteCount(newDer)), _
+          "licdf_write_auth_rotate", handle
 End Sub
 
 Public Function KeyNubRecordCount(ByVal handle As Long) As Long

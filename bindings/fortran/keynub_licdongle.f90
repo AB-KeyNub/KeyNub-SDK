@@ -63,14 +63,18 @@ module keynub_licdongle
     integer(c_int32_t), parameter :: LICDF_FLAG_PROVISIONED = 2
     integer(c_int32_t), parameter :: LICDF_FLAG_WATCHDOG_REBOOT = 4
     integer(c_int32_t), parameter :: LICDF_FLAG_ISOLATED = 8
+    !> The write-auth key has been rotated away from the factory one, which is
+    !! public: a dongle without this bit takes writes from anyone holding it.
+    integer(c_int32_t), parameter :: LICDF_FLAG_WRITEAUTH_ROTATED = 16
 
     ! --- app-crypto scopes -------------------------------------------------
     integer(c_int32_t), parameter :: KEYNUB_SCOPE_DEVICE = 0    !< this dongle only
-    integer(c_int32_t), parameter :: KEYNUB_SCOPE_DEVELOPER = 1 !< any dongle in the batch
+    integer(c_int32_t), parameter :: KEYNUB_SCOPE_DEVELOPER = 1 !< any dongle you issued
 
     ! --- buffer sizes ------------------------------------------------------
-    integer, parameter :: KEYNUB_SERIAL_LEN = 18
-    integer, parameter :: KEYNUB_BATCH_LEN = 63
+    integer, parameter :: KEYNUB_SERIAL_LEN = 14
+    !> Length of a personalisation date, "YYYY-MM-DD".
+    integer, parameter :: KEYNUB_DATE_LEN = 10
     integer, parameter :: KEYNUB_ERROR_LEN = 255
 
     ! =======================================================================
@@ -143,14 +147,14 @@ module keynub_licdongle
         end function licdf_get_info
 
         integer(c_int32_t) function licdf_verify_genuine_c(handle, genuine, serial, &
-                serial_size, batch, batch_size) bind(C, name="licdf_verify_genuine")
+                serial_size, prov_date, date_size) bind(C, name="licdf_verify_genuine")
             import :: c_int32_t, c_char
             integer(c_int32_t), value :: handle
             integer(c_int32_t), intent(out) :: genuine
             character(kind=c_char), intent(out) :: serial(*)
             integer(c_int32_t), value :: serial_size
-            character(kind=c_char), intent(out) :: batch(*)
-            integer(c_int32_t), value :: batch_size
+            character(kind=c_char), intent(out) :: prov_date(*)
+            integer(c_int32_t), value :: date_size
         end function licdf_verify_genuine_c
 
         integer(c_int32_t) function licdf_session_open(handle) &
@@ -172,6 +176,14 @@ module keynub_licdongle
             integer(c_int8_t), intent(in) :: der(*)
             integer(c_int32_t), value :: der_len
         end function licdf_write_auth
+
+        integer(c_int32_t) function licdf_write_auth_rotate(handle, der, der_len) &
+                bind(C, name="licdf_write_auth_rotate")
+            import :: c_int32_t, c_int8_t
+            integer(c_int32_t), value :: handle
+            integer(c_int8_t), intent(in) :: der(*)
+            integer(c_int32_t), value :: der_len
+        end function licdf_write_auth_rotate
 
         integer(c_int32_t) function licdf_record_count(handle, count) &
                 bind(C, name="licdf_record_count")
@@ -347,26 +359,27 @@ contains
 
     !> Proves authenticity and returns the identity from the certificate.
     !! Returns LICD_OK only when the dongle is genuine.
-    function keynub_verify_genuine(handle, genuine, serial, batch) result(status)
+    function keynub_verify_genuine(handle, genuine, serial, prov_date) result(status)
         integer(c_int32_t), intent(in) :: handle
         logical, intent(out) :: genuine
         character(len=KEYNUB_SERIAL_LEN), intent(out), optional :: serial
-        character(len=KEYNUB_BATCH_LEN), intent(out), optional :: batch
+        !> "YYYY-MM-DD", or blank when the dongle reports no date.
+        character(len=KEYNUB_DATE_LEN), intent(out), optional :: prov_date
         integer(c_int32_t) :: status
         integer(c_int32_t) :: is_genuine
         character(kind=c_char) :: serial_buf(KEYNUB_SERIAL_LEN + 1)
-        character(kind=c_char) :: batch_buf(KEYNUB_BATCH_LEN + 1)
+        character(kind=c_char) :: date_buf(KEYNUB_DATE_LEN + 1)
 
         genuine = .false.
         if (present(serial)) serial = ''
-        if (present(batch)) batch = ''
+        if (present(prov_date)) prov_date = ''
         status = licdf_verify_genuine_c(handle, is_genuine, serial_buf, &
-                                        int(size(serial_buf), c_int32_t), batch_buf, &
-                                        int(size(batch_buf), c_int32_t))
+                                        int(size(serial_buf), c_int32_t), date_buf, &
+                                        int(size(date_buf), c_int32_t))
         if (status /= LICD_OK) return
         genuine = (is_genuine /= 0)
         if (present(serial)) serial = keynub_f_string(serial_buf)
-        if (present(batch)) batch = keynub_f_string(batch_buf)
+        if (present(prov_date)) prov_date = keynub_f_string(date_buf)
     end function keynub_verify_genuine
 
     !> Size in bytes of a named record.

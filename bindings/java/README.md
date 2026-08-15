@@ -20,7 +20,7 @@ try (LicenseDongleContext ctx = new LicenseDongleContext()) {
         try (Session session = dongle.openSession()) {  // ECDH -> HKDF -> AES-256-GCM
             byte[] license = session.readRecord("license");         // read role
 
-            session.authorizeWrite(masterKeyDer);                   // vendor/provisioning tools
+            session.authorizeWrite(masterKeyDer);                   // licence-issuing tooling
             session.writeRecord("license", newBytes);
 
             byte[] blob = session.appEncrypt(Scope.DEVICE, plaintext);
@@ -41,20 +41,7 @@ try (LicenseDongleContext ctx = new LicenseDongleContext()) {
 JNA loads `keynub_licdongle` from `jna.library.path`, the JAR-embedded natives, or the system
 search path. Override with the system property `-Dkeynub.licdongle.library=<path-or-name>`. Linux
 additionally needs the shipped udev rule (a permission rule, not a driver). Per-platform natives
-are embedded into the published JAR by the build/CI.
-
-## Build & test (no hardware required)
-
-The suite runs the whole binding against the in-process software dongle
-(`keynub_licdongle_sim`, shipped as a prebuilt binary), driven through the same simulator entry points as the C,
-.NET, and Python suites. The test picks up `KEYNUB_SIM_PATH`, else the standard `native/` output.
-
-```
-see NATIVES.md for the prebuilt library
-cd bindings/java
-KEYNUB_SIM_PATH=../../build/libkeynub_licdongle_sim.so mvn test
-mvn package     # produces target/keynub-licdongle-1.0.0.jar
-```
+are embedded into the published JAR.
 
 ## Security
 

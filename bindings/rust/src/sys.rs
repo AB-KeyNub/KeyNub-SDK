@@ -1,10 +1,10 @@
-//! Raw declarations of the KeyNub C ABI (``include/licdongle.h`).
+//! Raw declarations of the KeyNub C ABI (`include/licdongle.h`).
 //!
 //! Hand-written rather than bindgen-generated: bindgen would add a build
 //! dependency on libclang for every downstream user of a licensing crate, to
 //! restate a frozen, twenty-eight-function ABI. The cost is that nothing checks
 //! these against the header at compile time, which is why every one of them is
-//! exercised by the crate's test suite.
+//! written out by hand.
 //!
 //! Nothing here is part of the public API; use the safe wrapper in `lib.rs`.
 
@@ -37,7 +37,7 @@ pub const LICD_E_CANCELLED: c_int = -18;
 pub const LICD_E_NOT_IMPLEMENTED: c_int = -19;
 pub const LICD_E_INTERNAL: c_int = -20;
 
-pub const LICD_SERIAL_HEX_LEN: usize = 18;
+pub const LICD_SERIAL_HEX_LEN: usize = 14;
 
 /// Opaque; only ever handled behind a pointer.
 #[repr(C)]
@@ -72,13 +72,13 @@ pub struct licd_info {
     pub data_free: u32,
     pub watchdog_reboot: c_int,
     pub isolated: c_int,
+    pub writeauth_rotated: c_int,
 }
 
 #[repr(C)]
 pub struct licd_genuine_result {
     pub genuine: c_int,
     pub serial: [c_char; LICD_SERIAL_HEX_LEN + 1],
-    pub batch: [c_char; 64],
     pub provisioned_date: [c_char; 11],
 }
 
@@ -87,7 +87,6 @@ impl Default for licd_genuine_result {
         Self {
             genuine: 0,
             serial: [0; LICD_SERIAL_HEX_LEN + 1],
-            batch: [0; 64],
             provisioned_date: [0; 11],
         }
     }
@@ -133,6 +132,7 @@ extern "C" {
     pub fn licd_session_open(dev: *mut licd_device) -> c_int;
     pub fn licd_session_close(dev: *mut licd_device) -> c_int;
     pub fn licd_write_auth(dev: *mut licd_device, der: *const u8, len: usize) -> c_int;
+    pub fn licd_write_auth_rotate(dev: *mut licd_device, der: *const u8, len: usize) -> c_int;
 
     pub fn licd_record_list(
         dev: *mut licd_device,

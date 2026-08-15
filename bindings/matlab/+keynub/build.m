@@ -13,24 +13,18 @@ function outFile = build(buildDir, varargin)
 %   the MATLAB path. A release ships this prebuilt, so customers do not need a
 %   compiler; you only need this when building the SDK from source.
 %
-%   keynub.build(BUILDDIR, 'Sim', true) additionally compiles the in-process
-%   device simulator, so the binding's test suite can exercise the whole protocol
-%   stack with no hardware. Never ship a gateway built that way: it exposes test
-%   entry points the shipping library deliberately does not have.
-%
 %   Static linking is deliberate: it makes the gateway one self-contained file.
 %   A MEX file that depended on keynub_licdongle.dll would need that DLL on the
 %   system PATH, because Windows resolves a MEX file's dependencies against the
 %   MATLAB executable's directory and not the MEX file's own.
 %
 %   Options:
-%     'Sim'     (false)  compile the device simulator + test entry points
 %     'Verbose' (false)  pass -v to mex
 %
 %   See also keynub.Context, mex.
 
-narginchk(1, 5);
-opts = struct('Sim', false, 'Verbose', false);
+narginchk(1, 3);
+opts = struct('Verbose', false);
 for i = 1:2:numel(varargin)
     name = varargin{i};
     if ~isfield(opts, name)
@@ -51,14 +45,6 @@ end
 sources = {fullfile(matlabDir, 'src', 'licd_mex.c')};
 includes = {['-I' fullfile(sdkDir, 'core', 'include')]};
 defines = {};
-if opts.Sim
-    sources = [sources, ...
-        {fullfile(sdkDir, 'tests', 'sim_device.c'), fullfile(sdkDir, 'tests', 'sim_entry.c')}];
-    includes = [includes, {['-I' fullfile(sdkDir, 'core')], ...
-                           ['-I' fullfile(sdkDir, 'core', 'src')], ...
-                           ['-I' fullfile(sdkDir, 'tests')]}];
-    defines = {'-DLICD_MEX_ENABLE_SIM'};
-end
 
 % --- static libraries, in link order --------------------------------------
 if ispc
@@ -98,10 +84,6 @@ mex(args{:});
 outFile = fullfile(outDir, ['licd_mex.' mexext]);
 addpath(outDir);
 fprintf('Built %s\n', outFile);
-if opts.Sim
-    fprintf(['NOTE: this gateway includes the device simulator and its test entry ' ...
-             'points.\n      Do not ship it.\n']);
-end
 end
 
 function path = findLibrary(buildDir, pattern)

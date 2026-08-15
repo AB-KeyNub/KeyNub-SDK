@@ -39,13 +39,14 @@ namespace KeyNub.LicenseDongle
                 info.data_capacity,
                 info.data_free,
                 info.watchdog_reboot != 0,
-                info.isolated != 0);
+                info.isolated != 0,
+                info.writeauth_rotated != 0);
         }
 
-        /// <summary>Reads the dongle serial as hex (e.g. <c>0123456789ABCDEFEE</c>).</summary>
+        /// <summary>Reads the dongle serial as hex (e.g. <c>04A1B2C3D4E5F6</c>).</summary>
         public string GetSerial()
         {
-            var buf = new byte[19]; // LICD_SERIAL_HEX_LEN + 1
+            var buf = new byte[15]; // LICD_SERIAL_HEX_LEN + 1
             int rc = NativeMethods.licd_get_serial(_handle, buf, new UIntPtr((uint)buf.Length));
             Errors.Check(rc, ContextHandle, "licd_get_serial");
             return Utf8.FromFixedBuffer(buf);
@@ -62,7 +63,7 @@ namespace KeyNub.LicenseDongle
             int rc = NativeMethods.licd_verify_genuine(_handle, out LicdGenuineResultNative res);
             Errors.Check(rc, ContextHandle, "licd_verify_genuine");
             return new GenuineResult(res.genuine != 0, res.serial ?? string.Empty,
-                res.batch ?? string.Empty, res.provisioned_date ?? string.Empty);
+                res.provisioned_date ?? string.Empty);
         }
 
         /// <summary>

@@ -64,18 +64,19 @@
        78  LICDF-FLAG-PROVISIONED       VALUE 2.
        78  LICDF-FLAG-WATCHDOG-REBOOT   VALUE 4.
        78  LICDF-FLAG-ISOLATED          VALUE 8.
+       78  LICDF-FLAG-WRITEAUTH-ROTATED VALUE 16.
 
       *>--- app-crypto scopes -----------------------------------------
       *> DEVICE: only this one physical dongle can decrypt.
-      *> DEVELOPER: any dongle from the same batch, so one encrypted file
+      *> DEVELOPER: any dongle you have issued, so one encrypted file
       *> ships to every customer.
        78  KEYNUB-SCOPE-DEVICE          VALUE 0.
        78  KEYNUB-SCOPE-DEVELOPER       VALUE 1.
 
       *>--- buffer sizes ----------------------------------------------
-       78  KEYNUB-SERIAL-SIZE           VALUE 19.
+       78  KEYNUB-SERIAL-SIZE           VALUE 15.
+       78  KEYNUB-DATE-SIZE             VALUE 11.
        78  KEYNUB-PATH-SIZE             VALUE 512.
-       78  KEYNUB-BATCH-SIZE            VALUE 64.
        78  KEYNUB-ERROR-SIZE            VALUE 256.
 
       *>--- working storage for the common calls -----------------------
@@ -88,8 +89,9 @@
        01  KN-LENGTH                    PIC S9(9) COMP-5 VALUE 0.
        01  KN-NEEDED                    PIC S9(9) COMP-5 VALUE 0.
        01  KN-VALUE                     PIC S9(9) COMP-5 VALUE 0.
-       01  KN-SERIAL                    PIC X(19) VALUE SPACES.
-       01  KN-BATCH                     PIC X(64) VALUE SPACES.
+       01  KN-SERIAL                    PIC X(15) VALUE SPACES.
+      *> "YYYY-MM-DD" when the dongle reports a personalisation date.
+       01  KN-PROV-DATE                 PIC X(11) VALUE SPACES.
        01  KN-ERROR-TEXT                PIC X(256) VALUE SPACES.
 
       *> licdf-get-info out-parameters, in call order.

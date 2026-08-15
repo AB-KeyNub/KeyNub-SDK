@@ -80,6 +80,11 @@ begin
         Halt(2);
       end;
       WriteLn('genuine: yes, cert serial ', StrPas(PAnsiChar(@genuine.serial[0])));
+      { Informational only. Empty on a dongle that reports no date. }
+      if genuine.provisioned_date[0] <> #0 then
+        WriteLn('personalised: ', StrPas(PAnsiChar(@genuine.provisioned_date[0])))
+      else
+        WriteLn('personalised: (not reported)');
 
       if licd_session_open(dev) <> LICD_OK then
       begin

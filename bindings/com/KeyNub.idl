@@ -41,7 +41,7 @@ typedef enum KeyNubScope
 {
     [helpstring("Only this one physical dongle can decrypt it.")]
     keynubScopeDevice = 0,
-    [helpstring("Any dongle from the same developer batch can decrypt it.")]
+    [helpstring("Any dongle issued by the same developer can decrypt it.")]
     keynubScopeDeveloper = 1
 } KeyNubScope;
 
@@ -59,7 +59,9 @@ typedef enum KeyNubFlag
     [helpstring("The last boot followed a watchdog reset, not a clean power-up.")]
     keynubFlagWatchdogReboot = 4,
     [helpstring("The dongle confirmed its USB and parsing code is fenced off from keys and storage.")]
-    keynubFlagIsolated = 8
+    keynubFlagIsolated = 8,
+    [helpstring("The write-auth key has been rotated away from the factory one. That key is public, so a dongle without this flag takes writes from anyone holding it.")]
+    keynubFlagWriteAuthRotated = 16
 } KeyNubFlag;
 
 [
@@ -162,25 +164,27 @@ interface IDongle : IDispatch
 
     [id(15), helpstring("Proves authenticity by certificate chain plus a live "
         "challenge-response, and returns the certificate serial. Raises unless the "
-        "dongle is genuine. Also fills in Batch.")]
+        "dongle is genuine.")]
     HRESULT VerifyGenuine([out, retval] BSTR* certificateSerial);
-
-    [propget, id(16), helpstring("Batch name from the last successful VerifyGenuine; "
-        "empty before then.")]
-    HRESULT Batch([out, retval] BSTR* value);
 
     // --- session -------------------------------------------------------------
 
-    [id(17), helpstring("Opens the encrypted session that records, counters and "
+    [id(16), helpstring("Opens the encrypted session that records, counters and "
         "app-crypto all require.")]
     HRESULT SessionOpen();
 
-    [id(18), helpstring("Closes the encrypted session.")]
+    [id(17), helpstring("Closes the encrypted session.")]
     HRESULT SessionClose();
 
-    [id(19), helpstring("Elevates to the write role with the developer master key. "
-        "Vendor provisioning tools only — never ship this key to a customer.")]
+    [id(18), helpstring("Elevates to the write role with the developer master key. "
+        "Belongs in your licence-issuing tooling, never in the application your "
+        "users run.")]
     HRESULT AuthorizeWrite([in] SAFEARRAY(unsigned char) der);
+
+    [id(19), helpstring("Replaces the dongle's write-auth key with your own. "
+        "Call AuthorizeWrite with the current key first; from the next session "
+        "on, only the new key elevates.")]
+    HRESULT RotateWriteKey([in] SAFEARRAY(unsigned char) der);
 
     // --- records -------------------------------------------------------------
 
@@ -221,7 +225,7 @@ interface IDongle : IDispatch
 
     // --- app-data envelopes: the pair to build a real licence check on --------
 
-    [id(29), helpstring("Encrypts data to this dongle or to your whole batch. Run "
+    [id(29), helpstring("Encrypts data to this dongle or to all of your dongles. Run "
         "once, when you issue a licence, with your developer dongle.")]
     HRESULT AppEncrypt([in] KeyNubScope scope,
                        [in] SAFEARRAY(unsigned char) plaintext,
@@ -243,8 +247,13 @@ interface IDongle : IDispatch
         "Err.Description already carries this; the property is for logging.")]
     HRESULT LastError([out, retval] BSTR* value);
 
-    [propget, id(33), helpstring("SDK version as \"major.minor.patch\".")]
+    [propget, id(33), helpstring("Personalisation date of the dongle VerifyGenuine "
+        "last confirmed, as \"YYYY-MM-DD\", or empty. Informational.")]
+    HRESULT ProvisionedDate([out, retval] BSTR* value);
+
+    [propget, id(34), helpstring("SDK version as \"major.minor.patch\".")]
     HRESULT Version([out, retval] BSTR* value);
+
 }
 
 [

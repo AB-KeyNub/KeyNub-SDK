@@ -161,19 +161,17 @@
            END-IF
 
            MOVE SPACES TO KN-SERIAL
-           MOVE SPACES TO KN-BATCH
            CALL "licdf_verify_genuine" USING BY VALUE KN-HANDLE
                                             BY REFERENCE KN-GENUINE
                                             BY REFERENCE KN-SERIAL
                                             BY VALUE KEYNUB-SERIAL-SIZE
-                                            BY REFERENCE KN-BATCH
-                                            BY VALUE KEYNUB-BATCH-SIZE
+                                            BY REFERENCE KN-PROV-DATE
+                                            BY VALUE KEYNUB-DATE-SIZE
                 RETURNING KN-STATUS
            IF KN-STATUS = LICD-OK
                MOVE KN-GENUINE TO WS-N1
                DISPLAY "Genuine: " FUNCTION TRIM(WS-N1) " (serial "
-                       FUNCTION TRIM(KN-SERIAL) ", batch "
-                       FUNCTION TRIM(KN-BATCH) ")"
+                       FUNCTION TRIM(KN-SERIAL) ")"
            ELSE
                MOVE "verify_genuine" TO WS-REC-NAME
                PERFORM SHOW-FAILURE

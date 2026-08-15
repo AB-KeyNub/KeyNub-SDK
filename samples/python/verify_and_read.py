@@ -12,7 +12,14 @@ the native discoverable via KEYNUB_LICDONGLE_LIBRARY):
 
 import sys
 
-import keynub_licdongle as kn
+try:
+    import keynub_licdongle as kn
+except ModuleNotFoundError:
+    # Running from a checkout, where the package is not installed.
+    import os
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "..", "..", "bindings", "python"))
+    import keynub_licdongle as kn
 
 
 def main() -> int:

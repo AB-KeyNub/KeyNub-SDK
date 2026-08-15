@@ -27,11 +27,11 @@ module KeyNubLicDongle
   # Who can decrypt data produced by Session#app_encrypt.
   module Scope
     DEVICE = 0    # only this one physical dongle
-    DEVELOPER = 1 # any dongle from the same developer batch
+    DEVELOPER = 1 # any dongle issued by the same developer
     ALL = [DEVICE, DEVELOPER].freeze
   end
 
-  SERIAL_BUFFER = 19 # LICD_SERIAL_HEX_LEN + 1
+  SERIAL_BUFFER = 15 # LICD_SERIAL_HEX_LEN + 1
   private_constant :SERIAL_BUFFER
 
   # The library context: the entry point for finding and opening dongles.
@@ -183,7 +183,7 @@ module KeyNubLicDongle
     # a field hang leaves behind, and a power cycle clears it, so log it.
     #
     # +:isolated+ reports that the dongle confirmed at boot that its USB and parsing code is fenced off
-    # from keys and storage. The software simulator reports false.
+    # from keys and storage. Anything that is not a dongle reports false.
     def info
       raw = Types::Info.malloc(Fiddle::RUBY_FREE)
       @context.check(Native.call(:licd_get_info, handle, raw), 'licd_get_info')
@@ -195,7 +195,8 @@ module KeyNubLicDongle
         data_capacity: raw.data_capacity,
         data_free: raw.data_free,
         watchdog_reboot: !raw.watchdog_reboot.zero?,
-        isolated: !raw.isolated.zero?
+        isolated: !raw.isolated.zero?,
+        writeauth_rotated: !raw.writeauth_rotated.zero?
       }
     end
 
@@ -215,7 +216,6 @@ module KeyNubLicDongle
       {
         genuine: !raw.genuine.zero?,
         serial: Native.read_fixed_string(raw.serial.pack('c*')),
-        batch: Native.read_fixed_string(raw.batch.pack('c*')),
         provisioned_date: Native.read_fixed_string(raw.provisioned_date.pack('c*'))
       }
     end
@@ -265,10 +265,20 @@ module KeyNubLicDongle
     end
 
     # Elevates to the write role with the developer master key (a DER EC private
-    # key). Vendor tooling only — never ship that key in an application.
+    # key). This belongs in your licence-issuing tooling; never ship
+    # that key in the application your users run.
     def authorize_write(master_key_der)
       bytes = master_key_der.to_s.b
       check(Native.call(:licd_write_auth, device, bytes, bytes.bytesize), 'licd_write_auth')
+    end
+
+    # Replaces the dongle's write-auth key with your own (a DER EC private key).
+    # Call authorize_write with the current key first. From the next session on,
+    # only the new key elevates.
+    def rotate_write_key(new_key_der)
+      bytes = new_key_der.to_s.b
+      check(Native.call(:licd_write_auth_rotate, device, bytes, bytes.bytesize),
+            'licd_write_auth_rotate')
     end
 
     # Records stored on the dongle, as an array of {name:, size:} hashes.
