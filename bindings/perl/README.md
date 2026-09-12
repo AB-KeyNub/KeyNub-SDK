@@ -21,7 +21,7 @@ cpanm FFI::Platypus
 ## It uses the flat API, not the core ABI
 
 Unlike the other scripting bindings, this one calls
-[`keynub_licdongle_flat`](../flat/README.md) — the same surface COBOL and Fortran
+[`keynub_licdongle_flat`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/flat/README.md) — the same surface COBOL and Fortran
 use. Perl has no way to describe a C struct layout that computes its own padding,
 so a core-ABI binding would have to hand-write `unpack` templates with explicit
 offsets, and a wrong offset there reads a neighbouring field: a plausible wrong
@@ -48,7 +48,7 @@ Set `KEYNUB_LICDONGLE_FLAT_LIBRARY` to point at a specific library.
 - `close` is called from `DESTROY` as well, and the destructor cannot die. The
   library holds 32 handles at once, so a loop that forgets will notice.
 
-> Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > before writing the check. `exit unless $dongle->is_genuine` is one line to
 > delete, and Perl ships as source — obfuscation and `pp` only raise the effort.
 > What cannot be deleted is data the program needs and only the dongle can
@@ -61,3 +61,10 @@ everything else, but on an *engineering*-dongle language list Perl reads as padd
 to a technical evaluator. It is here because
 it was cheap once the toolchain was in place; see
 the binding list.
+
+## Links
+
+- [KeyNub License Dongle for Perl](https://www.keynub.com/developers/perl/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

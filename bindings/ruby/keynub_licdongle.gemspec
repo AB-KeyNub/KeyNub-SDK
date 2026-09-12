@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   # A built gem carries the native library in vendor/, which is under
   # BINARY-LICENSE.txt rather than Apache-2.0.
   spec.licenses = ['Apache-2.0', 'LicenseRef-KeyNub-Binary']
-  spec.homepage = 'https://github.com/AB-KeyNub/KeyNub-SDK'
+  spec.homepage = 'https://www.keynub.com/developers/ruby/'
   spec.required_ruby_version = '>= 3.0'
 
   spec.files = Dir['lib/**/*.rb'] + Dir['vendor/*'] +
@@ -26,7 +26,10 @@ Gem::Specification.new do |spec|
   # No runtime dependencies, deliberately. Fiddle is stdlib; a licensing gem is
   # the last place a customer wants a dependency that could be substituted.
   spec.metadata = {
-    'source_code_uri' => spec.homepage,
+    'homepage_uri' => spec.homepage,
+    'source_code_uri' => 'https://github.com/AB-KeyNub/KeyNub-SDK',
+    'documentation_uri' => 'https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/ruby/README.md',
+    'bug_tracker_uri' => 'https://github.com/AB-KeyNub/KeyNub-SDK/issues',
     'rubygems_mfa_required' => 'true'
   }
 end

@@ -16,7 +16,7 @@ let data = session.app_decrypt(&blob)?;    // <- build your licence check on thi
 # Ok::<(), keynub_licdongle::Error>(())
 ```
 
-> Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > before writing the check. `if dongle.is_genuine()` compiles to a conditional
 > jump, and patching one of those in a release binary is a beginner exercise —
 > Rust's guarantees stop at the machine code and were never about an adversary
@@ -79,4 +79,11 @@ crate one call at a time.
 
 Apache-2.0, like the rest of the SDK. The native library statically links
 Mbed TLS (Apache-2.0 elected) and hidapi (BSD-style elected) — see
-[`../../THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt).
+[`../../THIRD-PARTY-NOTICES.txt`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/THIRD-PARTY-NOTICES.txt).
+
+## Links
+
+- [KeyNub License Dongle for Rust](https://www.keynub.com/developers/rust/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

@@ -7,7 +7,7 @@ use FFI::Platypus 2.00;
 use FFI::Platypus::Buffer qw(scalar_to_buffer);
 use Exporter qw(import);
 
-our $VERSION = '1.1.0';
+our $VERSION = '1.1.1';
 
 =head1 NAME
 

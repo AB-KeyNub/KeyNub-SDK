@@ -4,11 +4,11 @@ version = 4
 
 [[package]]
 name = "keynub-licdongle"
-version = "1.1.0"
+version = "1.1.1"
 
 [[package]]
 name = "keynub-verify-and-read"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "keynub-licdongle",
 ]

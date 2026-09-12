@@ -37,7 +37,7 @@ WriteMakefile(
     META_MERGE => {
         'meta-spec' => { version => 2 },
         resources   => {
-            homepage   => 'https://www.keynub.com',
+            homepage   => 'https://www.keynub.com/developers/perl/',
             repository => {
                 type => 'git',
                 url  => 'https://github.com/AB-KeyNub/KeyNub-SDK.git',

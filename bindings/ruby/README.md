@@ -17,7 +17,7 @@ KeyNubLicDongle::Context.open do |ctx|
 end
 ```
 
-> Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > first. `exit unless licensed?` is one line to delete, and Ruby ships as source —
 > even a `.rbc` or an obfuscator only slows that down. What cannot be deleted is
 > data the program needs and only the dongle can decrypt.
@@ -31,7 +31,7 @@ replace with a stub of their own. Nothing to install, nothing to build, nothing 
 the load path but Ruby itself.
 
 The cost is that the C signatures live in
-[`lib/keynub_licdongle/native.rb`](lib/keynub_licdongle/native.rb) as data no
+[`lib/keynub_licdongle/native.rb`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/ruby/lib/keynub_licdongle/native.rb) as data no
 compiler verifies — which is why every one of them is written out by hand. Struct
 layouts go through `Fiddle::Importer`, so the padding is computed rather than
 hand-maintained; a hand-written offset that is wrong reads a neighbouring field
@@ -84,5 +84,12 @@ The binding looks for the core library, in order:
 
 ## License
 
-Apache-2.0, like the rest of the SDK — [`../../LICENSE`](../../LICENSE),
-[`../../THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt).
+Apache-2.0, like the rest of the SDK — [`../../LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE),
+[`../../THIRD-PARTY-NOTICES.txt`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/THIRD-PARTY-NOTICES.txt).
+
+## Links
+
+- [KeyNub License Dongle for Ruby](https://www.keynub.com/developers/ruby/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

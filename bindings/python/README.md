@@ -90,7 +90,7 @@ steps.
 
 ## Security
 
-Read [`docs/integration-security.md`](../../docs/integration-security.md) before
+Read [`docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md) before
 writing your licensing check. `verify_genuine()` proves a genuine dongle is attached;
 it cannot stop an attacker from patching your application or pointing
 `KEYNUB_LICDONGLE_LIBRARY` at a fake library. Branch on a boolean and you will be
@@ -99,7 +99,14 @@ application actually needs.
 
 ## License
 
-Apache-2.0 — see [`LICENSE`](../../LICENSE), [`NOTICE`](../../NOTICE), and
-[`THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt) (all three ship inside the
+Apache-2.0 — see [`LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE), [`NOTICE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NOTICE), and
+[`THIRD-PARTY-NOTICES.txt`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/THIRD-PARTY-NOTICES.txt) (all three ship inside the
 wheel, under `.dist-info/licenses/`). The bundled native statically links Mbed TLS
 (Apache-2.0 elected) and hidapi (BSD-style elected); no GPL terms apply.
+
+## Links
+
+- [KeyNub License Dongle for Python](https://www.keynub.com/developers/python/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

@@ -19,14 +19,14 @@
   <!-- NuGet package metadata -->
   <PropertyGroup>
     <PackageId>KeyNub.LicenseDongle</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Authors>KeyNub</Authors>
     <Company>KeyNub</Company>
     <Product>KeyNub License Dongle SDK</Product>
     <Description>Managed .NET binding for the KeyNub USB-C license dongle: verify authenticity, open an encrypted session, read/write license records, monotonic counters, and app-data envelope encryption. Driverless on Windows, Linux, and macOS. Wraps the native keynub_licdongle core (no protocol or crypto logic in managed code).</Description>
     <PackageTags>keynub;license;dongle;usb;hid;licensing;security;hardware;copy-protection</PackageTags>
     <Copyright>Copyright (c) KeyNub</Copyright>
-    <PackageProjectUrl>https://github.com/AB-KeyNub/KeyNub-SDK</PackageProjectUrl>
+    <PackageProjectUrl>https://www.keynub.com/developers/dotnet-csharp/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AB-KeyNub/KeyNub-SDK.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>

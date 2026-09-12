@@ -24,7 +24,7 @@ using dongle = ctx.open();
 using session = dongle.openSession();
 ```
 
-> **Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> **Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > first.** `if (isLicensed())` is one line to delete, and in an Electron app the
 > attacker has your source: `app.asar` is a container, not encryption, and
 > unpacking it takes one command. What cannot be deleted is data the application
@@ -41,7 +41,7 @@ rebuild per Electron ABI**. A native addon has to be recompiled for every Electr
 version your app upgrades to; an FFI binding does not.
 
 The trade is that the C signatures live in
-[`lib/native.js`](lib/native.js) as strings that no compiler checks, which is
+[`lib/native.js`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/nodejs/lib/native.js) as strings that no compiler checks, which is
 exactly why every single one of them is written out by hand against a software
 dongle.
 
@@ -100,8 +100,15 @@ asar archive.
 
 ## License
 
-Apache-2.0, like the rest of the SDK — [`LICENSE`](../../LICENSE),
-[`NOTICE`](../../NOTICE),
-[`THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt). koffi is
+Apache-2.0, like the rest of the SDK — [`LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE),
+[`NOTICE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NOTICE),
+[`THIRD-PARTY-NOTICES.txt`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/THIRD-PARTY-NOTICES.txt). koffi is
 MIT; the native library statically links Mbed TLS (Apache-2.0 elected) and hidapi
 (BSD-style elected).
+
+## Links
+
+- [KeyNub License Dongle for Node.js and Electron](https://www.keynub.com/developers/nodejs/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

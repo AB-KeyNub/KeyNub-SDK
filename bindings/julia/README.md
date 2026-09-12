@@ -51,7 +51,14 @@ The path is resolved once, when the module is first loaded.
   returning `false` cancels. An exception inside the callback cancels the transfer
   rather than unwinding through the C frames, which would strand the device.
 
-> Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > first. `if is_genuine(dongle)` is one line to delete, and Julia ships as source
 > — a sysimage only raises the effort.
 
+
+## Links
+
+- [KeyNub License Dongle for Julia](https://www.keynub.com/developers/julia/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

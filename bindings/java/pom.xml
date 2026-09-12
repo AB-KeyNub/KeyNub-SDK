@@ -6,12 +6,12 @@
 
   <groupId>com.keynub</groupId>
   <artifactId>keynub-licdongle</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
   <packaging>jar</packaging>
 
   <name>KeyNub License Dongle SDK</name>
   <description>Java binding for the KeyNub USB-C license dongle (JNA; driverless on Windows/Linux/macOS).</description>
-  <url>https://github.com/AB-KeyNub/KeyNub-SDK</url>
+  <url>https://www.keynub.com/developers/java/</url>
 
   <licenses>
     <license>
@@ -23,7 +23,7 @@
 
   <organization>
     <name>KeyNub</name>
-    <url>https://github.com/AB-KeyNub/KeyNub-SDK</url>
+    <url>https://www.keynub.com</url>
   </organization>
 
   <developers>

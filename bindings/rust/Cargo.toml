@@ -1,11 +1,12 @@
 [package]
 name = "keynub-licdongle"
-version = "1.1.0"
+version = "1.1.1"
 edition = "2021"
 rust-version = "1.70"
 description = "Rust binding for the KeyNub USB-C license dongle"
 license = "Apache-2.0"
 repository = "https://github.com/AB-KeyNub/KeyNub-SDK"
+homepage = "https://www.keynub.com/developers/rust/"
 keywords = ["license", "licensing", "dongle", "usb", "copy-protection"]
 categories = ["api-bindings", "hardware-support"]
 readme = "README.md"

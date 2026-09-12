@@ -12,7 +12,7 @@
 # native keynub_licdongle library is loaded at run time, is not bundled here, and
 # its terms are stated separately in BINARY-LICENSE.txt.
 
-version       = "1.1.0"
+version       = "1.1.1"
 author        = "KeyNub"
 description   = "Nim binding for the KeyNub USB-C license dongle (driverless on Windows, Linux and macOS)"
 license       = "Apache-2.0"

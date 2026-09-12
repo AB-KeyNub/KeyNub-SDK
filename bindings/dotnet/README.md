@@ -48,7 +48,7 @@ byte[] plain  = session.AppDecrypt(sealed);
 
 ## Security
 
-Read [`docs/integration-security.md`](../../docs/integration-security.md) before
+Read [`docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md) before
 writing your licensing check. `VerifyGenuine()` proves a genuine dongle is attached;
 it cannot stop an attacker from patching your application or substituting a fake
 native library. Branch on a boolean and you will be bypassed — put dongle-derived
@@ -56,7 +56,14 @@ data (`AppEncrypt`/`AppDecrypt`) on the path your application actually needs.
 
 ## License
 
-Apache-2.0 — see [`LICENSE`](../../LICENSE), [`NOTICE`](../../NOTICE), and
-[`THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt) (all three ship inside the
+Apache-2.0 — see [`LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE), [`NOTICE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NOTICE), and
+[`THIRD-PARTY-NOTICES.txt`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/THIRD-PARTY-NOTICES.txt) (all three ship inside the
 NuGet package). The bundled natives statically link Mbed TLS (Apache-2.0 elected) and
 hidapi (BSD-style elected); no GPL terms apply.
+
+## Links
+
+- [KeyNub License Dongle for .NET](https://www.keynub.com/developers/dotnet-csharp/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

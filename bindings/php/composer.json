@@ -3,7 +3,7 @@
   "description": "PHP binding for the KeyNub USB-C license dongle (FFI; driverless on Windows, Linux and macOS).",
   "type": "library",
   "keywords": ["keynub", "license", "dongle", "usb", "licensing", "copy-protection"],
-  "homepage": "https://www.keynub.com",
+  "homepage": "https://www.keynub.com/developers/php/",
   "license": "Apache-2.0",
   "authors": [
     {
@@ -12,6 +12,7 @@
     }
   ],
   "support": {
+    "docs": "https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/php/README.md",
     "issues": "https://github.com/AB-KeyNub/KeyNub-SDK/issues",
     "source": "https://github.com/AB-KeyNub/KeyNub-SDK"
   },

@@ -1,6 +1,6 @@
 # Integrating KeyNub securely
 
-**Document version 1.1 · Applies to firmware 1.1.x, protocol version 1, SDK 1.1.0**
+**Document version 1.1 · Applies to firmware 1.1.x, protocol version 1, SDK 1.1.1**
 
 **Read this before you write your licensing check.** The dongle is strong hardware,
 but hardware cannot fix a weak integration — and the most common integration is a

@@ -26,7 +26,7 @@ add-on, and it is also the case where the check is most exposed, because the
 script usually ships as readable source alongside the application.
 
 Which is exactly why the answer is not a boolean. See
-[`../../docs/integration-security.md`](../../docs/integration-security.md):
+[`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md):
 `if not licensed then os.exit() end` is one line of a file the customer can edit.
 Put what the add-on needs through `appEncrypt`/`appDecrypt` instead.
 
@@ -45,3 +45,10 @@ Put what the add-on needs through `appEncrypt`/`appDecrypt` instead.
   machine-code trampoline per `ffi.cast` of a function and they are a finite
   resource, so a long-running host that forgot would eventually run out.
 
+
+## Links
+
+- [KeyNub License Dongle for Lua](https://www.keynub.com/developers/lua/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

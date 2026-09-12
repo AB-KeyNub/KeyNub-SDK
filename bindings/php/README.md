@@ -34,7 +34,7 @@ in a binding that restates the ABI in another notation.
   `false` cancels. An exception from it is held and re-thrown once the SDK has
   unwound its own transfer.
 
-> Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > first. `if (!$licensed) die();` is one line to delete, and PHP ships as source.
 > What cannot be deleted is data the application needs and only the dongle can
 > decrypt — a rate table, a licensed data set, the parameters of a calculation.
@@ -55,3 +55,10 @@ in a binding that restates the ABI in another notation.
 
 Static `FFI::new()` is also deprecated as of PHP 8.3; allocate through the
 instance.
+
+## Links
+
+- [KeyNub License Dongle for PHP](https://www.keynub.com/developers/php/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

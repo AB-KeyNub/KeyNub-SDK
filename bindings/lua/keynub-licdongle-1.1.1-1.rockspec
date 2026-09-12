@@ -1,7 +1,7 @@
 -- LuaRocks manifest.
 --
 -- The rockspec filename carries the version and the rockspec revision
--- (1.1.0-1): LuaRocks derives both from it, so a new SDK version means a new
+-- (1.1.1-1): LuaRocks derives both from it, so a new SDK version means a new
 -- file, not an edited one. The trailing -1 increments only when the packaging
 -- changes without the SDK changing.
 --
@@ -14,11 +14,11 @@
 -- search path -- and its terms are stated separately in BINARY-LICENSE.txt.
 
 package = "keynub-licdongle"
-version = "1.1.0-1"
+version = "1.1.1-1"
 
 source = {
    url = "git+https://github.com/AB-KeyNub/KeyNub-SDK.git",
-   tag = "v1.1.0",
+   tag = "v1.1.1",
    dir = "KeyNub-SDK/bindings/lua",
 }
 
@@ -33,7 +33,7 @@ description = {
       at run time and is not part of this rock; install the SDK archive for the
       platform first.
    ]],
-   homepage = "https://www.keynub.com",
+   homepage = "https://www.keynub.com/developers/lua/",
    license  = "Apache-2.0",
 }
 

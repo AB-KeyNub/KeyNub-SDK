@@ -39,7 +39,7 @@ pointed at a specific library without the source knowing about it.
   directly, and `ctx.rawHandle()` goes the other way, so this can be introduced
   into existing `importc` code a call at a time.
 
-> Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > before writing the check. `if not dongle.isGenuine(): quit()` compiles to a
 > conditional jump, and patching one of those in a release binary is a beginner
 > exercise. Route something the program needs through `appEncrypt`/`appDecrypt`,
@@ -57,3 +57,10 @@ A note on obtaining the compiler: Windows Defender has flagged Nim's release
 archive as `Trojan:Win32/Vigorf.A`, a long-standing false positive on its
 binaries. Verify the download against nim-lang.org's own checksum before
 extracting; do not disable the scanner to get past it.
+
+## Links
+
+- [KeyNub License Dongle for Nim](https://www.keynub.com/developers/nim/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

@@ -2,8 +2,7 @@
 //
 //   KEYNUB_LIB_DIR   directory holding the library (required unless it is already
 //                    on the linker's default search path)
-//   KEYNUB_LIB_NAME  override the library name; defaults to keynub_licdongle, or
-//                    keynub_licdongle_sim with the `simulator` feature
+//   KEYNUB_LIB_NAME  override the library name; defaults to keynub_licdongle
 //   KEYNUB_STATIC    set to 1 to link the static library instead of the shared one
 //
 // A build script rather than a vendored copy of the C sources: the core is built
@@ -35,12 +34,7 @@ fn main() {
         ),
     }
 
-    let default_name = if cfg!(feature = "simulator") {
-        "keynub_licdongle_sim"
-    } else {
-        "keynub_licdongle"
-    };
-    let name = env::var("KEYNUB_LIB_NAME").unwrap_or_else(|_| default_name.to_string());
+    let name = env::var("KEYNUB_LIB_NAME").unwrap_or_else(|_| "keynub_licdongle".to_string());
 
     let static_link = env::var("KEYNUB_STATIC").map(|v| v == "1").unwrap_or(false);
     if static_link {

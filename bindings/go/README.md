@@ -16,7 +16,7 @@ defer session.Close()
 data, err := session.AppDecrypt(blob) // <- build your licence check on this
 ```
 
-> Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
+> Read [`../../docs/integration-security.md`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/docs/integration-security.md)
 > first. `if licensed { }` is one line to delete from a Go binary too. Route
 > something the program needs through `AppEncrypt`/`AppDecrypt` instead.
 
@@ -76,5 +76,12 @@ cancelled, and it is re-raised in your goroutine once C is off the stack.
 ## License
 
 Apache-2.0, like the rest of the SDK — see
-[`../../LICENSE`](../../LICENSE) and
-[`../../THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt).
+[`../../LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE) and
+[`../../THIRD-PARTY-NOTICES.txt`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/THIRD-PARTY-NOTICES.txt).
+
+## Links
+
+- [KeyNub License Dongle for Go](https://www.keynub.com/developers/go/): the product, and how to
+  order one
+- [Source, samples and issue tracker](https://github.com/AB-KeyNub/KeyNub-SDK) on GitHub
+- [Native library for your platform](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)

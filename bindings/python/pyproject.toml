@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "keynub-licdongle"
-version = "1.1.0"
+version = "1.1.1"
 description = "Python binding for the KeyNub USB-C license dongle (ctypes; driverless on Windows/Linux/macOS)."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -34,8 +34,10 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/AB-KeyNub/KeyNub-SDK"
-Repository = "https://github.com/AB-KeyNub/KeyNub-SDK.git"
+Homepage = "https://www.keynub.com/developers/python/"
+Documentation = "https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/python/README.md"
+Repository = "https://github.com/AB-KeyNub/KeyNub-SDK"
+Issues = "https://github.com/AB-KeyNub/KeyNub-SDK/issues"
 
 # `pip install keynub-licdongle` also provides the licd-tool CLI (see cli.py).
 [project.scripts]
