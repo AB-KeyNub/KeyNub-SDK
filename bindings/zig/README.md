@@ -26,6 +26,26 @@ to catch.
 That is worth knowing when the ABI next changes — this binding tells you
 immediately, which makes it a useful canary for the others.
 
+## Installing
+
+The repository is a Zig package: its root `build.zig.zon` exposes this binding
+as the module `keynub_licdongle`, compiled against the real header, and links
+the prebuilt native library for your target from `natives/`.
+
+```
+zig fetch --save git+https://github.com/AB-KeyNub/KeyNub-SDK#v1.1.1
+```
+
+```zig
+// build.zig
+const keynub = b.dependency("keynub_licdongle", .{ .target = target, .optimize = optimize });
+exe.root_module.addImport("keynub_licdongle", keynub.module("keynub_licdongle"));
+```
+
+The executable still loads the shared library at start-up, by name, so put it
+next to the executable or on the system search path; `NATIVES.md` in the
+repository says which file that is per platform.
+
 ## Building
 
 ```

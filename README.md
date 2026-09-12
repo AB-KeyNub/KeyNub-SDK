@@ -5,6 +5,15 @@ bindings and samples over one core C library (`keynub_licdongle`, prefix `licd_`
 with a stable C ABI. Windows, Linux and macOS, with **no driver to install**: the
 dongle is a vendor-defined USB HID device.
 
+[![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle?label=NuGet)](https://www.nuget.org/packages/KeyNub.LicenseDongle)
+[![PyPI](https://img.shields.io/pypi/v/keynub-licdongle?label=PyPI)](https://pypi.org/project/keynub-licdongle/)
+[![npm](https://img.shields.io/npm/v/%40keynub%2Flicdongle?label=npm)](https://www.npmjs.com/package/@keynub/licdongle)
+[![crates.io](https://img.shields.io/crates/v/keynub-licdongle?label=crates.io)](https://crates.io/crates/keynub-licdongle)
+[![RubyGems](https://img.shields.io/gem/v/keynub_licdongle?label=RubyGems)](https://rubygems.org/gems/keynub_licdongle)
+[![LuaRocks](https://img.shields.io/luarocks/v/ab-tools/keynub-licdongle?label=LuaRocks)](https://luarocks.org/modules/ab-tools/keynub-licdongle)
+[![Packagist](https://img.shields.io/packagist/v/keynub/licdongle?label=Packagist)](https://packagist.org/packages/keynub/licdongle)
+[![Go Reference](https://pkg.go.dev/badge/github.com/AB-KeyNub/KeyNub-SDK/bindings/go.svg)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go)
+
 > **Before you write your licensing check, read
 > [`docs/integration-security.md`](docs/integration-security.md).** The dongle
 > proves a genuine device is attached; it cannot stop an attacker patching the
@@ -27,32 +36,32 @@ once.
 
 ## Languages
 
-| Language | Binding | Sample |
-| --- | --- | --- |
-| C | [`include/licdongle.h`](include/licdongle.h) | [`samples/c`](samples/c) |
-| C++ | [`bindings/cpp`](bindings/cpp) — header-only RAII, C++11 | [`samples/cpp`](samples/cpp) |
-| flat API | [`bindings/flat`](bindings/flat) — integer handles, no callbacks | [`samples/flat`](samples/flat) |
-| C# / VB.NET / F# | [`bindings/dotnet`](bindings/dotnet) — `KeyNub.LicenseDongle` | [C#](samples/csharp), [VB.NET](samples/vbnet), [F#](samples/fsharp) |
-| Python | [`bindings/python`](bindings/python) — `keynub-licdongle`, ctypes, plus the `licd-tool` CLI | [`samples/python`](samples/python) |
-| Java | [`bindings/java`](bindings/java) — JNA, Java 17+ | [`samples/java`](samples/java) |
-| Delphi / Free Pascal | [`bindings/delphi`](bindings/delphi) | [`samples/delphi`](samples/delphi) |
-| Visual Basic 6 / VBScript | [`bindings/com`](bindings/com) — COM object `KeyNub.Dongle` | [`samples/vb6`](samples/vb6) |
-| twinBASIC | [`bindings/com`](bindings/com) | [`samples/twinbasic`](samples/twinbasic) |
-| Excel / VBA | [`bindings/vba`](bindings/vba) | [`samples/vba`](samples/vba) |
-| MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output | [MATLAB](samples/matlab), [Simulink](samples/simulink) |
-| LabVIEW | [`bindings/labview`](bindings/labview) | [`samples/labview`](samples/labview) |
-| Node.js / Electron | [`bindings/nodejs`](bindings/nodejs) — `@keynub/licdongle` | [`samples/nodejs`](samples/nodejs) |
-| Go | [`bindings/go`](bindings/go) — cgo, `errors.Is` sentinels | [`samples/go`](samples/go) |
-| Rust | [`bindings/rust`](bindings/rust) — `keynub-licdongle`, no dependencies | [`samples/rust`](samples/rust) |
-| Ruby | [`bindings/ruby`](bindings/ruby) — stdlib Fiddle, no gems | [`samples/ruby`](samples/ruby) |
-| PHP | [`bindings/php`](bindings/php) — bundled FFI, no PECL module | [`samples/php`](samples/php) |
-| Perl | [`bindings/perl`](bindings/perl) — `FFI::Platypus` | [`samples/perl`](samples/perl) |
-| Lua | [`bindings/lua`](bindings/lua) — LuaJIT FFI | [`samples/lua`](samples/lua) |
-| Fortran | [`bindings/fortran`](bindings/fortran) — F2003 `iso_c_binding` | [`samples/fortran`](samples/fortran) |
-| COBOL | [`bindings/cobol`](bindings/cobol) — copybook, GnuCOBOL | [`samples/cobol`](samples/cobol) |
-| Zig | [`bindings/zig`](bindings/zig) — `@cImport` compiles the real header | [`samples/zig`](samples/zig) |
-| Julia | [`bindings/julia`](bindings/julia) — `ccall`, no packages | [`samples/julia`](samples/julia) |
-| Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) |
+| Language | Binding | Sample | Package |
+| --- | --- | --- | --- |
+| C | [`include/licdongle.h`](include/licdongle.h) | [`samples/c`](samples/c) | — |
+| C++ | [`bindings/cpp`](bindings/cpp) — header-only RAII, C++11 | [`samples/cpp`](samples/cpp) | — |
+| flat API | [`bindings/flat`](bindings/flat) — integer handles, no callbacks | [`samples/flat`](samples/flat) | — |
+| C# / VB.NET / F# | [`bindings/dotnet`](bindings/dotnet) — `KeyNub.LicenseDongle` | [`samples/csharp`](samples/csharp), [`samples/vbnet`](samples/vbnet), [`samples/fsharp`](samples/fsharp) | [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle?label=NuGet)](https://www.nuget.org/packages/KeyNub.LicenseDongle) |
+| Python | [`bindings/python`](bindings/python) — `keynub-licdongle`, ctypes, plus the `licd-tool` CLI | [`samples/python`](samples/python) | [![PyPI](https://img.shields.io/pypi/v/keynub-licdongle?label=PyPI)](https://pypi.org/project/keynub-licdongle/) |
+| Java | [`bindings/java`](bindings/java) — JNA, Java 17+ | [`samples/java`](samples/java) | — |
+| Delphi / Free Pascal | [`bindings/delphi`](bindings/delphi) | [`samples/delphi`](samples/delphi) | — |
+| Visual Basic 6 / VBScript | [`bindings/com`](bindings/com) — COM object `KeyNub.Dongle` | [`samples/vb6`](samples/vb6) | — |
+| twinBASIC | [`bindings/com`](bindings/com) | [`samples/twinbasic`](samples/twinbasic) | — |
+| Excel / VBA | [`bindings/vba`](bindings/vba) | [`samples/vba`](samples/vba) | — |
+| MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output | [`samples/matlab`](samples/matlab), [`samples/simulink`](samples/simulink) | — |
+| LabVIEW | [`bindings/labview`](bindings/labview) | [`samples/labview`](samples/labview) | — |
+| Node.js / Electron | [`bindings/nodejs`](bindings/nodejs) — `@keynub/licdongle` | [`samples/nodejs`](samples/nodejs) | [![npm](https://img.shields.io/npm/v/%40keynub%2Flicdongle?label=npm)](https://www.npmjs.com/package/@keynub/licdongle) |
+| Go | [`bindings/go`](bindings/go) — cgo, `errors.Is` sentinels | [`samples/go`](samples/go) | [![Go Reference](https://pkg.go.dev/badge/github.com/AB-KeyNub/KeyNub-SDK/bindings/go.svg)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go) |
+| Rust | [`bindings/rust`](bindings/rust) — `keynub-licdongle`, no dependencies | [`samples/rust`](samples/rust) | [![crates.io](https://img.shields.io/crates/v/keynub-licdongle?label=crates.io)](https://crates.io/crates/keynub-licdongle) |
+| Ruby | [`bindings/ruby`](bindings/ruby) — stdlib Fiddle, no gems | [`samples/ruby`](samples/ruby) | [![RubyGems](https://img.shields.io/gem/v/keynub_licdongle?label=RubyGems)](https://rubygems.org/gems/keynub_licdongle) |
+| PHP | [`bindings/php`](bindings/php) — bundled FFI, no PECL module | [`samples/php`](samples/php) | [![Packagist](https://img.shields.io/packagist/v/keynub/licdongle?label=Packagist)](https://packagist.org/packages/keynub/licdongle) |
+| Perl | [`bindings/perl`](bindings/perl) — `FFI::Platypus` | [`samples/perl`](samples/perl) | — |
+| Lua | [`bindings/lua`](bindings/lua) — LuaJIT FFI | [`samples/lua`](samples/lua) | [![LuaRocks](https://img.shields.io/luarocks/v/ab-tools/keynub-licdongle?label=LuaRocks)](https://luarocks.org/modules/ab-tools/keynub-licdongle) |
+| Fortran | [`bindings/fortran`](bindings/fortran) — F2003 `iso_c_binding` | [`samples/fortran`](samples/fortran) | — |
+| COBOL | [`bindings/cobol`](bindings/cobol) — copybook, GnuCOBOL | [`samples/cobol`](samples/cobol) | — |
+| Zig | [`bindings/zig`](bindings/zig) — `@cImport` compiles the real header | [`samples/zig`](samples/zig) | — |
+| Julia | [`bindings/julia`](bindings/julia) — `ccall`, no packages | [`samples/julia`](samples/julia) | — |
+| Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) | — |
 
 Every sample carries the exact command that builds and runs it in its header
 comment, including which native library it wants. All of them except **Excel/VBA**

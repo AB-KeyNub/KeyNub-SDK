@@ -107,11 +107,7 @@
 
   <!-- Everything Maven Central requires on top of an ordinary build: signatures, a
        sources jar and a javadoc jar. Kept in a profile so a normal `mvn test` neither
-       slows down nor asks for a signing key. Activate with `mvn -P release deploy`.
-
-       Publishing goes through the Central Portal; OSSRH is being retired. The
-       namespace com.keynub has to be verified there first, which needs a DNS TXT
-       record on keynub.com and is the long-lead item; start it before the rest. -->
+       slows down nor asks for a signing key. Activate with `mvn -P release deploy`. -->
   <profiles>
     <profile>
       <id>release</id>
@@ -154,10 +150,11 @@
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.5.0</version>
+            <version>0.11.0</version>
             <extensions>true</extensions>
             <configuration>
               <publishingServerId>central</publishingServerId>
+              <deploymentName>${project.artifactId}-${project.version}</deploymentName>
               <!-- Leave the upload manual: a Central deployment is immutable, so the
                    last look happens in the Portal, not in a build log. -->
               <autoPublish>false</autoPublish>

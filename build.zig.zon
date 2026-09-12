@@ -1,0 +1,21 @@
+.{
+    // Zig package manifest. `paths` limits a fetched archive to the binding, the
+    // header, the prebuilt libraries it links, and the licence files that cover them.
+    .name = .keynub_licdongle,
+    .version = "1.1.1",
+    .fingerprint = 0x97a156552e4d2c49,
+    .minimum_zig_version = "0.14.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "bindings/zig",
+        "include",
+        "natives",
+        "LICENSE",
+        "BINARY-LICENSE.txt",
+        "NOTICE",
+        "THIRD-PARTY-NOTICES.txt",
+        "NATIVES.md",
+    },
+}
