@@ -3,10 +3,10 @@
 // encryption. Targets real hardware; prints guidance and exits 0 when no
 // dongle is attached.
 //
-// Build it with the SDK's CMake project (-DLICD_BUILD_SAMPLES=ON), or compile it
-// straight against a release archive:
+// Build it with the CMakeLists.txt beside this file (cmake -S . -B build &&
+// cmake --build build), or compile it straight against the prebuilt library:
 //
-//   cc verify_and_read.c -Iinclude -Lx64 -lkeynub_licdongle -o verify_and_read
+//   cc verify_and_read.c -Iinclude -Lnatives/<platform> -lkeynub_licdongle -o verify_and_read
 
 #include <stdint.h>
 #include <stdio.h>

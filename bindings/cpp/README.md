@@ -19,12 +19,22 @@ keynub::Bytes data = session.appDecrypt(blob);   // build the licence check here
 dongle is sold to are frequently pinned to an older toolchain, and a licensing SDK
 that forces a compiler upgrade does not get adopted.
 
-Link the same way you would for the C API:
+The repository is a CMake package. Fetch it and link the C++ target, which
+carries the header and the core library:
 
 ```cmake
-target_link_libraries(myapp PRIVATE keynub::licdongle)          # or _static
-target_include_directories(myapp PRIVATE ${KEYNUB_SDK}/bindings/cpp)
+include(FetchContent)
+FetchContent_Declare(keynub_licdongle
+    GIT_REPOSITORY https://github.com/AB-KeyNub/KeyNub-SDK.git
+    GIT_TAG        v1.1.1)
+FetchContent_MakeAvailable(keynub_licdongle)
+
+target_link_libraries(myapp PRIVATE keynub::licdongle_cpp)
+keynub_copy_runtime(myapp)      # puts the shared library next to the executable
 ```
+
+From a clone or an installed prefix, `find_package(keynub_licdongle CONFIG REQUIRED)`
+provides the same targets; `keynub::licdongle` is the C API alone.
 
 > **Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
 > before writing your check.** `if (dongle.isGenuine())` compiles to a conditional

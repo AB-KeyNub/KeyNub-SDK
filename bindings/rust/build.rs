@@ -39,8 +39,8 @@ fn main() {
     let static_link = env::var("KEYNUB_STATIC").map(|v| v == "1").unwrap_or(false);
     if static_link {
         println!("cargo:rustc-link-lib=static={name}");
-        // A static core does not carry its own dependencies, so name them here.
-        // With the shared library these are already resolved inside it.
+        // The static library carries Mbed TLS and hidapi; the system libraries
+        // those use are named here. The shared library resolves them itself.
         let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
         match target_os.as_str() {
             "windows" => {
@@ -56,10 +56,6 @@ fn main() {
                 println!("cargo:rustc-link-lib=dylib=udev");
                 println!("cargo:rustc-link-lib=dylib=pthread");
             }
-        }
-        // mbedcrypto/mbedx509 are separate archives in the CMake build tree.
-        for lib in ["mbedx509", "mbedcrypto"] {
-            println!("cargo:rustc-link-lib=static={lib}");
         }
     } else {
         println!("cargo:rustc-link-lib=dylib={name}");

@@ -12,7 +12,10 @@ dongle is a vendor-defined USB HID device.
 [![RubyGems](https://img.shields.io/gem/v/keynub_licdongle?label=RubyGems)](https://rubygems.org/gems/keynub_licdongle)
 [![LuaRocks](https://img.shields.io/luarocks/v/ab-tools/keynub-licdongle?label=LuaRocks)](https://luarocks.org/modules/ab-tools/keynub-licdongle)
 [![Packagist](https://img.shields.io/packagist/v/keynub/licdongle?label=Packagist)](https://packagist.org/packages/keynub/licdongle)
-[![Go Reference](https://pkg.go.dev/badge/github.com/AB-KeyNub/KeyNub-SDK/bindings/go.svg)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go)
+[![Maven Central](https://img.shields.io/maven-central/v/com.keynub/keynub-licdongle?label=Maven%20Central)](https://central.sonatype.com/artifact/com.keynub/keynub-licdongle)
+[![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go)
+[![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md)
+[![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native)
 
 > **Before you write your licensing check, read
 > [`docs/integration-security.md`](docs/integration-security.md).** The dongle
@@ -38,12 +41,12 @@ once.
 
 | Language | Binding | Sample | Package |
 | --- | --- | --- | --- |
-| C | [`include/licdongle.h`](include/licdongle.h) | [`samples/c`](samples/c) | — |
-| C++ | [`bindings/cpp`](bindings/cpp) — header-only RAII, C++11 | [`samples/cpp`](samples/cpp) | — |
+| C | [`include/licdongle.h`](include/licdongle.h) — CMake target `keynub::licdongle` | [`samples/c`](samples/c) | [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md) [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native) |
+| C++ | [`bindings/cpp`](bindings/cpp) — header-only RAII, C++11, CMake target `keynub::licdongle_cpp` | [`samples/cpp`](samples/cpp) | [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md) [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native) |
 | flat API | [`bindings/flat`](bindings/flat) — integer handles, no callbacks | [`samples/flat`](samples/flat) | — |
 | C# / VB.NET / F# | [`bindings/dotnet`](bindings/dotnet) — `KeyNub.LicenseDongle` | [`samples/csharp`](samples/csharp), [`samples/vbnet`](samples/vbnet), [`samples/fsharp`](samples/fsharp) | [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle?label=NuGet)](https://www.nuget.org/packages/KeyNub.LicenseDongle) |
 | Python | [`bindings/python`](bindings/python) — `keynub-licdongle`, ctypes, plus the `licd-tool` CLI | [`samples/python`](samples/python) | [![PyPI](https://img.shields.io/pypi/v/keynub-licdongle?label=PyPI)](https://pypi.org/project/keynub-licdongle/) |
-| Java | [`bindings/java`](bindings/java) — JNA, Java 17+ | [`samples/java`](samples/java) | — |
+| Java | [`bindings/java`](bindings/java) — JNA, Java 17+ | [`samples/java`](samples/java) | [![Maven Central](https://img.shields.io/maven-central/v/com.keynub/keynub-licdongle?label=Maven%20Central)](https://central.sonatype.com/artifact/com.keynub/keynub-licdongle) |
 | Delphi / Free Pascal | [`bindings/delphi`](bindings/delphi) | [`samples/delphi`](samples/delphi) | — |
 | Visual Basic 6 / VBScript | [`bindings/com`](bindings/com) — COM object `KeyNub.Dongle` | [`samples/vb6`](samples/vb6) | — |
 | twinBASIC | [`bindings/com`](bindings/com) | [`samples/twinbasic`](samples/twinbasic) | — |
@@ -51,7 +54,7 @@ once.
 | MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output | [`samples/matlab`](samples/matlab), [`samples/simulink`](samples/simulink) | — |
 | LabVIEW | [`bindings/labview`](bindings/labview) | [`samples/labview`](samples/labview) | — |
 | Node.js / Electron | [`bindings/nodejs`](bindings/nodejs) — `@keynub/licdongle` | [`samples/nodejs`](samples/nodejs) | [![npm](https://img.shields.io/npm/v/%40keynub%2Flicdongle?label=npm)](https://www.npmjs.com/package/@keynub/licdongle) |
-| Go | [`bindings/go`](bindings/go) — cgo, `errors.Is` sentinels | [`samples/go`](samples/go) | [![Go Reference](https://pkg.go.dev/badge/github.com/AB-KeyNub/KeyNub-SDK/bindings/go.svg)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go) |
+| Go | [`bindings/go`](bindings/go) — cgo, `errors.Is` sentinels | [`samples/go`](samples/go) | [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go) |
 | Rust | [`bindings/rust`](bindings/rust) — `keynub-licdongle`, no dependencies | [`samples/rust`](samples/rust) | [![crates.io](https://img.shields.io/crates/v/keynub-licdongle?label=crates.io)](https://crates.io/crates/keynub-licdongle) |
 | Ruby | [`bindings/ruby`](bindings/ruby) — stdlib Fiddle, no gems | [`samples/ruby`](samples/ruby) | [![RubyGems](https://img.shields.io/gem/v/keynub_licdongle?label=RubyGems)](https://rubygems.org/gems/keynub_licdongle) |
 | PHP | [`bindings/php`](bindings/php) — bundled FFI, no PECL module | [`samples/php`](samples/php) | [![Packagist](https://img.shields.io/packagist/v/keynub/licdongle?label=Packagist)](https://packagist.org/packages/keynub/licdongle) |

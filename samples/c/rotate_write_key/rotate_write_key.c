@@ -9,10 +9,10 @@
 //   openssl ecparam -name prime256v1 -genkey -noout |
 //     openssl pkcs8 -topk8 -nocrypt -outform DER -out my-key.der
 //
-// Build it with the SDK's CMake project (-DLICD_BUILD_SAMPLES=ON), or compile it
-// straight against a release archive:
+// Build it with the CMakeLists.txt beside this file (cmake -S . -B build &&
+// cmake --build build), or compile it straight against the prebuilt library:
 //
-//   cc rotate_write_key.c -Iinclude -Lx64 -lkeynub_licdongle -o rotate_write_key
+//   cc rotate_write_key.c -Iinclude -Lnatives/<platform> -lkeynub_licdongle -o rotate_write_key
 //   ./rotate_write_key ../../../keys/keynub-shipping-writeauth.key.der my-key.der
 //
 // Targets real hardware; prints guidance and exits 0 when no dongle is attached.

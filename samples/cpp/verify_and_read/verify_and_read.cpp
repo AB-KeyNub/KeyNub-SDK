@@ -1,10 +1,10 @@
 // KeyNub dongle check from C++: enumerate -> open -> verify -> session ->
 // read a record -> app-crypto round trip.
 //
-// Build it with the SDK's CMake project (-DLICD_BUILD_SAMPLES=ON), or compile it
-// straight against a release archive:
+// Build it with the CMakeLists.txt beside this file (cmake -S . -B build &&
+// cmake --build build), or compile it straight against the prebuilt library:
 //
-//   c++ -std=c++11 verify_and_read.cpp -Iinclude -Ibindings/cpp -Lx64 \
+//   c++ -std=c++11 verify_and_read.cpp -Iinclude -Ibindings/cpp -Lnatives/<platform> \
 //       -lkeynub_licdongle -o verify_and_read
 //
 // The binding is header-only (bindings/cpp/licdongle.hpp) over the same C ABI

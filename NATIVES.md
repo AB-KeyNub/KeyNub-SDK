@@ -85,10 +85,34 @@ Julia, Nim, Go. Put the shared library where the runtime will find it:
 **Compiled against** — C, C++, Rust, Fortran, COBOL, Zig, LabVIEW, and the flat
 API. These need [`include/licdongle.h`](include/licdongle.h) (or the flat and
 LabVIEW headers named above) at compile time and the library at link time:
-`-Iinclude -Lnatives/<platform>`, or the equivalent for your toolchain. The
-static library is there for the same toolchains when a single self-contained
-executable is wanted. The Rust crate looks in `natives/` on its own
-when it is built from a checkout.
+`-Iinclude -Lnatives/<platform>`, or the equivalent for your toolchain.
+
+For CMake the repository is a package. [`CMakeLists.txt`](CMakeLists.txt) and
+[`keynub_licdongleConfig.cmake`](keynub_licdongleConfig.cmake) at the root give
+you `keynub::licdongle`, `keynub::licdongle_flat` and the header-only
+`keynub::licdongle_cpp`, each already pointing at the right folder here, plus
+`keynub_copy_runtime(<target>)` to place the shared library next to your
+executable:
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(keynub_licdongle
+    GIT_REPOSITORY https://github.com/AB-KeyNub/KeyNub-SDK.git
+    GIT_TAG        v1.1.1)
+FetchContent_MakeAvailable(keynub_licdongle)
+target_link_libraries(myapp PRIVATE keynub::licdongle)
+keynub_copy_runtime(myapp)
+```
+
+`find_package(keynub_licdongle CONFIG REQUIRED)` provides the same targets from a
+clone (`PATHS <clone>`) or from a prefix installed with `cmake --install`. The
+Rust crate and the Zig package find `natives/` on their own.
+
+The static library is self-contained: it carries Mbed TLS and hidapi, so a
+single executable with no shared library beside it links the one archive plus
+the platform's system libraries: `setupapi hid advapi32 bcrypt` on Windows, the
+IOKit and CoreFoundation frameworks on macOS, `udev` and `pthread` on Linux.
+`keynub::licdongle_static` in the CMake package names them for you.
 
 One thing carries over from linking anywhere else: the finished executable loads
 the shared library at **startup**, by name, from the operating system's search

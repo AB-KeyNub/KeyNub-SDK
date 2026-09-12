@@ -9,9 +9,10 @@
 //   openssl ecparam -name prime256v1 -genkey -noout |
 //     openssl pkcs8 -topk8 -nocrypt -outform DER -out my-key.der
 //
-// Build it with the SDK's CMake project (-DLICD_BUILD_SAMPLES=ON), then:
+// Build it with the CMakeLists.txt beside this file (cmake -S . -B build &&
+// cmake --build build), then run it with the key the dongle holds and yours:
 //
-//   ./sample_rotate_write_key_cpp ../../../keys/keynub-shipping-writeauth.key.der my-key.der
+//   ./rotate_write_key ../../../keys/keynub-shipping-writeauth.key.der my-key.der
 //
 // Targets real hardware; prints guidance and exits 0 when no dongle is attached.
 //
