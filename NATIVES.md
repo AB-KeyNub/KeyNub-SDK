@@ -5,18 +5,27 @@ a **prebuilt binary** — you do not build it yourself.
 
 ## It is already here
 
-A clone of this repository carries one per platform:
+A clone of this repository carries everything, per platform. There is nothing to
+download separately and no release archive to look for:
 
 ```
-natives/win-x64/      keynub_licdongle.dll   keynub_licdongle_flat.dll   + .lib
-natives/win-x86/                          "                              + .lib
-natives/win-arm64/                        "                              + .lib
+natives/win-x64/      keynub_licdongle.dll   keynub_licdongle_flat.dll   KeyNub.dll
+                      + the .lib import libraries, and keynub_licdongle_static.lib
+natives/win-x86/                          "
+natives/win-arm64/                        "
 natives/linux-x64/    libkeynub_licdongle.so      libkeynub_licdongle_flat.so
+                      libkeynub_licdongle_static.a
 natives/linux-arm64/                      "
 natives/osx-x64/      libkeynub_licdongle.dylib   libkeynub_licdongle_flat.dylib
-natives/osx-arm64/                        "        (one universal binary, both slices)
+                      libkeynub_licdongle_static.a   (universal binaries, both slices)
+natives/osx-arm64/                        "
 natives/MANIFEST.txt  the version, and a SHA-256 for every file above
 ```
+
+The headers are in the repository too: [`include/licdongle.h`](include/licdongle.h)
+for the core API, [`bindings/flat/licd_flat.h`](bindings/flat/licd_flat.h) for
+the flat companion API, and
+[`bindings/labview/licd_labview.h`](bindings/labview/licd_labview.h) for LabVIEW.
 
 Every binding that loads its library at run time finds this directory by itself, so
 the samples run from a clone with nothing set. The bindings that link at build time
@@ -29,54 +38,29 @@ absolute path to one specific library.
 The prebuilt libraries are under [`BINARY-LICENSE.txt`](BINARY-LICENSE.txt), not the
 Apache-2.0 licence that covers the source in this repository.
 
-## Which download
+The package registries are the other way to get them: the NuGet, PyPI and npm
+packages carry the core library for every platform, so those bindings need
+nothing from this folder.
 
-The [release archives](https://github.com/AB-KeyNub/KeyNub-SDK/releases/latest) are
-the other way to get them, and the only source for the static libraries and the COM
-server. Later releases will also publish through the package registries (NuGet,
-PyPI, npm, crates.io), at which point the managed-language bindings pull the native
-automatically.
+## Which file
 
-One archive per platform, each self-contained — headers, libraries, licences, a
-README and a `SHA256SUMS` covering its own contents:
-
-| Asset | Contains |
-| --- | --- |
-| `keynub-sdk-<version>-windows.zip` | `include/`, `x64/`, `x86/` |
-| `keynub-sdk-<version>-linux-x64.tar.gz` | `include/`, `lib/`, the udev rule |
-| `keynub-sdk-<version>-macos-arm64.tar.gz` | `include/`, `lib/` |
-| `keynub-sdk-<version>-SHA256SUMS` | checksums for the three archives |
-
-The Linux build is x86_64 and the macOS build is arm64 (Apple Silicon). If you
-need another architecture — aarch64 Linux, Intel macOS, a universal binary —
-[ask us](https://www.keynub.com/#contact).
-
-## What is in the archive
-
-```
-include/    licdongle.h        the core C ABI
-            licd_flat.h        the flat companion API
-            licd_labview.h     LabVIEW declarations over the flat API
-x64/  x86/  Windows libraries, per architecture
-lib/        Linux and macOS libraries
-```
-
-Each library folder holds the same three libraries, and **they are not
+Each platform folder holds the same three libraries, and **they are not
 interchangeable**:
 
 | File | Who needs it |
 | --- | --- |
 | `keynub_licdongle` | the core library — .NET, Python, Java, Node.js, Ruby, Lua, Julia, Nim, Go load it; C, C++, Rust and Zig link it |
 | `keynub_licdongle_flat` | the flat companion API — LabVIEW, VBA, COBOL, Fortran and Perl |
-| `KeyNub.dll` | the COM server — Visual Basic 6, twinBASIC, VBScript |
+| `KeyNub.dll` | the COM server — Visual Basic 6, twinBASIC, VBScript (Windows only) |
 
-Import libraries (`.lib`) and a static library (`_static.lib` / `_static.a`) ship
-alongside every architecture, for the bindings that link rather than load.
+Import libraries (`.lib`) and a static library (`_static.lib` / `_static.a`) sit
+beside them for the bindings that link rather than load.
 
-The Windows archive carries `x64/`, `x86/` and `arm64/`. On Windows on ARM the
-choice between the last two is the same host-process question as everywhere else:
-a native ARM64 application wants `arm64/`, while an x64 application running under
-emulation wants `x64/`.
+The Linux folders are x86_64 and aarch64; the macOS libraries are universal
+binaries and serve Intel and Apple Silicon alike. On Windows on ARM the choice
+between `win-arm64` and `win-x64` is the same host-process question as
+everywhere else: a native ARM64 application wants `win-arm64`, while an x64
+application running under emulation wants `win-x64`.
 
 Pointing a flat-API binding at the core library, or the other way round, reports a
 missing symbol (`licdf_*` or `licd_*`) rather than anything that says "wrong
@@ -99,9 +83,11 @@ Julia, Nim, Go. Put the shared library where the runtime will find it:
 - or wherever your binding's README says it looks, if it looks somewhere specific
 
 **Compiled against** — C, C++, Rust, Fortran, COBOL, Zig, LabVIEW, and the flat
-API. These need [`include/licdongle.h`](include/licdongle.h) (in this repository)
-at compile time and the library at link time: `-Iinclude -Lnatives/<platform>`, or
-the equivalent for your toolchain. The Rust crate looks in `natives/` on its own
+API. These need [`include/licdongle.h`](include/licdongle.h) (or the flat and
+LabVIEW headers named above) at compile time and the library at link time:
+`-Iinclude -Lnatives/<platform>`, or the equivalent for your toolchain. The
+static library is there for the same toolchains when a single self-contained
+executable is wanted. The Rust crate looks in `natives/` on its own
 when it is built from a checkout.
 
 One thing carries over from linking anywhere else: the finished executable loads
@@ -112,8 +98,8 @@ to the executable or add that directory to `PATH` / `LD_LIBRARY_PATH` /
 
 ## The COM server
 
-`KeyNub.dll` in the release is the COM server used by Visual Basic 6, twinBASIC
-and VBScript — a different file from `keynub_licdongle.dll`. Register it once with
+`KeyNub.dll` in each `natives/win-*` folder is the COM server used by Visual
+Basic 6, twinBASIC and VBScript — a different file from `keynub_licdongle.dll`. Register it once with
 the `regsvr32` matching its architecture:
 
 ```
@@ -125,15 +111,16 @@ The type library is embedded as a resource, so there is one file to deploy and
 registration-free activation also works. An unelevated `regsvr32` falls back to a
 per-user registration rather than failing.
 
-## Verifying what you downloaded
+## Verifying what you have
 
-Each release publishes SHA-256 checksums. Check them before shipping a native
+`natives/MANIFEST.txt` lists a SHA-256 for every file in the folder, written by
+the same tool that staged them from the build. Check it before shipping a native
 library inside your product — you are about to make it part of your licensing, so
 it is worth thirty seconds:
 
 ```
-sha256sum -c keynub-sdk-<version>-SHA256SUMS      # Linux / macOS
-certutil -hashfile keynub_licdongle.dll SHA256    # Windows
+cd natives && grep -E '^[0-9a-f]{64} ' MANIFEST.txt | sha256sum -c     # Linux / macOS
+certutil -hashfile natives\win-x64\keynub_licdongle.dll SHA256          # Windows: compare by eye
 ```
 
 ## The trust root

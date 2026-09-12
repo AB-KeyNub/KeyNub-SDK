@@ -1,0 +1,31 @@
+{
+  "name": "keynub/licdongle",
+  "description": "PHP binding for the KeyNub USB-C license dongle (FFI; driverless on Windows, Linux and macOS). Installs the prebuilt native library for every platform alongside the binding.",
+  "type": "library",
+  "keywords": ["keynub", "license", "dongle", "usb", "licensing", "copy-protection"],
+  "homepage": "https://www.keynub.com/developers/php/",
+  "license": ["Apache-2.0", "LicenseRef-KeyNub-Binary"],
+  "authors": [
+    {
+      "name": "KeyNub",
+      "homepage": "https://www.keynub.com"
+    }
+  ],
+  "support": {
+    "docs": "https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/php/README.md",
+    "issues": "https://github.com/AB-KeyNub/KeyNub-SDK/issues",
+    "source": "https://github.com/AB-KeyNub/KeyNub-SDK"
+  },
+  "require": {
+    "php": ">=8.1",
+    "ext-ffi": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "KeyNub\\LicDongle\\": "bindings/php/src/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

@@ -15,8 +15,8 @@ dongle is a vendor-defined USB HID device.
 
 ## Getting started
 
-1. **Download the native library** for your platform — see
-   [`NATIVES.md`](NATIVES.md).
+1. **Pick the native library** for your platform from [`natives/`](natives/) —
+   [`NATIVES.md`](NATIVES.md) says which file is which.
 2. **Install the binding** for your language, or drop its source into your project.
 3. Enumerate, verify, open a session, read your licence data. Each binding's
    README shows the whole flow in a dozen lines.
@@ -104,10 +104,10 @@ header — is Apache-2.0. See [`LICENSE`](LICENSE), [`NOTICE`](NOTICE) and
 [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt) for the dependency licence
 elections.
 
-The prebuilt native libraries attached to each release are not in this
-repository and are not covered by that licence; their terms come with the
-release. You can use them from an Apache-2.0 binding in a closed-source
-application either way — that is what they are for.
+The prebuilt native libraries in [`natives/`](natives/) are not covered by that
+licence; their terms are in [`BINARY-LICENSE.txt`](BINARY-LICENSE.txt). You can
+use them from an Apache-2.0 binding in a closed-source application either way —
+that is what they are for.
 
 Security reports: [`SECURITY.md`](SECURITY.md).
 

@@ -27,10 +27,10 @@ fn main() {
         Some(dir) => println!("cargo:rustc-link-search=native={dir}"),
         None => println!(
             "cargo:warning=KEYNUB_LIB_DIR is not set, so the linker will look for the \
-             KeyNub native library on its default search path only. Download the SDK \
-             archive for your platform and set KEYNUB_LIB_DIR to the directory holding \
-             it (the lib/ folder on Linux and macOS, the architecture folder on \
-             Windows). See https://github.com/AB-KeyNub/KeyNub-SDK"
+             KeyNub native library on its default search path only. The library ships \
+             prebuilt in the SDK repository under natives/<platform>; clone \
+             https://github.com/AB-KeyNub/KeyNub-SDK and set KEYNUB_LIB_DIR to that \
+             directory (see its NATIVES.md)"
         ),
     }
 
