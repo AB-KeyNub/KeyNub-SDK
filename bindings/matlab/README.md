@@ -36,7 +36,6 @@ session.close();
 +keynub/+internal/       not API
 src/licd_mex.c           the MEX gateway (all validation and marshalling)
 mex/                     built gateway: licd_mex.<mexext>
-tests/tKeyNub.m          matlab.unittest suite
 ```
 
 Results are plain structs, which is what MATLAB code expects — `info.dataFree`,
@@ -51,11 +50,13 @@ per status code — so `catch err; switch err.identifier` works.
 
 ## Building the gateway
 
-A release ships `mex/licd_mex.<mexext>` prebuilt, so **customers need no
-compiler**. Building from source needs one command after the SDK's CMake build:
+The gateway is compiled once per platform and MATLAB release, from
+`src/licd_mex.c` against the prebuilt static library in `natives/<platform>/`.
+It needs a C compiler that MATLAB knows about (`mex -setup C`); one command from
+a clone of the repository:
 
 ```matlab
-keynub.build('<SDK>/build')
+keynub.build()
 ```
 
 It links the SDK **statically**, so the gateway is one self-contained file. That
