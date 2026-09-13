@@ -8,8 +8,10 @@ higher-level object wrapper; you call the C functions directly.
 
 ## Use
 
-Add `LicDongle.pas` to your project (or its directory to the unit search path)
-and ensure the native `keynub_licdongle` library is loadable at runtime
+Add `LicDongle.pas` to your project (or its directory to the unit search path).
+Lazarus users can instead open [`keynub_licdongle.lpk`](keynub_licdongle.lpk) with
+**Package ▸ Open Package File** and add it to the project's requirements. Either
+way, ensure the native `keynub_licdongle` library is loadable at runtime
 (`keynub_licdongle.dll` on `PATH` / next to the exe; `libkeynub_licdongle.so`
 with the shipped udev rule on Linux; `libkeynub_licdongle.dylib` on macOS).
 

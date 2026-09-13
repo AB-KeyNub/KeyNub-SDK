@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nidocument>
+<nicomment>KeyNub License Dongle: status codes of keynub_licdongle_flat, as returned by licdf_strerror.</nicomment>
+<nierror code="-1">invalid argument (LICD_E_INVALID_ARG)</nierror>
+<nierror code="-2">no matching dongle found (LICD_E_NO_DEVICE)</nierror>
+<nierror code="-3">access denied by the OS (LICD_E_ACCESS_DENIED)</nierror>
+<nierror code="-4">device I/O error (LICD_E_IO)</nierror>
+<nierror code="-5">device did not respond in time (LICD_E_TIMEOUT)</nierror>
+<nierror code="-6">malformed or unexpected protocol response (LICD_E_PROTOCOL)</nierror>
+<nierror code="-7">dongle authenticity check failed (LICD_E_NOT_GENUINE)</nierror>
+<nierror code="-8">device certificate invalid (LICD_E_CERT_INVALID)</nierror>
+<nierror code="-9">no active session (LICD_E_SESSION_EXPIRED)</nierror>
+<nierror code="-10">authentication tag mismatch (LICD_E_TAG_MISMATCH)</nierror>
+<nierror code="-11">value out of range (LICD_E_RANGE)</nierror>
+<nierror code="-12">dongle storage full (LICD_E_STORAGE_FULL)</nierror>
+<nierror code="-13">device busy (LICD_E_BUSY)</nierror>
+<nierror code="-14">record not found (LICD_E_NOT_FOUND)</nierror>
+<nierror code="-15">operation requires a session or the write role (LICD_E_AUTH_REQUIRED)</nierror>
+<nierror code="-16">firmware protocol incompatible with this SDK (LICD_E_FW_INCOMPATIBLE)</nierror>
+<nierror code="-17">SDK too old for this firmware (LICD_E_SDK_TOO_OLD)</nierror>
+<nierror code="-18">operation cancelled (LICD_E_CANCELLED)</nierror>
+<nierror code="-19">not implemented in this build (LICD_E_NOT_IMPLEMENTED)</nierror>
+<nierror code="-20">internal error (LICD_E_INTERNAL)</nierror>
+</nidocument>

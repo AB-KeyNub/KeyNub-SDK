@@ -1,14 +1,10 @@
 /* KeyNub License Dongle SDK - LabVIEW import header.
  *
- * The same functions as bindings/flat/licd_flat.h, restated with nothing in them
- * that LabVIEW's "Import Shared Library" wizard has to guess at: no #include, no
- * __declspec, no macros in the signatures, no typedefs of our own. Point the
- * wizard at this file and keynub_licdongle_flat.dll and it can generate the
- * Call Library Function Nodes for you.
- *
- * This file must stay in step with licd_flat.h; packaging/check_flat_bindings.py
- * matches it, because a silently diverged parameter list here is a
- * crash in a customer's VI rather than a compile error anywhere.
+ * The functions of bindings/flat/licd_flat.h in the form LabVIEW's "Import
+ * Shared Library" wizard reads directly: no #include, no __declspec, no macros
+ * in the signatures. Point the wizard at this file and keynub_licdongle_flat.dll
+ * to generate the Call Library Function Nodes; the ready-made library is in
+ * keynub_licdongle/.
  *
  * See README.md in this folder for the per-parameter node configuration, and
  * docs/integration-security.md before deciding where the check goes.
@@ -17,7 +13,8 @@
 #ifndef LICD_LABVIEW_H
 #define LICD_LABVIEW_H
 
-#include <stdint.h>
+typedef int int32_t;
+typedef unsigned char uint8_t;
 
 /* --- status codes (0 = success, everything else negative) ----------------- */
 #define LICD_OK 0

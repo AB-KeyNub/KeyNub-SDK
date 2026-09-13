@@ -14,7 +14,23 @@ system — the core, Mbed TLS and hidapi are all compiled into it.
 **Build it 32-bit or 64-bit to match your LabVIEW**, not your OS. A 64-bit DLL in
 32-bit LabVIEW fails to load with an error that does not mention bitness.
 
-## Fastest route: the Import Shared Library wizard
+## The ready-made library
+
+[`keynub_licdongle/keynub_licdongle.lvlib`](keynub_licdongle/keynub_licdongle.lvlib)
+wraps all 28 functions, one VI each (`licdf open.vi`, `licdf verify genuine.vi`,
+…), saved in LabVIEW 2026, 64-bit. Every VI has `error in`/`error out`; a
+negative status from the library becomes an error with that status as the
+code, and [`keynub_licdongle/keynub-errors.txt`](keynub_licdongle/keynub-errors.txt)
+gives LabVIEW the text for each code (copy it to `<LabVIEW>\project\errors\` or
+let the VI Package install it). The C return value is also on `function return`.
+Inputs carry the parameter names from the header; outputs are named
+`<parameter> out`.
+
+The VIs find `keynub_licdongle_flat.dll` in `natives/win-x64/` relative to this
+repository. Deployed elsewhere, put that file next to the VIs or on `PATH`;
+LabVIEW looks in the calling VI's folder when the stored path does not resolve.
+
+## Generating it yourself: the Import Shared Library wizard
 
 **Tools ▸ Import ▸ Shared Library (.dll)…**, then give it
 `keynub_licdongle_flat.dll` and [`licd_labview.h`](licd_labview.h). That header

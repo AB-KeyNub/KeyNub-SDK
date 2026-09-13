@@ -16,6 +16,7 @@ dongle is a vendor-defined USB HID device.
 [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go)
 [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md)
 [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native)
+[![File Exchange](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=File%20Exchange)](https://www.mathworks.com/matlabcentral/fileexchange/184704-keynub-license-dongle-for-matlab-and-simulink)
 
 > **Before you write your licensing check, read
 > [`docs/integration-security.md`](docs/integration-security.md).** The dongle
@@ -51,8 +52,8 @@ once.
 | Visual Basic 6 / VBScript | [`bindings/com`](bindings/com) — COM object `KeyNub.Dongle` | [`samples/vb6`](samples/vb6) | — |
 | twinBASIC | [`bindings/com`](bindings/com) | [`samples/twinbasic`](samples/twinbasic) | — |
 | Excel / VBA | [`bindings/vba`](bindings/vba) | [`samples/vba`](samples/vba) | — |
-| MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output | [`samples/matlab`](samples/matlab), [`samples/simulink`](samples/simulink) | — |
-| LabVIEW | [`bindings/labview`](bindings/labview) | [`samples/labview`](samples/labview) | — |
+| MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output | [`samples/matlab`](samples/matlab), [`samples/simulink`](samples/simulink) | [![File Exchange](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=File%20Exchange)](https://www.mathworks.com/matlabcentral/fileexchange/184704-keynub-license-dongle-for-matlab-and-simulink) |
+| LabVIEW | [`bindings/labview`](bindings/labview) — VI library (LabVIEW 2026, 64-bit) and the import header | [`samples/labview`](samples/labview) | — |
 | Node.js / Electron | [`bindings/nodejs`](bindings/nodejs) — `@keynub/licdongle` | [`samples/nodejs`](samples/nodejs) | [![npm](https://img.shields.io/npm/v/%40keynub%2Flicdongle?label=npm)](https://www.npmjs.com/package/@keynub/licdongle) |
 | Go | [`bindings/go`](bindings/go) — cgo, `errors.Is` sentinels | [`samples/go`](samples/go) | [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go) |
 | Rust | [`bindings/rust`](bindings/rust) — `keynub-licdongle`, no dependencies | [`samples/rust`](samples/rust) | [![crates.io](https://img.shields.io/crates/v/keynub-licdongle?label=crates.io)](https://crates.io/crates/keynub-licdongle) |
@@ -70,9 +71,11 @@ Every sample carries the exact command that builds and runs it in its header
 comment, including which native library it wants. All of them except **Excel/VBA**
 and **LabVIEW** were compiled and run against a software dongle before release;
 those two need Excel and a licensed LabVIEW respectively, so they are written
-against the API and reviewed rather than executed. LabVIEW ships wiring
-instructions rather than a `.vi`, and Excel a `.bas` rather than an `.xlsm`,
-because neither binary format can be reviewed in a diff.
+against the API and reviewed rather than executed. LabVIEW also has a
+ready-made VI library ([`bindings/labview/keynub_licdongle`](bindings/labview/keynub_licdongle),
+saved in LabVIEW 2026, 64-bit), whose VIs were run in LabVIEW against the
+shipped library; Excel ships a `.bas` rather than an `.xlsm` so that the code can
+be reviewed in a diff.
 
 Environments that cannot express the core ABI — LabVIEW, VBA, COBOL — go through
 a **flat companion API** ([`bindings/flat`](bindings/flat)): one self-contained

@@ -1,9 +1,13 @@
 # LabVIEW samples — verify and read, and take ownership
 
-This folder holds **wiring instructions rather than a `.vi`**, deliberately. A VI is
-a binary file: it cannot be reviewed in a diff, and it pins you to one LabVIEW
-version. The flat API it calls is stable, so a diagram you wire from this page keeps
-working. See [`../../bindings/labview`](../../bindings/labview) for the binding.
+The ready-made VI library in
+[`../../bindings/labview/keynub_licdongle`](../../bindings/labview/keynub_licdongle)
+(LabVIEW 2026, 64-bit) wraps every function with `error in`/`error out`; the flows
+below name the C functions, and the VI of each is the same name with spaces
+(`licdf verify genuine.vi`). In another LabVIEW version, or in 32-bit LabVIEW, wire
+the Call Library Function Nodes as described here: the flat API is stable, so a
+diagram wired from this page keeps working. See
+[`../../bindings/labview`](../../bindings/labview) for the binding.
 
 > **Read [`../../docs/integration-security.md`](../../docs/integration-security.md)
 > first.** The last section here is the part that matters: a Boolean wire is one
@@ -23,7 +27,8 @@ open its configuration:
 | Calling convention | **C** — *not* stdcall |
 
 Match the bitness of your LabVIEW installation, not of the machine: 32-bit LabVIEW
-needs the 32-bit library. Both are published in the release archive.
+needs the 32-bit library. Both are in [`natives/`](../../natives): `win-x64` and
+`win-x86`.
 
 ## Parameter mapping
 
