@@ -108,6 +108,23 @@ keynub_copy_runtime(myapp)
 clone (`PATHS <clone>`) or from a prefix installed with `cmake --install`. The
 Rust crate and the Zig package find `natives/` on their own.
 
+Visual Studio projects without CMake take the NuGet package
+[`KeyNub.LicenseDongle.Native`](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native):
+headers, import libraries and the library for x64, x86 and ARM64, linked and
+copied beside the executable by its `.targets`.
+
+For Conan, [`packaging/conan`](packaging/conan) is a recipe index in the
+conan-center-index layout. From a clone:
+
+```
+conan remote add keynub <clone>/packaging/conan -t local-recipes-index
+```
+
+then `keynub_licdongle/1.1.1` in your requirements gives `keynub::licdongle`,
+`keynub::licdongle_cpp` and `keynub::licdongle_flat` through `CMakeDeps`; the
+recipe packages the prebuilt files for the host's operating system and
+architecture, whatever the compiler and build type.
+
 The static library is self-contained: it carries Mbed TLS and hidapi, so a
 single executable with no shared library beside it links the one archive plus
 the platform's system libraries: `setupapi hid advapi32 bcrypt` on Windows, the
