@@ -16,11 +16,11 @@
 # because the valuable part is normally data: a correlation set, fitted parameters,
 # a proprietary model's coefficients.
 
-if Base.find_package("KeyNubLicDongle") === nothing
+if Base.find_package("KeyNubLicenseDongle") === nothing
     # Running from a checkout, where the package is not installed.
     push!(LOAD_PATH, joinpath(@__DIR__, "..", "..", "bindings", "julia"))
 end
-using KeyNubLicDongle
+using KeyNubLicenseDongle
 
 function report(dongle)
     i = info(dongle)

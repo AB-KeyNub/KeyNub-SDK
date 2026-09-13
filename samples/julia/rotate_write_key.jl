@@ -18,11 +18,11 @@
 # recovered from the dongle, and a unit rotated to a key you have lost has to come
 # back to be re-provisioned.
 
-if Base.find_package("KeyNubLicDongle") === nothing
+if Base.find_package("KeyNubLicenseDongle") === nothing
     # Running from a checkout, where the package is not installed.
     push!(LOAD_PATH, joinpath(@__DIR__, "..", "..", "bindings", "julia"))
 end
-using KeyNubLicDongle
+using KeyNubLicenseDongle
 
 function main(args)
     if length(args) != 2

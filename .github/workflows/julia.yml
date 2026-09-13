@@ -1,0 +1,80 @@
+name: Julia
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'bindings/julia/**'
+      - 'include/**'
+      - 'natives/**'
+      - '.github/workflows/julia.yml'
+  pull_request:
+    paths:
+      - 'bindings/julia/**'
+      - 'include/**'
+      - 'natives/**'
+      - '.github/workflows/julia.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: julia-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Julia ${{ matrix.version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['1.10', '1']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.version }}
+      - uses: julia-actions/cache@v2
+      - uses: julia-actions/julia-buildpkg@v1
+        with:
+          project: bindings/julia
+      - uses: julia-actions/julia-runtest@v1
+        with:
+          project: bindings/julia
+      - uses: julia-actions/julia-processcoverage@v1
+        if: matrix.os == 'ubuntu-latest' && matrix.version == '1'
+        with:
+          directories: bindings/julia/src
+      - uses: codecov/codecov-action@v5
+        if: matrix.os == 'ubuntu-latest' && matrix.version == '1'
+        with:
+          files: lcov.info
+          flags: julia
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  installed:
+    name: Installed package on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+      - name: Add the package the way Pkg installs it and load the library from the artifact
+        shell: julia --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.add(PackageSpec(path=pwd(), subdir="bindings/julia"))
+          using KeyNubLicenseDongle
+          @info "library" KeyNubLicenseDongle.LIB library_version()
+          @assert isfile(KeyNubLicenseDongle.LIB)
+          @assert occursin("artifacts", KeyNubLicenseDongle.LIB)
+          @assert library_version() >= (1, 1, 1)
+          ctx = Context()
+          @info "dongles" enumerate_dongles(ctx)
+          close(ctx)

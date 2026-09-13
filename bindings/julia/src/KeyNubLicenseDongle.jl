@@ -1,10 +1,10 @@
 """
-    KeyNubLicDongle
+    KeyNubLicenseDongle
 
 Julia binding for the KeyNub USB-C license dongle.
 
 ```julia
-using KeyNubLicDongle
+using KeyNubLicenseDongle
 
 ctx = Context()
 try
@@ -19,8 +19,9 @@ end
 ```
 
 No packages: `ccall` is part of the language, so this has no dependencies outside
-`Base` and the stdlib. Set `ENV["KEYNUB_LICDONGLE_LIBRARY"]` before `using` to
-point at a specific library.
+the standard library. The native library comes with the package; set
+`ENV["KEYNUB_LICDONGLE_LIBRARY"]` to a path before the first call to use a
+specific one.
 
 Read `docs/integration-security.md` before writing the check. `if
 is_genuine(dongle)` is one line to delete, and Julia ships as source — even a
@@ -29,7 +30,9 @@ sysimage only raises the effort. Route something the program needs through
 data. For a Julia package that is usually the interesting part anyway: a
 correlation table, fitted parameters, a proprietary model's coefficients.
 """
-module KeyNubLicDongle
+module KeyNubLicenseDongle
+
+using Artifacts
 
 export Context, Dongle, Session, Scope, DEVICE, DEVELOPER
 export LicenseDongleError, NotGenuineError, CertificateInvalidError,
@@ -63,19 +66,62 @@ function _repo_rid()
     return string(os, "-", arch)
 end
 
-"""The native library this binding calls. Resolved once, at load time.
+"""The native library this binding calls, as a path or a bare name for the system
+loader. Set in `__init__`: `ENV["KEYNUB_LICDONGLE_LIBRARY"]` names a specific file,
+otherwise the library for this platform comes from the SDK tree (see
+[`sdk_root`](@ref)). Julia binds each call to the library on its first use, so a
+different value only takes effect when assigned before the first call."""
+LIB::String = ""
 
-A checkout of the SDK carries a prebuilt library per platform under `natives/`,
-which is what makes a clone runnable with nothing set. Otherwise the bare name,
-resolved by the system loader."""
-const LIB = let override = get(ENV, "KEYNUB_LICDONGLE_LIBRARY", "")
-    if !isempty(override)
-        override
-    else
-        candidate = joinpath(@__DIR__, "..", "..", "..", "natives", _repo_rid(),
-                             _default_basename())
-        isfile(candidate) ? candidate : _default_basename()
+"""
+    sdk_root() -> Union{String,Nothing}
+
+The SDK tree this binding reads `natives/<platform>/` and `include/` from: the
+repository when the package is used from a clone of it, otherwise the SDK release
+the package's artifact downloads. `nothing` if neither is available.
+"""
+function sdk_root()
+    checkout = normpath(joinpath(@__DIR__, "..", "..", ".."))
+    isdir(joinpath(checkout, "natives")) && return checkout
+    root = try
+        artifact"keynub_sdk"
+    catch
+        return nothing
     end
+    entries = readdir(root)
+    return length(entries) == 1 ? joinpath(root, first(entries)) : root
+end
+
+function _resolve_library()
+    override = get(ENV, "KEYNUB_LICDONGLE_LIBRARY", "")
+    isempty(override) || return override
+    root = sdk_root()
+    if root !== nothing
+        candidate = joinpath(root, "natives", _repo_rid(), _default_basename())
+        if isfile(candidate)
+            _make_loadable(candidate)
+            return candidate
+        end
+    end
+    return _default_basename()
+end
+
+"""Windows loads a DLL only from a file that grants execute permission; a file
+installed from an artifact carries none, since the archive stores it as a plain
+read-only file. Grants it, leaving the file read-only."""
+function _make_loadable(path::AbstractString)
+    Sys.iswindows() || return nothing
+    Sys.isexecutable(path) && return nothing
+    try
+        chmod(path, filemode(path) | 0o111)
+    catch
+    end
+    return nothing
+end
+
+function __init__()
+    global LIB = _resolve_library()
+    return nothing
 end
 
 # --- status codes and errors -------------------------------------------------

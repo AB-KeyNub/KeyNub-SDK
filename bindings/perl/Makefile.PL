@@ -1,17 +1,7 @@
-# CPAN manifest.
-#
-# Uploading is a PAUSE account and a tarball; there is no registry API. PAUSE
-# indexes by package name from the .pm, so KeyNub::LicDongle has to be claimed
-# before the first upload -- and, as everywhere else here, a version cannot be
-# reused once it has been indexed.
-#
-# VERSION_FROM reads lib/KeyNub/LicDongle.pm rather than repeating the number,
-# so the module and the distribution cannot disagree. They already had: the
-# module said 1.0.0 while the SDK was at 1.1.0.
-#
-# Apache-2.0 alone is correct: the distribution contains only Perl source. The
-# native library is loaded at run time through the flat companion API and is not
-# bundled; its terms are in BINARY-LICENSE.txt.
+# CPAN distribution. VERSION_FROM reads lib/KeyNub/LicDongle.pm, so the
+# distribution carries the module's $VERSION. The distribution contains Perl
+# source only; the native library is loaded at run time and is not bundled (its
+# terms are in BINARY-LICENSE.txt).
 
 use strict;
 use warnings;
@@ -26,8 +16,6 @@ WriteMakefile(
     MIN_PERL_VERSION => '5.016',
 
     PREREQ_PM => {
-        # Core since 5.8; named so a minimal perl reports it at install time
-        # rather than at the first call.
         'FFI::Platypus' => '1.00',
     },
     TEST_REQUIRES => {

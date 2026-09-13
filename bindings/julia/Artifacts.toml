@@ -1,0 +1,6 @@
+[keynub_sdk]
+git-tree-sha1 = "2dd54a83eae6991309dfba45c326e780759fee9f"
+
+    [[keynub_sdk.download]]
+    sha256 = "3a8242fc9a19cd6c04f1abc9e23c17374ba48712089f49c4d9f6e1830321513a"
+    url = "https://github.com/AB-KeyNub/KeyNub-SDK/archive/refs/tags/v1.1.1.tar.gz"
