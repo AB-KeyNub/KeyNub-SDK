@@ -14,7 +14,11 @@ dongle is a vendor-defined USB HID device.
 [![Packagist](https://img.shields.io/packagist/v/keynub/licdongle?label=Packagist)](https://packagist.org/packages/keynub/licdongle)
 [![Maven Central](https://img.shields.io/maven-central/v/com.keynub/keynub-licdongle?label=Maven%20Central)](https://central.sonatype.com/artifact/com.keynub/keynub-licdongle)
 [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go)
+[![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle)
+[![CPAN](https://img.shields.io/cpan/v/KeyNub-LicDongle?label=CPAN)](https://metacpan.org/dist/KeyNub-LicDongle)
+[![Lazarus OPM](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=Lazarus%20OPM)](https://packages.lazarus-ide.org/)
 [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md)
+[![xmake](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fxmake-io%2Fxmake-repo%2Fmaster%2Fpackages%2Fk%2Fkeynub_licdongle%2Fxmake.lua&search=add_versions%5C%28%22%28%5B0-9.%5D%2B%29%22&replace=v%241&label=xmake)](https://packages.xmake.io/packages/keynub_licdongle)
 [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native)
 [![File Exchange](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=File%20Exchange)](https://www.mathworks.com/matlabcentral/fileexchange/184704-keynub-license-dongle-for-matlab-and-simulink)
 
@@ -42,13 +46,13 @@ once.
 
 | Language | Binding | Sample | Package |
 | --- | --- | --- | --- |
-| C | [`include/licdongle.h`](include/licdongle.h) — CMake target `keynub::licdongle` | [`samples/c`](samples/c) | [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md) [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native) |
-| C++ | [`bindings/cpp`](bindings/cpp) — header-only RAII, C++11, CMake target `keynub::licdongle_cpp` | [`samples/cpp`](samples/cpp) | [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md) [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native) |
+| C | [`include/licdongle.h`](include/licdongle.h) — CMake target `keynub::licdongle` | [`samples/c`](samples/c) | [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md) [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native) [![xmake](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fxmake-io%2Fxmake-repo%2Fmaster%2Fpackages%2Fk%2Fkeynub_licdongle%2Fxmake.lua&search=add_versions%5C%28%22%28%5B0-9.%5D%2B%29%22&replace=v%241&label=xmake)](https://packages.xmake.io/packages/keynub_licdongle) |
+| C++ | [`bindings/cpp`](bindings/cpp) — header-only RAII, C++11, CMake target `keynub::licdongle_cpp` | [`samples/cpp`](samples/cpp) | [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=CMake%20package)](NATIVES.md) [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native) [![xmake](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fxmake-io%2Fxmake-repo%2Fmaster%2Fpackages%2Fk%2Fkeynub_licdongle%2Fxmake.lua&search=add_versions%5C%28%22%28%5B0-9.%5D%2B%29%22&replace=v%241&label=xmake)](https://packages.xmake.io/packages/keynub_licdongle) |
 | flat API | [`bindings/flat`](bindings/flat) — integer handles, no callbacks | [`samples/flat`](samples/flat) | — |
 | C# / VB.NET / F# | [`bindings/dotnet`](bindings/dotnet) — `KeyNub.LicenseDongle` | [`samples/csharp`](samples/csharp), [`samples/vbnet`](samples/vbnet), [`samples/fsharp`](samples/fsharp) | [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle?label=NuGet)](https://www.nuget.org/packages/KeyNub.LicenseDongle) |
 | Python | [`bindings/python`](bindings/python) — `keynub-licdongle`, ctypes, plus the `licd-tool` CLI | [`samples/python`](samples/python) | [![PyPI](https://img.shields.io/pypi/v/keynub-licdongle?label=PyPI)](https://pypi.org/project/keynub-licdongle/) |
 | Java | [`bindings/java`](bindings/java) — JNA, Java 17+ | [`samples/java`](samples/java) | [![Maven Central](https://img.shields.io/maven-central/v/com.keynub/keynub-licdongle?label=Maven%20Central)](https://central.sonatype.com/artifact/com.keynub/keynub-licdongle) |
-| Delphi / Free Pascal | [`bindings/delphi`](bindings/delphi) | [`samples/delphi`](samples/delphi) | — |
+| Delphi / Free Pascal | [`bindings/delphi`](bindings/delphi) | [`samples/delphi`](samples/delphi) | [![Lazarus OPM](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=Lazarus%20OPM)](https://packages.lazarus-ide.org/) |
 | Visual Basic 6 / VBScript | [`bindings/com`](bindings/com) — COM object `KeyNub.Dongle` | [`samples/vb6`](samples/vb6) | — |
 | twinBASIC | [`bindings/com`](bindings/com) | [`samples/twinbasic`](samples/twinbasic) | — |
 | Excel / VBA | [`bindings/vba`](bindings/vba) | [`samples/vba`](samples/vba) | — |
@@ -59,13 +63,13 @@ once.
 | Rust | [`bindings/rust`](bindings/rust) — `keynub-licdongle`, no dependencies | [`samples/rust`](samples/rust) | [![crates.io](https://img.shields.io/crates/v/keynub-licdongle?label=crates.io)](https://crates.io/crates/keynub-licdongle) |
 | Ruby | [`bindings/ruby`](bindings/ruby) — stdlib Fiddle, no gems | [`samples/ruby`](samples/ruby) | [![RubyGems](https://img.shields.io/gem/v/keynub_licdongle?label=RubyGems)](https://rubygems.org/gems/keynub_licdongle) |
 | PHP | [`bindings/php`](bindings/php) — bundled FFI, no PECL module | [`samples/php`](samples/php) | [![Packagist](https://img.shields.io/packagist/v/keynub/licdongle?label=Packagist)](https://packagist.org/packages/keynub/licdongle) |
-| Perl | [`bindings/perl`](bindings/perl) — `FFI::Platypus` | [`samples/perl`](samples/perl) | — |
+| Perl | [`bindings/perl`](bindings/perl) — `FFI::Platypus` | [`samples/perl`](samples/perl) | [![CPAN](https://img.shields.io/cpan/v/KeyNub-LicDongle?label=CPAN)](https://metacpan.org/dist/KeyNub-LicDongle) |
 | Lua | [`bindings/lua`](bindings/lua) — LuaJIT FFI | [`samples/lua`](samples/lua) | [![LuaRocks](https://img.shields.io/luarocks/v/ab-tools/keynub-licdongle?label=LuaRocks)](https://luarocks.org/modules/ab-tools/keynub-licdongle) |
 | Fortran | [`bindings/fortran`](bindings/fortran) — F2003 `iso_c_binding` | [`samples/fortran`](samples/fortran) | — |
 | COBOL | [`bindings/cobol`](bindings/cobol) — copybook, GnuCOBOL | [`samples/cobol`](samples/cobol) | — |
 | Zig | [`bindings/zig`](bindings/zig) — `@cImport` compiles the real header | [`samples/zig`](samples/zig) | — |
 | Julia | [`bindings/julia`](bindings/julia) — `ccall`, no packages | [`samples/julia`](samples/julia) | — |
-| Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) | — |
+| Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) | [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle) |
 
 Every sample carries the exact command that builds and runs it in its header
 comment, including which native library it wants. All of them except **Excel/VBA**

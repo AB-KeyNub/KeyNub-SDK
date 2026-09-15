@@ -49,6 +49,13 @@ fpc -Mdelphi -Fu bindings/delphi samples/delphi/VerifyAndRead.dpr
 dcc32 -USDK\bindings\delphi SDK\samples\delphi\VerifyAndRead.dpr
 ```
 
+## Lazarus demo
+
+The package as distributed through the Lazarus Online Package Manager carries
+`demo/`: a console project that requires the package and runs every call, with
+a stand-in for the native library for each platform so that it works without a
+dongle. `demo/README.md` there has the steps and the expected output.
+
 ## Security
 
 Read [`docs/integration-security.md`](../../docs/integration-security.md) before
