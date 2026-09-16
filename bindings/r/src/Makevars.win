@@ -1,0 +1,2 @@
+# Windows loads through LoadLibrary, which needs no extra library.
+PKG_CPPFLAGS = -I../inst/include

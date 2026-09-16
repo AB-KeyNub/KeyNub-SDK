@@ -1,0 +1,26 @@
+Package: KeyNubLicDongle
+Type: Package
+Title: Client for the 'KeyNub' USB License Dongle
+Version: 1.1.1
+Authors@R: c(
+    person("Andreas", "Breitschopp", email = "info@keynub.com",
+           role = c("aut", "cre")),
+    person("KeyNub", role = "cph"))
+Description: Verifies that a 'KeyNub' USB license dongle is genuine, reads and
+    writes the license records it holds, reads and increments its monotonic
+    counters, and encrypts data so that only a dongle can decrypt it. The work
+    is done by the vendor's native library, which the package loads at run
+    time; the package installs without it and reports where it looked. Runs on
+    Windows, Linux and macOS.
+License: Apache License (== 2.0)
+URL: https://www.keynub.com/developers/r/,
+    https://github.com/AB-KeyNub/KeyNub-SDK
+BugReports: https://github.com/AB-KeyNub/KeyNub-SDK/issues
+SystemRequirements: the KeyNub License Dongle native library
+    (keynub_licdongle) for the platform, see
+    https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md
+Encoding: UTF-8
+Depends: R (>= 4.0)
+NeedsCompilation: yes
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.0

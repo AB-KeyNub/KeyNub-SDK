@@ -190,6 +190,13 @@ codegen/
 *.zip
 *.tar.gz
 
+# --- R ---------------------------------------------------------------------------
+bindings/r/src/*.dll
+bindings/r/src/*.so
+bindings/r/src/*.dylib
+bindings/r/*.Rcheck/
+bindings/r/*.tar.gz
+
 # --- the tracked prebuilt libraries ------------------------------------------
 # Last word, deliberately: these are the one binary thing this repository does
 # track, and a broad pattern above must not be able to drop them.

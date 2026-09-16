@@ -1,0 +1,5 @@
+# The header is the package's public copy of the SDK's licdongle.h, installed
+# under include/ for anyone who wants it. The library is loaded at run time, so
+# nothing is linked beyond the loader itself.
+PKG_CPPFLAGS = -I../inst/include
+PKG_LIBS = -ldl
