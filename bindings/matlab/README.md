@@ -65,6 +65,22 @@ MATLAB executable's directory, not the MEX file's own, so a gateway that depende
 on `keynub_licdongle.dll` would need that DLL on the system `PATH` at every
 customer site.
 
+### GNU Octave
+
+The binding runs under Octave as well. Octave compiles MEX files with
+`mkoctfile`, whose MinGW toolchain cannot consume the MSVC static library on
+Windows, so the gateway is linked against the shared library instead and that
+library has to be findable at run time (on `PATH` on Windows, `LD_LIBRARY_PATH`
+on Linux). From a clone of the repository:
+
+```
+mkoctfile --mex -Iinclude -Lnatives/<platform> -lkeynub_licdongle -o bindings/matlab/mex/licd_mex.mex bindings/matlab/src/licd_mex.c
+```
+
+then `addpath('bindings/matlab')` and the same `keynub.Context`, `keynub.Dongle`
+and `keynub.Session` classes as in MATLAB. The Simulink block and the MATLAB
+Coder path are MATLAB-only.
+
 ### Why MEX and not `loadlibrary`
 
 `loadlibrary` would need no compile step from us, but it needs one from the

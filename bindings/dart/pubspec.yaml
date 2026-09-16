@@ -1,0 +1,26 @@
+name: keynub_licdongle
+description: >-
+  Client for the KeyNub USB license dongle: verify that a dongle is genuine,
+  read and write its license records, use its counters and encrypt data so that
+  only a dongle can decrypt it. Pure Dart over the vendor's native library
+  through dart:ffi; Windows, Linux and macOS.
+version: 1.1.1
+homepage: https://www.keynub.com/developers/dart/
+repository: https://github.com/AB-KeyNub/KeyNub-SDK
+issue_tracker: https://github.com/AB-KeyNub/KeyNub-SDK/issues
+topics:
+  - licensing
+  - copy-protection
+  - usb
+  - ffi
+  - hardware
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  ffi: ^2.1.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0

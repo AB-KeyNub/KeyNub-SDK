@@ -1,0 +1,16 @@
+# The Dart samples, depending on the package two directories up.
+#
+#   dart pub get
+#   dart run bin/verify_and_read.dart
+#   dart run bin/rotate_write_key.dart ../../keys/keynub-shipping-writeauth.key.der my-key.der
+name: keynub_samples
+description: Samples for the KeyNub License Dongle Dart package.
+publish_to: none
+version: 1.1.1
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  keynub_licdongle:
+    path: ../../bindings/dart

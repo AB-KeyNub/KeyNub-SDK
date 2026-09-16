@@ -57,7 +57,8 @@ once.
 | Visual Basic 6 / VBScript | [`bindings/com`](bindings/com) — COM object `KeyNub.Dongle` | [`samples/vb6`](samples/vb6) | — |
 | twinBASIC | [`bindings/com`](bindings/com) | [`samples/twinbasic`](samples/twinbasic) | — |
 | Excel / VBA | [`bindings/vba`](bindings/vba) | [`samples/vba`](samples/vba) | — |
-| MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output | [`samples/matlab`](samples/matlab), [`samples/simulink`](samples/simulink) | [![File Exchange](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=File%20Exchange)](https://www.mathworks.com/matlabcentral/fileexchange/184704-keynub-license-dongle-for-matlab-and-simulink) |
+| MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output; runs in GNU Octave | [`samples/matlab`](samples/matlab), [`samples/simulink`](samples/simulink) | [![File Exchange](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=File%20Exchange)](https://www.mathworks.com/matlabcentral/fileexchange/184704-keynub-license-dongle-for-matlab-and-simulink) |
+| Wolfram Language | [`bindings/wolfram`](bindings/wolfram) — paclet over `ForeignFunctionLoad`, flat API | [`samples/wolfram`](samples/wolfram) | — |
 | LabVIEW | [`bindings/labview`](bindings/labview) — VI library (LabVIEW 2026, 64-bit) and the import header | [`samples/labview`](samples/labview) | — |
 | Node.js / Electron | [`bindings/nodejs`](bindings/nodejs) — `@keynub/licdongle` | [`samples/nodejs`](samples/nodejs) | [![npm](https://img.shields.io/npm/v/%40keynub%2Flicdongle?label=npm)](https://www.npmjs.com/package/@keynub/licdongle) |
 | Go | [`bindings/go`](bindings/go) — cgo, `errors.Is` sentinels | [`samples/go`](samples/go) | [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go) |
@@ -68,7 +69,10 @@ once.
 | Lua | [`bindings/lua`](bindings/lua) — LuaJIT FFI | [`samples/lua`](samples/lua) | [![LuaRocks](https://img.shields.io/luarocks/v/ab-tools/keynub-licdongle?label=LuaRocks)](https://luarocks.org/modules/ab-tools/keynub-licdongle) |
 | Fortran | [`bindings/fortran`](bindings/fortran) — F2003 `iso_c_binding` | [`samples/fortran`](samples/fortran) | — |
 | COBOL | [`bindings/cobol`](bindings/cobol) — copybook, GnuCOBOL | [`samples/cobol`](samples/cobol) | — |
+| Ada | [`bindings/ada`](bindings/ada) — Alire crate `keynub_licdongle`, library loaded at run time | [`samples/ada`](samples/ada) | — |
 | Zig | [`bindings/zig`](bindings/zig) — `@cImport` compiles the real header | [`samples/zig`](samples/zig) | — |
+| Swift | [`bindings/swift`](bindings/swift) — `KeyNubLicDongle`, SwiftPM package at the repository root | [`samples/swift`](samples/swift) | — |
+| Dart / Flutter | [`bindings/dart`](bindings/dart) — `keynub_licdongle`, `dart:ffi` | [`samples/dart`](samples/dart) | — |
 | Julia | [`bindings/julia`](bindings/julia) — `ccall`, no packages | [`samples/julia`](samples/julia) | [![Julia General](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FJuliaRegistries%2FGeneral%2Fmaster%2FK%2FKeyNubLicenseDongle%2FVersions.toml&search=%5C%5B%22%28%5B0-9.%5D%2B%29%22%5C%5D%5Cs*git-tree-sha1%20%3D%20%22%5B0-9a-f%5D%2B%22%5Cs*%24&replace=v%241&label=Julia%20General&logo=julia)](https://juliahub.com/ui/Packages/General/KeyNubLicenseDongle) |
 | R | [`bindings/r`](bindings/r) — `KeyNubLicDongle`, a C layer compiled at install | [`samples/r`](samples/r) | — |
 | Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) | [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle) |

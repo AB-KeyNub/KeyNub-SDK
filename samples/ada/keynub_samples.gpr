@@ -1,0 +1,25 @@
+--  The Ada samples: two programs over the crate two directories up.
+--
+--    alr build                          # from samples/ada
+--    ./bin/verify_and_read
+--    ./bin/rotate_write_key ../../keys/keynub-shipping-writeauth.key.der my-key.der
+with "config/keynub_samples_config.gpr";
+with "keynub_licdongle.gpr";
+
+project Keynub_Samples is
+   for Source_Dirs use ("src", "config");
+   for Object_Dir use "obj/" & Keynub_Samples_Config.Build_Profile;
+   for Exec_Dir use "bin";
+   for Create_Missing_Dirs use "True";
+   for Main use ("verify_and_read.adb", "rotate_write_key.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use Keynub_Samples_Config.Ada_Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      --  -static: the GNAT runtime linked in, so the executable carries no
+      --  run path to the toolchain (macOS refuses a duplicate LC_RPATH).
+      for Switches ("Ada") use ("-Es", "-static");
+   end Binder;
+end Keynub_Samples;

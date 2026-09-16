@@ -1,0 +1,49 @@
+--  KeyNub License Dongle: the Ada binding as a static library.
+--
+--  Nothing here links the native library; it is loaded at run time (see
+--  KeyNub_LicDongle.Thin), so an application needs no -L flag for it. The one
+--  operating-system difference is the loader itself, and the host is what
+--  Alire's configuration package says it is.
+with "config/keynub_licdongle_config.gpr";
+
+library project Keynub_Licdongle is
+
+   for Library_Name use "keynub_licdongle_ada";
+   for Library_Version use Project'Library_Name & ".so." & Keynub_Licdongle_Config.Crate_Version;
+
+   Loader_Dir := "src/os/posix";
+   case Keynub_Licdongle_Config.Alire_Host_OS is
+      when "windows" => Loader_Dir := "src/os/windows";
+      when others    => Loader_Dir := "src/os/posix";
+   end case;
+
+   for Source_Dirs use ("src", Loader_Dir, "config");
+   for Object_Dir use "obj/" & Keynub_Licdongle_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("KEYNUB_LICDONGLE_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Keynub_Licdongle_Config.Ada_Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es");  --  symbolic traceback
+   end Binder;
+
+   package Linker is
+      case Keynub_Licdongle_Config.Alire_Host_OS is
+         when "windows" => for Linker_Options use ();
+         when others    => for Linker_Options use ("-ldl");
+      end case;
+   end Linker;
+
+   package Install is
+      for Artifacts (".") use ("share");
+   end Install;
+
+end Keynub_Licdongle;

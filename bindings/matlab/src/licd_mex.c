@@ -596,7 +596,7 @@ static void cmd_get_serial(int nlhs, mxArray *plhs[], int nrhs, const mxArray *p
     plhs[0] = mxCreateString(serial);
 }
 
-static const char *k_genuine_fields[] = {"genuine", "serial", "batch", "provisionedDate"};
+static const char *k_genuine_fields[] = {"genuine", "serial", "provisionedDate"};
 
 static void cmd_verify_genuine(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     (void)nlhs; (void)nrhs;
@@ -610,7 +610,6 @@ static void cmd_verify_genuine(int nlhs, mxArray *plhs[], int nrhs, const mxArra
     mxArray *out = mxCreateStructMatrix(1, 1, NFIELDS(k_genuine_fields), k_genuine_fields);
     mxSetField(out, 0, "genuine", mxCreateLogicalScalar(res.genuine != 0));
     mxSetField(out, 0, "serial", mxCreateString(res.serial));
-    mxSetField(out, 0, "batch", mxCreateString(res.batch));
     mxSetField(out, 0, "provisionedDate", mxCreateString(res.provisioned_date));
     plhs[0] = out;
 }

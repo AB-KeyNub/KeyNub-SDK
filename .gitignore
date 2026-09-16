@@ -197,6 +197,27 @@ bindings/r/src/*.dylib
 bindings/r/*.Rcheck/
 bindings/r/*.tar.gz
 
+# --- Swift -----------------------------------------------------------------------
+.build/
+samples/swift/.build/
+
+# --- Dart -----------------------------------------------------------------------
+.dart_tool/
+bindings/dart/pubspec.lock
+samples/dart/pubspec.lock
+
+# --- Ada (Alire) ----------------------------------------------------------------
+bindings/ada/alire/
+bindings/ada/config/
+bindings/ada/obj/
+bindings/ada/lib/
+bindings/ada/tests/obj/
+bindings/ada/tests/bin/
+samples/ada/alire/
+samples/ada/config/
+samples/ada/obj/
+samples/ada/bin/
+
 # --- the tracked prebuilt libraries ------------------------------------------
 # Last word, deliberately: these are the one binary thing this repository does
 # track, and a broad pattern above must not be able to drop them.
