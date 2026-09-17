@@ -153,10 +153,13 @@ standIn = do
         exitFailure
       pure out
   where
+    -- Not the library's own name: macOS dyld searches DYLD_LIBRARY_PATH by
+    -- leaf name even for an absolute-path dlopen, and a build tree on that
+    -- path holds the real library under that name.
     libName = case System.Info.os of
-      "mingw32" -> "keynub_licdongle_flat.dll"
-      "darwin"  -> "libkeynub_licdongle_flat.dylib"
-      _         -> "libkeynub_licdongle_flat.so"
+      "mingw32" -> "keynub_flat_standin.dll"
+      "darwin"  -> "libkeynub_flat_standin.dylib"
+      _         -> "libkeynub_flat_standin.so"
     tryCompilers [] _ = pure False
     tryCompilers ((exe, pre) : rest) args = do
       r <- try (readProcessWithExitCode exe (pre ++ args) "") :: IO (Either SomeException (ExitCode, String, String))

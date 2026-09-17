@@ -1,0 +1,3 @@
+; The OCaml package lives under bindings/ocaml, its samples under samples/ocaml;
+; dune looks nowhere else.
+(dirs bindings samples)

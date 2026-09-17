@@ -1,0 +1,4 @@
+(library
+ (name keynub_licdongle)
+ (public_name keynub-licdongle)
+ (libraries ctypes ctypes-foreign))

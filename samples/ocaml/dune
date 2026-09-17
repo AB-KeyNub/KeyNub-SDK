@@ -1,0 +1,3 @@
+(executables
+ (names verify_and_read rotate_write_key)
+ (libraries keynub-licdongle))
