@@ -1,7 +1,7 @@
 # KeyNub License Dongle — Wolfram Language paclet
 
 ```wolfram
-Needs["KeyNubLicDongle`"]
+Needs["KeyNub`KeyNubLicDongle`"]
 
 h = LicDongleOpen[];                        (* first dongle, or LicDongleOpen[serial] *)
 LicDongleVerifyGenuine[h];                  (* a Failure unless genuine *)
@@ -34,7 +34,7 @@ From a clone of the SDK repository, no packaging step:
 
 ```wolfram
 PacletDirectoryLoad["<clone>/bindings/wolfram/KeyNubLicDongle"]
-Needs["KeyNubLicDongle`"]
+Needs["KeyNub`KeyNubLicDongle`"]
 ```
 
 `PacletInstall` on the paclet's repository entry does the same once it is

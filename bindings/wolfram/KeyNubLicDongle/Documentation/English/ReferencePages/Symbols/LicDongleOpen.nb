@@ -1,0 +1,92 @@
+Notebook[{Cell[CellGroupData[{Cell["LicDongleOpen", "ObjectName", 
+      CellID -> 251523073], Cell[TextData[{Cell["   ", "ModInfo"], 
+        Cell[BoxData[RowBox[{"LicDongleOpen", "[", "]"}]], "InlineFormula"], 
+        " \[LineSeparator]opens the first dongle and gives a handle.\n", 
+        Cell["   ", "ModInfo"], Cell[BoxData[RowBox[{"LicDongleOpen", "[", 
+            StyleBox["serial", "TI"], "]"}]], "InlineFormula"], 
+        " \[LineSeparator]opens the dongle with that serial."}], "Usage", 
+      CellID -> 1667103440], Cell["A handle is a positive integer; every \
+other function takes it as its first argument.", "Notes", 
+      CellID -> 716190204], Cell["The library holds up to 32 open handles; \
+release a dongle with LicDongleClose.", "Notes", CellID -> 867786820], 
+     Cell[
+      "serial is the hex string LicDongleDevices and LicDongleSerial give.", 
+      "Notes", CellID -> 1153323226], Cell["On failure the result is \
+Failure[\"LicDongleError\", ...] with \"Status\" (the C status code), \
+\"Operation\" and \"Detail\".", "Notes", CellID -> 1524286837]}, Open]], 
+  Cell[CellGroupData[{Cell["See Also", "SeeAlsoSection", 
+      CellID -> 1621746165], 
+     Cell[TextData[{Cell[TextData[ButtonBox["LicDongleOpenPath", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleOpenPath"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}], 
+        Cell[TextData[StyleBox[" \[FilledVerySmallSquare] ", 
+           "InlineSeparator"]]], Cell[TextData[ButtonBox["LicDongleClose", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleClose"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}], 
+        Cell[TextData[StyleBox[" \[FilledVerySmallSquare] ", 
+           "InlineSeparator"]]], Cell[TextData[ButtonBox["LicDongleDevices", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleDevices"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}]}], "SeeAlso", CellID -> 1939643347]}, 
+    Open]], Cell[CellGroupData[{Cell["Related Guides", "MoreAboutSection", 
+      CellID -> 1767967272], Cell[TextData[ButtonBox["KeyNub License Dongle", 
+        BaseStyle -> "Link", ButtonData -> 
+         "paclet:KeyNub/KeyNubLicDongle/guide/KeyNubLicDongle"]], 
+      "MoreAbout", CellID -> 940251315]}, Open]], 
+  Cell[CellGroupData[{Cell["Related Links", "RelatedLinksSection", 
+      CellID -> 1647576488], 
+     Cell[TextData[ButtonBox[
+        "KeyNub License Dongle for the Wolfram Language", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://www.keynub.com/developers/wolfram/"], None}]], 
+      "RelatedLinks", CellID -> 322410048], 
+     Cell[TextData[ButtonBox["KeyNub SDK on GitHub", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://github.com/AB-KeyNub/KeyNub-SDK"], None}]], 
+      "RelatedLinks", CellID -> 171886472]}, Open]], 
+  Cell[CellGroupData[{Cell["Examples Initialization", 
+      "ExamplesInitializationSection", CellID -> 380269965], 
+     Cell[BoxData[RowBox[{"Needs", "[", "\"KeyNub`KeyNubLicDongle`\"", 
+         "]"}]], "ExampleInitialization", CellID -> 893546233]}, Open]], 
+  Cell[CellGroupData[
+    {Cell[BoxData[InterpretationBox[GridBox[
+         {{StyleBox[RowBox[{"Basic", " ", "Examples"}], 
+            "PrimaryExamplesSection"], ButtonBox[RowBox[
+             {RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}], 
+            BaseStyle -> "ExtendedExamplesLink", ButtonData :> 
+             "ExtendedExamples"]}}], $Line = 0; ]], "PrimaryExamplesSection", 
+      CellID -> 1572567952], Cell["Open the first dongle:", "ExampleText", 
+      CellID -> 535375227], 
+     Cell[BoxData[RowBox[{"h", "=", RowBox[{"LicDongleOpen", "[", "]"}]}]], 
+      "Input", CellLabel -> "In[1]:=", CellID -> 360741637], 
+     Cell["Open a dongle by serial:", "ExampleText", CellID -> 115375299], 
+     Cell[BoxData[RowBox[{"h", "=", RowBox[{"LicDongleOpen", "[", 
+           "\"04A1B2C3D4E5F6\"", "]"}]}]], "Input", CellLabel -> "In[2]:=", 
+      CellID -> 210315961]}, Open]], 
+  Cell[CellGroupData[{Cell["Metadata", "MetadataSection", 
+      CellID -> 120358350], Cell[TextData[{"New in: ", 
+        Cell["1.1.1", "HistoryData", CellTags -> "New"], " | Modified in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Modified"], " | Obsolete in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Obsolete"]}], "History", 
+      CellID -> 358356606], Cell[CellGroupData[
+       {Cell["Categorization", "CategorizationSection", CellID -> 551111758], 
+        Cell["Symbol", "Categorization", CellLabel -> "Entity Type", 
+         CellID -> 1314166430], Cell["KeyNub/KeyNubLicDongle", 
+         "Categorization", CellLabel -> "Paclet Name", CellID -> 1438968290], 
+        Cell["KeyNub`KeyNubLicDongle`", "Categorization", 
+         CellLabel -> "Context", CellID -> 2139512644], 
+        Cell["KeyNub/KeyNubLicDongle/ref/LicDongleOpen", "Categorization", 
+         CellLabel -> "URI", CellID -> 1495442080]}, Closed]], 
+     Cell[CellGroupData[{Cell["Keywords", "KeywordsSection", 
+         CellID -> 95334785], Cell["license dongle", "Keywords", 
+         CellID -> 264337509], Cell["copy protection", "Keywords", 
+         CellID -> 382216673], Cell["KeyNub", "Keywords", 
+         CellID -> 1640962379]}, Closed]]}, Open]]}, 
+ TaggingRules -> <|"Paclet" -> "KeyNub/KeyNubLicDongle"|>, 
+ StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, 
+   "FunctionPageStylesExt.nb", CharacterEncoding -> "UTF-8"]]

@@ -1,0 +1,70 @@
+Notebook[{Cell[CellGroupData[{Cell["LicDongleGenuineQ", "ObjectName", 
+      CellID -> 1004393635], Cell[TextData[{Cell["   ", "ModInfo"], 
+        Cell[BoxData[RowBox[{"LicDongleGenuineQ", "[", StyleBox["handle", 
+             "TI"], "]"}]], "InlineFormula"], " \[LineSeparator]gives True \
+only when the dongle proves genuine."}], "Usage", CellID -> 20301612], 
+     Cell["Every failure, including a missing library or a closed handle, \
+gives False.", "Notes", CellID -> 229998506], 
+     Cell["The call needs no session.", "Notes", CellID -> 347876894]}, 
+    Open]], Cell[CellGroupData[{Cell["See Also", "SeeAlsoSection", 
+      CellID -> 47446374], 
+     Cell[TextData[{Cell[TextData[ButtonBox["LicDongleVerifyGenuine", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleVerifyGenuine"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}]}], "SeeAlso", CellID -> 145414826]}, 
+    Open]], Cell[CellGroupData[{Cell["Related Guides", "MoreAboutSection", 
+      CellID -> 307710801], Cell[TextData[ButtonBox["KeyNub License Dongle", 
+        BaseStyle -> "Link", ButtonData -> 
+         "paclet:KeyNub/KeyNubLicDongle/guide/KeyNubLicDongle"]], 
+      "MoreAbout", CellID -> 1504640436]}, Open]], 
+  Cell[CellGroupData[{Cell["Related Links", "RelatedLinksSection", 
+      CellID -> 6043716], Cell[TextData[ButtonBox[
+        "KeyNub License Dongle for the Wolfram Language", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://www.keynub.com/developers/wolfram/"], None}]], 
+      "RelatedLinks", CellID -> 1900908207], 
+     Cell[TextData[ButtonBox["KeyNub SDK on GitHub", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://github.com/AB-KeyNub/KeyNub-SDK"], None}]], 
+      "RelatedLinks", CellID -> 1749344023]}, Open]], 
+  Cell[CellGroupData[{Cell["Examples Initialization", 
+      "ExamplesInitializationSection", CellID -> 596266707], 
+     Cell[BoxData[RowBox[{"Needs", "[", "\"KeyNub`KeyNubLicDongle`\"", 
+         "]"}]], "ExampleInitialization", CellID -> 306651307]}, Open]], 
+  Cell[CellGroupData[
+    {Cell[BoxData[InterpretationBox[GridBox[
+         {{StyleBox[RowBox[{"Basic", " ", "Examples"}], 
+            "PrimaryExamplesSection"], ButtonBox[RowBox[
+             {RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}], 
+            BaseStyle -> "ExtendedExamplesLink", ButtonData :> 
+             "ExtendedExamples"]}}], $Line = 0; ]], "PrimaryExamplesSection", 
+      CellID -> 1523688008], Cell["Gate on authenticity:", "ExampleText", 
+      CellID -> 1754249226], 
+     Cell[BoxData[RowBox[{"If", "[", RowBox[
+          {RowBox[{"!", RowBox[{"LicDongleGenuineQ", "[", "h", "]"}]}], ",", 
+           RowBox[{"Return", "[", "$Failed", "]"}]}], "]"}]], "Input", 
+      CellLabel -> "In[1]:=", CellID -> 1536862685]}, Open]], 
+  Cell[CellGroupData[{Cell["Metadata", "MetadataSection", 
+      CellID -> 839696020], Cell[TextData[{"New in: ", 
+        Cell["1.1.1", "HistoryData", CellTags -> "New"], " | Modified in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Modified"], " | Obsolete in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Obsolete"]}], "History", 
+      CellID -> 1998982893], Cell[CellGroupData[
+       {Cell["Categorization", "CategorizationSection", 
+         CellID -> 1345135091], Cell["Symbol", "Categorization", 
+         CellLabel -> "Entity Type", CellID -> 1228820314], 
+        Cell["KeyNub/KeyNubLicDongle", "Categorization", 
+         CellLabel -> "Paclet Name", CellID -> 467548994], 
+        Cell["KeyNub`KeyNubLicDongle`", "Categorization", 
+         CellLabel -> "Context", CellID -> 505657923], 
+        Cell["KeyNub/KeyNubLicDongle/ref/LicDongleGenuineQ", 
+         "Categorization", CellLabel -> "URI", CellID -> 995670543]}, 
+       Closed]], Cell[CellGroupData[{Cell["Keywords", "KeywordsSection", 
+         CellID -> 2119190767], Cell["license dongle", "Keywords", 
+         CellID -> 987841339], Cell["copy protection", "Keywords", 
+         CellID -> 602411651], Cell["KeyNub", "Keywords", 
+         CellID -> 1424957973]}, Closed]]}, Open]]}, 
+ TaggingRules -> <|"Paclet" -> "KeyNub/KeyNubLicDongle"|>, 
+ StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, 
+   "FunctionPageStylesExt.nb", CharacterEncoding -> "UTF-8"]]

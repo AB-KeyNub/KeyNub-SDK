@@ -9,7 +9,7 @@
    Exit code 0 when every check passed. *)
 
 PacletDirectoryLoad[DirectoryName[$InputFileName, 2]];
-Needs["KeyNubLicDongle`"];
+Needs["KeyNub`KeyNubLicDongle`"];
 
 failures = 0;
 check[cond_, what_] := If[TrueQ[cond], Null, failures++; Print["  FAIL  ", what]];

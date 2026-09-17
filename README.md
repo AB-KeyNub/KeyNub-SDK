@@ -15,6 +15,7 @@ dongle is a vendor-defined USB HID device.
 [![Maven Central](https://img.shields.io/maven-central/v/com.keynub/keynub-licdongle?label=Maven%20Central)](https://central.sonatype.com/artifact/com.keynub/keynub-licdongle)
 [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go)
 [![Julia General](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FJuliaRegistries%2FGeneral%2Fmaster%2FK%2FKeyNubLicenseDongle%2FVersions.toml&search=%5C%5B%22%28%5B0-9.%5D%2B%29%22%5C%5D%5Cs*git-tree-sha1%20%3D%20%22%5B0-9a-f%5D%2B%22%5Cs*%24&replace=v%241&label=Julia%20General&logo=julia)](https://juliahub.com/ui/Packages/General/KeyNubLicenseDongle)
+[![pub.dev](https://img.shields.io/pub/v/keynub_licdongle?label=pub.dev)](https://pub.dev/packages/keynub_licdongle)
 [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle)
 [![CPAN](https://img.shields.io/cpan/v/KeyNub-LicDongle?label=CPAN)](https://metacpan.org/dist/KeyNub-LicDongle)
 [![Lazarus OPM](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?label=Lazarus%20OPM)](https://packages.lazarus-ide.org/)
@@ -72,9 +73,10 @@ once.
 | Ada | [`bindings/ada`](bindings/ada) — Alire crate `keynub_licdongle`, library loaded at run time | [`samples/ada`](samples/ada) | — |
 | Zig | [`bindings/zig`](bindings/zig) — `@cImport` compiles the real header | [`samples/zig`](samples/zig) | — |
 | Swift | [`bindings/swift`](bindings/swift) — `KeyNubLicDongle`, SwiftPM package at the repository root | [`samples/swift`](samples/swift) | — |
-| Dart / Flutter | [`bindings/dart`](bindings/dart) — `keynub_licdongle`, `dart:ffi` | [`samples/dart`](samples/dart) | — |
+| Dart / Flutter | [`bindings/dart`](bindings/dart) — `keynub_licdongle`, `dart:ffi` | [`samples/dart`](samples/dart) | [![pub.dev](https://img.shields.io/pub/v/keynub_licdongle?label=pub.dev)](https://pub.dev/packages/keynub_licdongle) |
 | Julia | [`bindings/julia`](bindings/julia) — `ccall`, no packages | [`samples/julia`](samples/julia) | [![Julia General](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FJuliaRegistries%2FGeneral%2Fmaster%2FK%2FKeyNubLicenseDongle%2FVersions.toml&search=%5C%5B%22%28%5B0-9.%5D%2B%29%22%5C%5D%5Cs*git-tree-sha1%20%3D%20%22%5B0-9a-f%5D%2B%22%5Cs*%24&replace=v%241&label=Julia%20General&logo=julia)](https://juliahub.com/ui/Packages/General/KeyNubLicenseDongle) |
 | R | [`bindings/r`](bindings/r) — `KeyNubLicDongle`, a C layer compiled at install | [`samples/r`](samples/r) | — |
+| Haskell | [`bindings/haskell`](bindings/haskell) — `keynub-licdongle`, pure Haskell over the flat API | [`samples/haskell`](samples/haskell) | — |
 | Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) | [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle) |
 
 Every sample carries the exact command that builds and runs it in its header

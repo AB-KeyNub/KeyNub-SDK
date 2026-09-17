@@ -19,7 +19,7 @@
    lost has to come back to be re-provisioned. *)
 
 PacletDirectoryLoad[FileNameJoin[{DirectoryName[$InputFileName, 3], "bindings", "wolfram", "KeyNubLicDongle"}]];
-Needs["KeyNubLicDongle`"];
+Needs["KeyNub`KeyNubLicDongle`"];
 
 bail[f_Failure] := (Print["KeyNub error: ", f["Message"]]; Exit[1]);
 readKey[path_] := If[FileExistsQ[path], ReadByteArray[path], Print["cannot open ", path]; Exit[2]];

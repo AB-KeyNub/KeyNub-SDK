@@ -1,0 +1,70 @@
+Notebook[{Cell[CellGroupData[{Cell["LicDongleEraseAllRecords", "ObjectName", 
+      CellID -> 1311623105], Cell[TextData[{Cell["   ", "ModInfo"], 
+        Cell[BoxData[RowBox[{"LicDongleEraseAllRecords", "[", 
+            StyleBox["handle", "TI"], "]"}]], "InlineFormula"], 
+        " \[LineSeparator]erases every record on the dongle."}], "Usage", 
+      CellID -> 364997496], Cell["The call needs the write role; elevate the \
+session with LicDongleAuthorizeWrite.", "Notes", CellID -> 1870436055], 
+     Cell["On failure the result is Failure[\"LicDongleError\", ...] with \
+\"Status\" (the C status code), \"Operation\" and \"Detail\".", "Notes", 
+      CellID -> 1987430255]}, Open]], 
+  Cell[CellGroupData[{Cell["See Also", "SeeAlsoSection", 
+      CellID -> 1270681613], 
+     Cell[TextData[{Cell[TextData[ButtonBox["LicDongleEraseRecord", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleEraseRecord"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}]}], "SeeAlso", CellID -> 857292416]}, 
+    Open]], Cell[CellGroupData[{Cell["Related Guides", "MoreAboutSection", 
+      CellID -> 702853003], Cell[TextData[ButtonBox["KeyNub License Dongle", 
+        BaseStyle -> "Link", ButtonData -> 
+         "paclet:KeyNub/KeyNubLicDongle/guide/KeyNubLicDongle"]], 
+      "MoreAbout", CellID -> 85904887]}, Open]], 
+  Cell[CellGroupData[{Cell["Related Links", "RelatedLinksSection", 
+      CellID -> 346592288], 
+     Cell[TextData[ButtonBox[
+        "KeyNub License Dongle for the Wolfram Language", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://www.keynub.com/developers/wolfram/"], None}]], 
+      "RelatedLinks", CellID -> 941844420], 
+     Cell[TextData[ButtonBox["KeyNub SDK on GitHub", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://github.com/AB-KeyNub/KeyNub-SDK"], None}]], 
+      "RelatedLinks", CellID -> 556414588]}, Open]], 
+  Cell[CellGroupData[{Cell["Examples Initialization", 
+      "ExamplesInitializationSection", CellID -> 1450859981], 
+     Cell[BoxData[RowBox[{"Needs", "[", "\"KeyNub`KeyNubLicDongle`\"", 
+         "]"}]], "ExampleInitialization", CellID -> 1888405978]}, Open]], 
+  Cell[CellGroupData[
+    {Cell[BoxData[InterpretationBox[GridBox[
+         {{StyleBox[RowBox[{"Basic", " ", "Examples"}], 
+            "PrimaryExamplesSection"], ButtonBox[RowBox[
+             {RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}], 
+            BaseStyle -> "ExtendedExamplesLink", ButtonData :> 
+             "ExtendedExamples"]}}], $Line = 0; ]], "PrimaryExamplesSection", 
+      CellID -> 118861926], Cell["Erase every record:", "ExampleText", 
+      CellID -> 15457293], Cell[BoxData[RowBox[{"LicDongleEraseAllRecords", 
+         "[", "h", "]"}]], "Input", CellLabel -> "In[1]:=", 
+      CellID -> 1034363379]}, Open]], 
+  Cell[CellGroupData[{Cell["Metadata", "MetadataSection", 
+      CellID -> 1207741838], Cell[TextData[{"New in: ", 
+        Cell["1.1.1", "HistoryData", CellTags -> "New"], " | Modified in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Modified"], " | Obsolete in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Obsolete"]}], "History", 
+      CellID -> 1044965254], Cell[CellGroupData[
+       {Cell["Categorization", "CategorizationSection", CellID -> 804940456], 
+        Cell["Symbol", "Categorization", CellLabel -> "Entity Type", 
+         CellID -> 351952248], Cell["KeyNub/KeyNubLicDongle", 
+         "Categorization", CellLabel -> "Paclet Name", CellID -> 2112074516], 
+        Cell["KeyNub`KeyNubLicDongle`", "Categorization", 
+         CellLabel -> "Context", CellID -> 1116965384], 
+        Cell["KeyNub/KeyNubLicDongle/ref/LicDongleEraseAllRecords", 
+         "Categorization", CellLabel -> "URI", CellID -> 1916162916]}, 
+       Closed]], Cell[CellGroupData[{Cell["Keywords", "KeywordsSection", 
+         CellID -> 644968250], Cell["license dongle", "Keywords", 
+         CellID -> 1326534693], Cell["copy protection", "Keywords", 
+         CellID -> 1444413857], Cell["KeyNub", "Keywords", 
+         CellID -> 555692299]}, Closed]]}, Open]]}, 
+ TaggingRules -> <|"Paclet" -> "KeyNub/KeyNubLicDongle"|>, 
+ StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, 
+   "FunctionPageStylesExt.nb", CharacterEncoding -> "UTF-8"]]

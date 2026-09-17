@@ -1,0 +1,94 @@
+Notebook[{Cell[CellGroupData[{Cell["LicDongleAuthorizeWrite", "ObjectName", 
+      CellID -> 365492538], Cell[TextData[{Cell["   ", "ModInfo"], 
+        Cell[BoxData[RowBox[{"LicDongleAuthorizeWrite", "[", 
+            RowBox[{StyleBox["handle", "TI"], ",", StyleBox["key", "TI"]}], 
+            "]"}]], "InlineFormula"], " \[LineSeparator]elevates the session \
+to the write role with the dongle's write key."}], "Usage", 
+      CellID -> 33469904], Cell["key is the write key as a ByteArray: a P-256 \
+private key in PKCS#8 DER form.", "Notes", CellID -> 1146942363], 
+     Cell["A dongle ships with the KeyNub write key, \
+keys/keynub-shipping-writeauth.key.der in the SDK repository; \
+LicDongleRotateWriteKey replaces it with one you hold.", "Notes", 
+      CellID -> 1565893155], 
+     Cell["The write role lasts until LicDongleSessionClose.", "Notes", 
+      CellID -> 710054581], 
+     Cell["The call needs a session; open one with LicDongleSessionOpen.", 
+      "Notes", CellID -> 875955994], Cell["On failure the result is \
+Failure[\"LicDongleError\", ...] with \"Status\" (the C status code), \
+\"Operation\" and \"Detail\".", "Notes", CellID -> 1127298948]}, Open]], 
+  Cell[CellGroupData[{Cell["See Also", "SeeAlsoSection", 
+      CellID -> 888946131], 
+     Cell[TextData[{Cell[TextData[ButtonBox["LicDongleRotateWriteKey", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleRotateWriteKey"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}], 
+        Cell[TextData[StyleBox[" \[FilledVerySmallSquare] ", 
+           "InlineSeparator"]]], Cell[TextData[ButtonBox[
+           "LicDongleWriteRecord", BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleWriteRecord"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}], 
+        Cell[TextData[StyleBox[" \[FilledVerySmallSquare] ", 
+           "InlineSeparator"]]], Cell[TextData[ButtonBox[
+           "LicDongleSessionOpen", BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleSessionOpen"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}]}], "SeeAlso", CellID -> 1769862619]}, 
+    Open]], Cell[CellGroupData[{Cell["Related Guides", "MoreAboutSection", 
+      CellID -> 1937794096], Cell[TextData[ButtonBox["KeyNub License Dongle", 
+        BaseStyle -> "Link", ButtonData -> 
+         "paclet:KeyNub/KeyNubLicDongle/guide/KeyNubLicDongle"]], 
+      "MoreAbout", CellID -> 1524155397]}, Open]], 
+  Cell[CellGroupData[{Cell["Related Links", "RelatedLinksSection", 
+      CellID -> 9915048], Cell[TextData[ButtonBox[
+        "KeyNub License Dongle for the Wolfram Language", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://www.keynub.com/developers/wolfram/"], None}]], 
+      "RelatedLinks", CellID -> 1197623838], 
+     Cell[TextData[ButtonBox["KeyNub SDK on GitHub", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://github.com/AB-KeyNub/KeyNub-SDK"], None}]], 
+      "RelatedLinks", CellID -> 1584077738]}, Open]], 
+  Cell[CellGroupData[{Cell["Examples Initialization", 
+      "ExamplesInitializationSection", CellID -> 228549446], 
+     Cell[BoxData[RowBox[{"Needs", "[", "\"KeyNub`KeyNubLicDongle`\"", 
+         "]"}]], "ExampleInitialization", CellID -> 1538174102]}, Open]], 
+  Cell[CellGroupData[
+    {Cell[BoxData[InterpretationBox[GridBox[
+         {{StyleBox[RowBox[{"Basic", " ", "Examples"}], 
+            "PrimaryExamplesSection"], ButtonBox[RowBox[
+             {RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}], 
+            BaseStyle -> "ExtendedExamplesLink", ButtonData :> 
+             "ExtendedExamples"]}}], $Line = 0; ]], "PrimaryExamplesSection", 
+      CellID -> 1711345308], 
+     Cell["Elevate the session with a key read from a file:", "ExampleText", 
+      CellID -> 1032448032], 
+     Cell[BoxData[RowBox[{RowBox[{RowBox[{"LicDongleSessionOpen", "[", "h", 
+             "]"}], ";"}], "\[IndentingNewLine]", 
+         RowBox[{"LicDongleAuthorizeWrite", "[", 
+           RowBox[{"h", ",", RowBox[{"ReadByteArray", "[", 
+               "\"my-write-key.der\"", "]"}]}], "]"}]}]], "Input", 
+      CellLabel -> "In[1]:=", CellID -> 457249377]}, Open]], 
+  Cell[CellGroupData[{Cell["Metadata", "MetadataSection", 
+      CellID -> 471438085], Cell[TextData[{"New in: ", 
+        Cell["1.1.1", "HistoryData", CellTags -> "New"], " | Modified in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Modified"], " | Obsolete in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Obsolete"]}], "History", 
+      CellID -> 1091160668], Cell[CellGroupData[
+       {Cell["Categorization", "CategorizationSection", CellID -> 342556185], 
+        Cell["Symbol", "Categorization", CellLabel -> "Entity Type", 
+         CellID -> 1978590090], Cell["KeyNub/KeyNubLicDongle", 
+         "Categorization", CellLabel -> "Paclet Name", CellID -> 1527087294], 
+        Cell["KeyNub`KeyNubLicDongle`", "Categorization", 
+         CellLabel -> "Context", CellID -> 492143610], 
+        Cell["KeyNub/KeyNubLicDongle/ref/LicDongleAuthorizeWrite", 
+         "Categorization", CellLabel -> "URI", CellID -> 225935038]}, 
+       Closed]], Cell[CellGroupData[{Cell["Keywords", "KeywordsSection", 
+         CellID -> 1489311768], Cell["license dongle", "Keywords", 
+         CellID -> 351563438], Cell["copy protection", "Keywords", 
+         CellID -> 234700570], Cell["KeyNub", "Keywords", 
+         CellID -> 2063208324]}, Closed]]}, Open]]}, 
+ TaggingRules -> <|"Paclet" -> "KeyNub/KeyNubLicDongle"|>, 
+ StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, 
+   "FunctionPageStylesExt.nb", CharacterEncoding -> "UTF-8"]]

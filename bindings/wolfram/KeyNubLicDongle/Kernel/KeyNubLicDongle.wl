@@ -13,7 +13,7 @@
    "Detail". LicDongleGenuineQ is the non-failing form for a gate and fails
    closed. *)
 
-BeginPackage["KeyNubLicDongle`"];
+BeginPackage["KeyNub`KeyNubLicDongle`"];
 
 LicDongleLibraryPath::usage = "LicDongleLibraryPath[] gives the native library in use, or the one the next call would load. LicDongleLibraryPath[path] names the library to load; call it before the first call.";
 LicDongleLibraryVersion::usage = "LicDongleLibraryVersion[] gives {major, minor, patch} of the loaded native library.";

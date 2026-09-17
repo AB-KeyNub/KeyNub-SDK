@@ -1,0 +1,82 @@
+Notebook[{Cell[CellGroupData[{Cell["LicDongleLibraryPath", "ObjectName", 
+      CellID -> 1898991932], Cell[TextData[{Cell["   ", "ModInfo"], 
+        Cell[BoxData[RowBox[{"LicDongleLibraryPath", "[", "]"}]], 
+         "InlineFormula"], " \[LineSeparator]gives the native library in use, \
+or the one the next call would load.\n", Cell["   ", "ModInfo"], 
+        Cell[BoxData[RowBox[{"LicDongleLibraryPath", "[", StyleBox["path", 
+             "TI"], "]"}]], "InlineFormula"], " \[LineSeparator]names the \
+native library to load; call it before the first call."}], "Usage", 
+      CellID -> 145490257], Cell["The native library keynub_licdongle_flat is \
+part of the KeyNub SDK, not of the paclet.", "Notes", CellID -> 820278201], 
+     Cell["Without LicDongleLibraryPath[path], the library is taken from the \
+environment variable KEYNUB_LICDONGLE_FLAT_LIBRARY, from natives/<platform> \
+in a clone of the SDK repository (searched from the working directory \
+upwards), or by its bare name through the operating system's library search."\
+, "Notes", CellID -> 703406605], Cell["A kernel loads the library once. \
+LicDongleLibraryPath[path] after the first call gives \
+Failure[\"LicDongleLibrary\", ...].", "Notes", CellID -> 1592398491]}, 
+    Open]], Cell[CellGroupData[{Cell["See Also", "SeeAlsoSection", 
+      CellID -> 1751025824], 
+     Cell[TextData[{Cell[TextData[ButtonBox["LicDongleLibraryVersion", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleLibraryVersion"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}]}], "SeeAlso", CellID -> 630668724]}, 
+    Open]], Cell[CellGroupData[{Cell["Related Guides", "MoreAboutSection", 
+      CellID -> 1063955527], Cell[TextData[ButtonBox["KeyNub License Dongle", 
+        BaseStyle -> "Link", ButtonData -> 
+         "paclet:KeyNub/KeyNubLicDongle/guide/KeyNubLicDongle"]], 
+      "MoreAbout", CellID -> 1232007169]}, Open]], 
+  Cell[CellGroupData[{Cell["Related Links", "RelatedLinksSection", 
+      CellID -> 163970601], 
+     Cell[TextData[ButtonBox[
+        "KeyNub License Dongle for the Wolfram Language", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://www.keynub.com/developers/wolfram/"], None}]], 
+      "RelatedLinks", CellID -> 465633109], 
+     Cell[TextData[ButtonBox["KeyNub SDK on GitHub", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://github.com/AB-KeyNub/KeyNub-SDK"], None}]], 
+      "RelatedLinks", CellID -> 46771945]}, Open]], 
+  Cell[CellGroupData[{Cell["Examples Initialization", 
+      "ExamplesInitializationSection", CellID -> 1768409932], 
+     Cell[BoxData[RowBox[{"Needs", "[", "\"KeyNub`KeyNubLicDongle`\"", 
+         "]"}]], "ExampleInitialization", CellID -> 789982396]}, Open]], 
+  Cell[CellGroupData[
+    {Cell[BoxData[InterpretationBox[GridBox[
+         {{StyleBox[RowBox[{"Basic", " ", "Examples"}], 
+            "PrimaryExamplesSection"], ButtonBox[RowBox[
+             {RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}], 
+            BaseStyle -> "ExtendedExamplesLink", ButtonData :> 
+             "ExtendedExamples"]}}], $Line = 0; ]], "PrimaryExamplesSection", 
+      CellID -> 12513330], Cell["Name the library before the first call:", 
+      "ExampleText", CellID -> 989305395], 
+     Cell[BoxData[RowBox[{"LicDongleLibraryPath", "[", 
+         "\"/opt/keynub/libkeynub_licdongle_flat.so\"", "]"}]], "Input", 
+      CellLabel -> "In[1]:=", CellID -> 1106067527], 
+     Cell["The library in use:", "ExampleText", CellID -> 603900811], 
+     Cell[BoxData[RowBox[{"LicDongleLibraryPath", "[", "]"}]], "Input", 
+      CellLabel -> "In[2]:=", CellID -> 1491341823]}, Open]], 
+  Cell[CellGroupData[{Cell["Metadata", "MetadataSection", 
+      CellID -> 2028026635], Cell[TextData[{"New in: ", 
+        Cell["1.1.1", "HistoryData", CellTags -> "New"], " | Modified in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Modified"], " | Obsolete in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Obsolete"]}], "History", 
+      CellID -> 497778455], Cell[CellGroupData[
+       {Cell["Categorization", "CategorizationSection", 
+         CellID -> 1645083031], Cell["Symbol", "Categorization", 
+         CellLabel -> "Entity Type", CellID -> 324083008], 
+        Cell["KeyNub/KeyNubLicDongle", "Categorization", 
+         CellLabel -> "Paclet Name", CellID -> 27906728], 
+        Cell["KeyNub`KeyNubLicDongle`", "Categorization", 
+         CellLabel -> "Context", CellID -> 249804790], 
+        Cell["KeyNub/KeyNubLicDongle/ref/LicDongleLibraryPath", 
+         "Categorization", CellLabel -> "URI", CellID -> 1372965877]}, 
+       Closed]], Cell[CellGroupData[{Cell["Keywords", "KeywordsSection", 
+         CellID -> 115658693], Cell["license dongle", "Keywords", 
+         CellID -> 1879885476], Cell["copy protection", "Keywords", 
+         CellID -> 1761974044], Cell["KeyNub", "Keywords", 
+         CellID -> 503490446]}, Closed]]}, Open]]}, 
+ TaggingRules -> <|"Paclet" -> "KeyNub/KeyNubLicDongle"|>, 
+ StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, 
+   "FunctionPageStylesExt.nb", CharacterEncoding -> "UTF-8"]]

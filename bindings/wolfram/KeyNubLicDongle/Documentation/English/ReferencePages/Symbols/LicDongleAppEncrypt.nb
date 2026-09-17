@@ -1,0 +1,90 @@
+Notebook[{Cell[CellGroupData[{Cell["LicDongleAppEncrypt", "ObjectName", 
+      CellID -> 279374584], Cell[TextData[{Cell["   ", "ModInfo"], 
+        Cell[BoxData[RowBox[{"LicDongleAppEncrypt", "[", 
+            RowBox[{StyleBox["handle", "TI"], ",", StyleBox["data", "TI"], 
+              ",", StyleBox["scope", "TI"]}], "]"}]], "InlineFormula"], " \
+\[LineSeparator]encrypts data so that only a dongle can decrypt it, and gives \
+the sealed bytes as a ByteArray."}], "Usage", CellID -> 1955690565], 
+     Cell["scope is \"Developer\" (any dongle issued to the same developer \
+decrypts) or \"Device\" (only this dongle decrypts).", "Notes", 
+      CellID -> 959316711], Cell["data can be a ByteArray or a String; a \
+String is stored as its UTF-8 bytes.", "Notes", CellID -> 539448159], 
+     Cell["Sealed data is what a program can hold instead of a plain check: \
+encrypted once at license-issue time, decrypted with LicDongleAppDecrypt at \
+run time.", "Notes", CellID -> 1461740489], 
+     Cell["The call needs a session; open one with LicDongleSessionOpen.", 
+      "Notes", CellID -> 1229256302], Cell["On failure the result is \
+Failure[\"LicDongleError\", ...] with \"Status\" (the C status code), \
+\"Operation\" and \"Detail\".", "Notes", CellID -> 1044629248]}, Open]], 
+  Cell[CellGroupData[{Cell["See Also", "SeeAlsoSection", 
+      CellID -> 1832022581], 
+     Cell[TextData[{Cell[TextData[ButtonBox["LicDongleAppDecrypt", 
+           BaseStyle -> "Link", ButtonData -> 
+            "paclet:KeyNub/KeyNubLicDongle/ref/LicDongleAppDecrypt"]], 
+         "InlineSeeAlsoFunction", TaggingRules -> 
+          {"PageType" -> "Function"}]}], "SeeAlso", CellID -> 121283710]}, 
+    Open]], Cell[CellGroupData[{Cell["Related Guides", "MoreAboutSection", 
+      CellID -> 499594637], Cell[TextData[ButtonBox["KeyNub License Dongle", 
+        BaseStyle -> "Link", ButtonData -> 
+         "paclet:KeyNub/KeyNubLicDongle/guide/KeyNubLicDongle"]], 
+      "MoreAbout", CellID -> 365167504]}, Open]], 
+  Cell[CellGroupData[{Cell["Related Links", "RelatedLinksSection", 
+      CellID -> 1979221805], 
+     Cell[TextData[ButtonBox[
+        "KeyNub License Dongle for the Wolfram Language", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://www.keynub.com/developers/wolfram/"], None}]], 
+      "RelatedLinks", CellID -> 514590204], 
+     Cell[TextData[ButtonBox["KeyNub SDK on GitHub", 
+        BaseStyle -> "Hyperlink", ButtonData -> 
+         {URL["https://github.com/AB-KeyNub/KeyNub-SDK"], None}]], 
+      "RelatedLinks", CellID -> 128275524]}, Open]], 
+  Cell[CellGroupData[{Cell["Examples Initialization", 
+      "ExamplesInitializationSection", CellID -> 150040712], 
+     Cell[BoxData[RowBox[{"Needs", "[", "\"KeyNub`KeyNubLicDongle`\"", 
+         "]"}]], "ExampleInitialization", CellID -> 651976170]}, Open]], 
+  Cell[CellGroupData[
+    {Cell[BoxData[InterpretationBox[GridBox[
+         {{StyleBox[RowBox[{"Basic", " ", "Examples"}], 
+            "PrimaryExamplesSection"], ButtonBox[RowBox[
+             {RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}], 
+            BaseStyle -> "ExtendedExamplesLink", ButtonData :> 
+             "ExtendedExamples"]}}], $Line = 0; ]], "PrimaryExamplesSection", 
+      CellID -> 791775130], 
+     Cell["Seal data for every dongle you have issued:", "ExampleText", 
+      CellID -> 690147167], 
+     Cell[BoxData[RowBox[{"sealed", "=", RowBox[{"LicDongleAppEncrypt", "[", 
+           RowBox[{"h", ",", "\"the data this program cannot run without\"", 
+             ",", "\"Developer\""}], "]"}]}]], "Input", 
+      CellLabel -> "In[1]:=", CellID -> 1024655977]}, Open]], 
+  Cell[CellGroupData[{Cell["More Examples", "ExtendedExamplesSection", 
+      CellTags -> "ExtendedExamples", CellID -> 1171744400], 
+     Cell[BoxData[InterpretationBox[Cell["Scope", "ExampleSection"], 
+        $Line = 0; ]], "ExampleSection", CellID -> 617968610], 
+     Cell["Bind data to this one dongle:", "ExampleText", 
+      CellID -> 493702088], Cell[BoxData[RowBox[{"LicDongleAppEncrypt", "[", 
+         RowBox[{"h", ",", "data", ",", "\"Device\""}], "]"}]], "Input", 
+      CellLabel -> "In[1]:=", CellID -> 1417862751]}, Open]], 
+  Cell[CellGroupData[{Cell["Metadata", "MetadataSection", 
+      CellID -> 427262151], Cell[TextData[{"New in: ", 
+        Cell["1.1.1", "HistoryData", CellTags -> "New"], " | Modified in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Modified"], " | Obsolete in: ", 
+        Cell[" ", "HistoryData", CellTags -> "Obsolete"]}], "History", 
+      CellID -> 415729086], Cell[CellGroupData[
+       {Cell["Categorization", "CategorizationSection", 
+         CellID -> 2049847264], Cell["Symbol", "Categorization", 
+         CellLabel -> "Entity Type", CellID -> 1021209228], 
+        Cell["KeyNub/KeyNubLicDongle", "Categorization", 
+         CellLabel -> "Paclet Name", CellID -> 2102890638], 
+        Cell["KeyNub`KeyNubLicDongle`", "Categorization", 
+         CellLabel -> "Context", CellID -> 1380533375], 
+        Cell["KeyNub/KeyNubLicDongle/ref/LicDongleAppEncrypt", 
+         "Categorization", CellLabel -> "URI", CellID -> 1421422940]}, 
+       Closed]], Cell[CellGroupData[{Cell["Keywords", "KeywordsSection", 
+         CellID -> 1997682817], Cell["license dongle", "Keywords", 
+         CellID -> 295337328], Cell["copy protection", "Keywords", 
+         CellID -> 143863000], Cell["KeyNub", "Keywords", 
+         CellID -> 2140412998]}, Closed]]}, Open]]}, 
+ TaggingRules -> <|"Paclet" -> "KeyNub/KeyNubLicDongle"|>, 
+ StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, 
+   "FunctionPageStylesExt.nb", CharacterEncoding -> "UTF-8"]]
