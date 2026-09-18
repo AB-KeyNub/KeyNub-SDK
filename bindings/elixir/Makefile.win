@@ -1,0 +1,14 @@
+# nmake: builds the NIF with the Visual C++ compiler into the application's
+# priv directory (elixir_make sets MIX_APP_PATH and ERTS_INCLUDE_DIR).
+PRIV_DIR = $(MIX_APP_PATH)\priv
+NIF = $(PRIV_DIR)\keynub_licdongle_nif.dll
+SRC = c_src\keynub_licdongle_nif.c
+
+all: $(NIF)
+
+$(NIF): $(SRC)
+	if not exist "$(PRIV_DIR)" mkdir "$(PRIV_DIR)"
+	cl /nologo /O2 /W3 /LD /I"$(ERTS_INCLUDE_DIR)" /Fo"$(PRIV_DIR)/" /Fe"$(NIF)" $(SRC)
+
+clean:
+	if exist "$(NIF)" del /q "$(NIF)"

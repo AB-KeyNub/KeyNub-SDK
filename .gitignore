@@ -225,6 +225,10 @@ cabal.project.local
 # --- OCaml (dune) ----------------------------------------------------------------
 _build/
 
+# --- Elixir (mix) ----------------------------------------------------------------
+bindings/elixir/deps/
+bindings/elixir/doc/
+
 # --- the tracked prebuilt libraries ------------------------------------------
 # Last word, deliberately: these are the one binary thing this repository does
 # track, and a broad pattern above must not be able to drop them.

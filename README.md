@@ -17,6 +17,7 @@ dongle is a vendor-defined USB HID device.
 [![Julia General](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FJuliaRegistries%2FGeneral%2Fmaster%2FK%2FKeyNubLicenseDongle%2FVersions.toml&search=%5C%5B%22%28%5B0-9.%5D%2B%29%22%5C%5D%5Cs*git-tree-sha1%20%3D%20%22%5B0-9a-f%5D%2B%22%5Cs*%24&replace=v%241&label=Julia%20General&logo=julia)](https://juliahub.com/ui/Packages/General/KeyNubLicenseDongle)
 [![pub.dev](https://img.shields.io/pub/v/keynub_licdongle?label=pub.dev)](https://pub.dev/packages/keynub_licdongle)
 [![Swift Package Index](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&label=Swift%20Package%20Index)](https://swiftpackageindex.com/AB-KeyNub/KeyNub-SDK)
+[![Hex](https://img.shields.io/hexpm/v/keynub_licdongle?label=Hex)](https://hex.pm/packages/keynub_licdongle)
 [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle)
 [![CPAN](https://img.shields.io/cpan/v/KeyNub-LicDongle?label=CPAN)](https://metacpan.org/dist/KeyNub-LicDongle)
 [![Lazarus OPM](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&label=Lazarus%20OPM)](https://packages.lazarus-ide.org/)
@@ -79,6 +80,7 @@ once.
 | R | [`bindings/r`](bindings/r) — `KeyNubLicDongle`, a C layer compiled at install | [`samples/r`](samples/r) | — |
 | Haskell | [`bindings/haskell`](bindings/haskell) — `keynub-licdongle`, pure Haskell over the flat API | [`samples/haskell`](samples/haskell) | — |
 | OCaml | [`bindings/ocaml`](bindings/ocaml) — `keynub-licdongle`, `ctypes-foreign` over the flat API | [`samples/ocaml`](samples/ocaml) | — |
+| Elixir | [`bindings/elixir`](bindings/elixir) — `keynub_licdongle`, a small NIF over the flat API | [`samples/elixir`](samples/elixir) | [![Hex](https://img.shields.io/hexpm/v/keynub_licdongle?label=Hex)](https://hex.pm/packages/keynub_licdongle) |
 | Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) | [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle) |
 
 Every sample carries the exact command that builds and runs it in its header
