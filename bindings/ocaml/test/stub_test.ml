@@ -51,12 +51,14 @@ let stand_in () =
       if file_exists_in root "core/include/licdongle.h" then Filename.concat root "core/include"
       else Filename.concat root "include"
     in
-    let dir = Filename.concat (Filename.get_temp_dir_name ()) "keynub-ocaml-stub" in
-    if not (Sys.file_exists dir) then Sys.mkdir dir 0o755;
     (* Not the library's own name: macOS dyld searches DYLD_LIBRARY_PATH by
        leaf name even for an absolute-path dlopen, and a build tree on that
-       path holds the real library under that name. *)
-    let out = Filename.concat dir (if windows then "keynub_flat_standin.dll" else "libkeynub_flat_standin.so") in
+       path holds the real library under that name. Written straight into the
+       temporary directory: the standard library before 4.12 has no mkdir. *)
+    let out =
+      Filename.concat (Filename.get_temp_dir_name ())
+        (if windows then "keynub_flat_standin.dll" else "libkeynub_flat_standin.so")
+    in
     let args =
       [ "-shared"; "-O1"; "-DLICD_BUILD_SHARED"; "-DLICDF_BUILD_SHARED";
         "-I" ^ include_dir; "-I" ^ Filename.concat root "bindings/flat";
