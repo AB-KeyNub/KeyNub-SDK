@@ -1,0 +1,29 @@
+// KeyNub License Dongle: the D package. It sits at the repository root so that
+// dub and the DUB registry find it; the sources live under bindings/d. The
+// native library is loaded at run time from the natives/ folder of this
+// repository (a package dependency is a fetch of it), so nothing is linked and
+// no build flags are needed.
+name "keynub-licdongle"
+description "Client for the KeyNub USB license dongle: verify it is genuine, read and write its license records, use its hardware counters and encrypt data so that only a dongle can decrypt it. The native library is loaded at run time, nothing is linked."
+authors "KeyNub"
+copyright "Copyright (c) 2026 KeyNub"
+license "Apache-2.0"
+homepage "https://www.keynub.com/developers/d/"
+
+targetType "library"
+targetPath "bindings/d/build"
+sourcePaths "bindings/d/source"
+importPaths "bindings/d/source"
+libs "dl" platform="linux"
+
+configuration "library" {
+    targetType "library"
+}
+
+// Every call of the binding against a stand-in for the flat C API, compiled
+// with the C compiler on the path: dub run --config=standin-test
+configuration "standin-test" {
+    targetType "executable"
+    targetName "keynub-licdongle-standin-test"
+    mainSourceFile "bindings/d/test/stub_test.d"
+}
