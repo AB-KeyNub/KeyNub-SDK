@@ -17,7 +17,7 @@ Please report security issues **privately**, not as a public issue.
 
 In scope:
 
-- The SDK (`keynub_licdongle` core, the .NET/Python/Java/Delphi bindings).
+- The SDK (`keynub_licdongle` core and every language binding).
 - The wire protocol (the protocol specification) — design weaknesses as
   well as implementation bugs.
 - The dongle firmware and its provisioning chain.
@@ -37,7 +37,7 @@ in scope and are treated as serious.
 
 | Version | Supported |
 | --- | --- |
-| 1.0.x | yes |
+| 1.1.x | yes |
 
 Security fixes land in the latest 1.x release. There is no separate long-term
 branch: the C ABI is stable across 1.x, so a newer 1.x native library is a drop-in

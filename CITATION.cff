@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+title: KeyNub License Dongle SDK
+abstract: >-
+  Host SDK for the KeyNub USB-C license dongle: one core C library with a
+  stable C ABI, thin bindings for 35 languages, and samples.
+type: software
+authors:
+  - name: AB-Tools GmbH
+    website: https://www.keynub.com
+repository-code: https://github.com/AB-KeyNub/KeyNub-SDK
+url: https://www.keynub.com/developers/
+license: Apache-2.0
+version: 1.1.1
+date-released: '2026-09-12'
+keywords:
+  - license dongle
+  - software licensing
+  - copy protection
+  - secure element
+  - USB HID
+message: >-
+  The security architecture behind this SDK is a citable document. Please cite
+  it as below.
+preferred-citation:
+  type: report
+  title: 'KeyNub USB-C License Dongle: Security Architecture'
+  authors:
+    - name: AB-Tools GmbH
+      website: https://www.keynub.com
+  institution:
+    name: AB-Tools GmbH
+    website: https://www.keynub.com
+  year: 2026
+  month: 9
+  doi: 10.5281/zenodo.22860069
+  url: https://www.keynub.com/security/architecture/
+  license: CC-BY-ND-4.0

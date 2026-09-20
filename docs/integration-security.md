@@ -1,6 +1,6 @@
 # Integrating KeyNub securely
 
-**Document version 1.1 · Applies to firmware 1.1.x, protocol version 1, SDK 1.1.1**
+**Document version 1.1 · Applies to firmware 1.1.x, protocol version 1, SDK version 1.1.x**
 
 **Read this before you write your licensing check.** The dongle is strong hardware,
 but hardware cannot fix a weak integration — and the most common integration is a
@@ -8,10 +8,9 @@ weak one. This document is normative guidance for developers building KeyNub int
 an application.
 
 The one-sentence version: **never let a boolean returned by this SDK be the thing
-that protects your product.** Make something your application genuinely needs pass
-through the dongle.
+that protects your product.** Make something your application needs pass through the dongle.
 
-## 1. The threat model you are actually up against
+## 1. The Threat Model You Are Actually Up Against
 
 The attacker is not a stranger on the network. It is the person the software was
 sold to, running it on a machine they fully own, with a debugger, root/admin, and
@@ -38,7 +37,7 @@ question. So:
   traffic regardless. The protection is the key in the secure element, not secrecy
   about how to talk to it.
 
-## 2. The anti-pattern
+## 2. The Anti-Pattern
 
 This is the integration to avoid, in every language:
 
@@ -62,10 +61,10 @@ Two cheap attacks defeat it, and neither one touches the cryptography:
 Both attacks work because the *value* of the check is one bit. Raise the cost by
 making the check produce something that cannot be guessed.
 
-## 3. The pattern: make the dongle hold something you need
+## 3. The Pattern: Make the Dongle Hold Something You Need
 
 Use [`licd_app_encrypt` / `licd_app_decrypt`](../include/licdongle.h)
-(protocol §5.4). The SDK generates a random AES-256 key, encrypts your payload on
+(protocol section 5.4). The SDK generates a random AES-256 key, encrypts your payload on
 the host, and has the dongle wrap the key; decryption requires the dongle to unwrap
 it. Bulk data never crosses USB, so payload size costs you nothing.
 
@@ -81,7 +80,7 @@ Encrypt something whose absence stops the program from working:
 - A signed license payload (entitlements, expiry, seat count) that your code
   *parses*, rather than a flag it tests.
 
-Pick the scope deliberately:
+Pick the scope:
 
 | Scope | Who can decrypt | Use for |
 | --- | --- | --- |
@@ -93,7 +92,7 @@ Pick the scope deliberately:
 role, so deployed applications can use them freely — no master key on the customer's
 machine.
 
-## 4. Practical hardening
+## 4. Practical Hardening
 
 Ordered by how much they buy you:
 
@@ -114,8 +113,7 @@ Ordered by how much they buy you:
    proves the dongle is real; only your licence records say whether *that* dongle is
    entitled to *this* product version.
 6. **Handle absence as a normal state, not an assertion.** `LICD_E_NO_DEVICE`
-   happens when a user unplugs a dongle or a USB hub resets. Report it clearly and
-   let the user re-plug; do not crash, and do not silently continue in a degraded
+   happens when a user unplugs a dongle or a USB hub resets. Report it and let the user re-plug; do not crash, and do not silently continue in a degraded
    mode that turns out to be the full product.
 7. **Keep your developer master key out of your application.** `licd_write_auth`
    elevates a session to the write role and belongs only in your licence-issuing
@@ -133,7 +131,7 @@ Ordered by how much they buy you:
    false, so a unit that slipped through cannot be shipped with the factory key
    still in place.
 
-## 5. What KeyNub protects, and what it does not
+## 5. What KeyNub Protects, and What It Does Not
 
 | Attack | Outcome |
 | --- | --- |
@@ -142,21 +140,21 @@ Ordered by how much they buy you:
 | Replaying a genuineness proof | Fails — each proof signs a fresh host challenge. |
 | Reading or tampering with session traffic | Fails — AES-256-GCM over an ECDH session. |
 | Rolling back a counter | Fails — monotonic in hardware. |
-| Exploiting a memory-safety bug in the dongle's own USB or parsing code | Contained — see §6. That code runs isolated and cannot address a key. |
-| Reading the wire protocol / this SDK's source | No benefit — both are public by design. |
-| **Patching the host application** | **Not prevented.** Mitigated only by §3. |
-| **Substituting a fake SDK library** | **Not prevented.** Mitigated only by §3. |
+| Exploiting a memory-safety bug in the dongle's own USB or parsing code | Contained — see section 6. That code runs isolated and cannot address a key. |
+| Reading the wire protocol / this SDK's source | No benefit: the source is published and the protocol is designed to be observed. |
+| **Patching the host application** | **Not prevented.** Mitigated only by section 3. |
+| **Substituting a fake SDK library** | **Not prevented.** Mitigated only by section 3. |
 
 The bottom two rows are the whole reason this document exists. They are properties
-of *your* integration, not of the dongle, and §3 is how you address them.
+of *your* integration, not of the dongle, and section 3 is how you address them.
 
-## 6. What the device does to contain its own bugs
+## 6. What the Device Does to Contain Its Own Bugs
 
 Everything above is about attacks on the cryptography or on your integration. A
 security reviewer will also ask the question the rest of this document does not
 answer: **what if the dongle's own firmware has a bug?**
 
-It is a fair question, and the honest form of it is specific. Every byte you send
+It is a fair question, and it has a specific form. Every byte you send
 arrives as a USB packet and is reassembled into a protocol frame. A USB stack and a
 parser are where a memory-safety defect is most likely to live, and they are the only
 part of the firmware an attacker can reach at all. So that is the code that is fenced
@@ -189,13 +187,12 @@ is not a dongle reports `false` — the flag is only ever set by asking real
 hardware, so a check gated on it cannot be satisfied by a stand-in.
 
 **What this does not do.** It does not make your licence check harder to bypass. Both
-attacks in §2 are entirely unaffected, because they happen on the host, inside your
+attacks in section 2 are entirely unaffected, because they happen on the host, inside your
 process, where the dongle has no reach. Device-side containment is about the dongle
-keeping the promise in §1 — *this key never leaves the secure element* — even if its
-own firmware turns out to be defective. It is not a substitute for §3, and if you take
-one thing from this document it should still be §3.
+keeping the promise in section 1 — *this key never leaves the secure element* — even if its
+own firmware turns out to be defective. It is not a substitute for section 3.
 
-## 8. Reporting a vulnerability
+## 7. Reporting a Vulnerability
 
 Found a weakness in the protocol, the SDK, or the firmware? Please report it
 privately — see [`SECURITY.md`](../SECURITY.md).

@@ -19,6 +19,7 @@ dongle is a vendor-defined USB HID device.
 [![Swift Package Index](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&label=Swift%20Package%20Index)](https://swiftpackageindex.com/AB-KeyNub/KeyNub-SDK)
 [![Hex](https://img.shields.io/hexpm/v/keynub_licdongle?label=Hex)](https://hex.pm/packages/keynub_licdongle)
 [![opam](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fopam.ocaml.org%2Fpackages%2Fkeynub-licdongle%2F&search=keynub-licdongle%5C.%28%5B0-9%5D%5B0-9.%5D*%29&replace=v%241&label=opam)](https://opam.ocaml.org/packages/keynub-licdongle/)
+[![DUB](https://img.shields.io/dub/v/keynub-licdongle?label=DUB)](https://code.dlang.org/packages/keynub-licdongle)
 [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle)
 [![CPAN](https://img.shields.io/cpan/v/KeyNub-LicDongle?label=CPAN)](https://metacpan.org/dist/KeyNub-LicDongle)
 [![Lazarus OPM](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&label=Lazarus%20OPM)](https://packages.lazarus-ide.org/)
@@ -26,12 +27,13 @@ dongle is a vendor-defined USB HID device.
 [![xmake](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fxmake-io%2Fxmake-repo%2Fmaster%2Fpackages%2Fk%2Fkeynub_licdongle%2Fxmake.lua&search=add_versions%5C%28%22%28%5B0-9.%5D%2B%29%22&replace=v%241&label=xmake)](https://packages.xmake.io/packages/keynub_licdongle)
 [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native)
 [![File Exchange](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&label=File%20Exchange)](https://www.mathworks.com/matlabcentral/fileexchange/184704-keynub-license-dongle-for-matlab-and-simulink)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22860068-blue)](https://doi.org/10.5281/zenodo.22860068)
 
 > **Before you write your licensing check, read
 > [`docs/integration-security.md`](docs/integration-security.md).** The dongle
 > proves a genuine device is attached; it cannot stop an attacker patching the
 > application that asks. An integration that branches on a boolean is bypassed
-> trivially — feed something your application actually needs through
+> trivially — feed something your application needs through
 > `app_encrypt`/`app_decrypt` instead. That document is short, and it is the
 > difference between real protection and a speed bump.
 
@@ -82,7 +84,7 @@ once.
 | Haskell | [`bindings/haskell`](bindings/haskell) — `keynub-licdongle`, pure Haskell over the flat API | [`samples/haskell`](samples/haskell) | — |
 | OCaml | [`bindings/ocaml`](bindings/ocaml) — `keynub-licdongle`, `ctypes-foreign` over the flat API | [`samples/ocaml`](samples/ocaml) | [![opam](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fopam.ocaml.org%2Fpackages%2Fkeynub-licdongle%2F&search=keynub-licdongle%5C.%28%5B0-9%5D%5B0-9.%5D*%29&replace=v%241&label=opam)](https://opam.ocaml.org/packages/keynub-licdongle/) |
 | Elixir | [`bindings/elixir`](bindings/elixir) — `keynub_licdongle`, a small NIF over the flat API | [`samples/elixir`](samples/elixir) | [![Hex](https://img.shields.io/hexpm/v/keynub_licdongle?label=Hex)](https://hex.pm/packages/keynub_licdongle) |
-| D | [`bindings/d`](bindings/d) — `keynub-licdongle`, `extern(C)` over the flat API, dub package at the repository root | [`samples/d`](samples/d) | — |
+| D | [`bindings/d`](bindings/d) — `keynub-licdongle`, `extern(C)` over the flat API, dub package at the repository root | [`samples/d`](samples/d) | [![DUB](https://img.shields.io/dub/v/keynub-licdongle?label=DUB)](https://code.dlang.org/packages/keynub-licdongle) |
 | Nim | [`bindings/nim`](bindings/nim) — `importc` over `dynlib` | [`samples/nim`](samples/nim) | [![Nimble](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fregistry.nimpkgs.org%2Fpackages%2Fke%2Fkeynub_licdongle%2Fpkg.json&query=%24.meta.nimble.version&label=Nimble&logo=nim&prefix=v)](https://nimpkgs.org/#/pkg/keynub_licdongle) |
 
 Every sample carries the exact command that builds and runs it in its header
@@ -117,8 +119,7 @@ if (dongle.IsGenuine) enableFeature();
 coefficients = dongle.AppDecrypt(blobShippedWithYourInstaller);
 ```
 
-Encrypt the constants, tables, thresholds or key material your application
-genuinely cannot compute. Ship them encrypted. Decrypt them through the dongle at
+Encrypt the constants, tables, thresholds or key material your application cannot compute. Ship them encrypted. Decrypt them through the dongle at
 run time. Then removing the check does not unlock the feature — it removes the
 feature's input.
 
@@ -129,6 +130,20 @@ production root CA, whose public certificate is compiled into the released libra
 so a substituted device fails verification and your application supplies nothing and
 manages no root. `licd_set_trust_root` (or the equivalent on your binding) overrides
 the built-in root, which only vendor tooling needs.
+
+## Security Architecture
+
+The whitepaper behind this SDK covers scope and product boundary, assets,
+threat model, environment assumptions, security objectives, the mechanisms
+that meet them, a cryptographic inventory, key management, per-mechanism
+verification status and the limitations.
+
+- [Security architecture](https://www.keynub.com/security/architecture/) — the whitepaper as a page
+- [KeyNub Security Architecture (PDF)](https://www.keynub.com/wp-content/uploads/KeyNub-Security-Architecture.pdf) — the dated document
+- [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22860068-blue)](https://doi.org/10.5281/zenodo.22860068) — the archived record on Zenodo, CC BY-ND 4.0
+
+Cite it as: AB-Tools GmbH (2026). *KeyNub USB-C License Dongle: Security
+Architecture*. Rev. 1.1. Zenodo. <https://doi.org/10.5281/zenodo.22860069>
 
 ## Licence
 
