@@ -1,0 +1,17 @@
+# KeyNub License Dongle: the Crystal shard. It sits at the repository root,
+# where shards looks for it; the sources live under bindings/crystal, and
+# keynub_licdongle.cr beside this file makes `require "keynub_licdongle"` find
+# them. The native library is loaded at run time, nothing is linked.
+name: keynub_licdongle
+version: 1.1.1-crystal
+description: |
+  Client for the KeyNub USB license dongle: verify it is genuine, read and
+  write its license records, use its hardware counters and encrypt data so
+  that only a dongle can decrypt it. The native library is loaded at run
+  time, nothing is linked.
+authors:
+  - KeyNub <info@keynub.com>
+crystal: ">= 1.10.0"
+license: Apache-2.0
+repository: https://github.com/AB-KeyNub/KeyNub-SDK
+homepage: https://www.keynub.com/developers/crystal/

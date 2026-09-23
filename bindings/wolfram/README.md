@@ -30,6 +30,13 @@ are read in one call.
 
 ## Setup
 
+From the Wolfram Paclet Repository:
+
+```wolfram
+PacletInstall["KeyNub/KeyNubLicDongle"]
+Needs["KeyNub`KeyNubLicDongle`"]
+```
+
 From a clone of the SDK repository, no packaging step:
 
 ```wolfram
@@ -37,8 +44,7 @@ PacletDirectoryLoad["<clone>/bindings/wolfram/KeyNubLicDongle"]
 Needs["KeyNub`KeyNubLicDongle`"]
 ```
 
-`PacletInstall` on the paclet's repository entry does the same once it is
-listed there. The paclet does not carry the native library. Take
+The paclet does not carry the native library. Take
 `keynub_licdongle_flat` for your platform from the SDK's
 [natives folder](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)
 and either put it where the operating system finds libraries or name it before
