@@ -71,3 +71,16 @@ Move-only throughout: a dongle handle is not a value to copy.
 `Dongle::adopt(device, ctx)` takes ownership of a device opened through
 `licd_open` directly — so an existing codebase can adopt this wrapper a function at
 a time rather than all at once.
+
+## Tests
+
+`bindings/cpp/tests` compiles the wrapper and a stand-in for the C API
+(`bindings/julia/test/stub/licd_stub.c`, one imaginary dongle held in memory)
+into one executable and exercises every call, sessions ending with their scope
+and moves included; no dongle and no native library are needed:
+
+```
+cmake -S bindings/cpp/tests -B build-standin
+cmake --build build-standin
+ctest --test-dir build-standin
+```

@@ -65,6 +65,25 @@ fake `keynub_licdongle` library next to it. Branch on a boolean and you will be
 bypassed — put dongle-derived data (`licd_app_encrypt`/`licd_app_decrypt`) on the path
 your application actually needs.
 
+## Tests
+
+`bindings/delphi/tests/StandinTest.dpr` runs every call of the unit against a
+stand-in for the C API (`bindings/julia/test/stub/licd_stub.c`, one imaginary
+dongle held in memory), built under the real library's file name in a folder of
+its own, and checks the record layouts against the sizes the C compiler
+reports; no dongle and no native library are needed. On Windows, from the
+repository root:
+
+```
+mkdir standin
+cc -shared -DLICD_BUILD_SHARED -Iinclude bindings/julia/test/stub/licd_stub.c -o standin/keynub_licdongle.dll
+fpc -Mdelphi -Fubindings/delphi -FUstandin -ostandin/StandinTest.exe bindings/delphi/tests/StandinTest.dpr
+standin\StandinTest.exe
+```
+
+On Linux the library is `standin/libkeynub_licdongle.so` (add `-fPIC`), `fpc`
+gets `-Flstandin`, and the program runs with `LD_LIBRARY_PATH=standin`.
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](../../LICENSE), [`NOTICE`](../../NOTICE), and

@@ -20,6 +20,15 @@ run time through `dynlib`, so nothing needs to be linked. Verified with **Nim
 The library name is a compile-time define (`-d:keynubLib=...`), so a build can be
 pointed at a specific library without the source knowing about it.
 
+## Tests
+
+`nim c -r tests/test_standin.nim` runs without a dongle: its configuration
+(`tests/test_standin.nims`) compiles a stand-in for the C ABI
+(`bindings/julia/test/stub/licd_stub.c`) into the temp directory with the C
+compiler on the path (cc, gcc, clang, `zig cc` or cl) and points `keynubLib` at
+it, and the test exercises every call of the binding against it.
+`KEYNUB_SDK_ROOT` names the SDK sources when the package is not inside a clone.
+
 ## Notes
 
 - `Status` is an enum over the C status codes; failures raise

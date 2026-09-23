@@ -97,6 +97,14 @@ it cannot stop an attacker from patching your application or pointing
 bypassed — put dongle-derived data (`app_encrypt`/`app_decrypt`) on the path your
 application actually needs.
 
+## Tests
+
+`python tests/test_standin.py` runs without a dongle: it compiles a stand-in for
+the C ABI (`bindings/julia/test/stub/licd_stub.c`) with the C compiler on the
+path and exercises every call against it. `KEYNUB_SDK_ROOT` names the SDK
+sources when the package is not inside a clone; `KEYNUB_LICDONGLE_LIBRARY` names
+a compiled stand-in instead.
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE), [`NOTICE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NOTICE), and

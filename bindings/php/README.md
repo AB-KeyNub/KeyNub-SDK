@@ -56,6 +56,14 @@ in a binding that restates the ABI in another notation.
 Static `FFI::new()` is also deprecated as of PHP 8.3; allocate through the
 instance.
 
+## Tests
+
+`php test/test_standin.php` runs without a dongle: it compiles a stand-in for
+the C ABI (`bindings/julia/test/stub/licd_stub.c`) with the C compiler on the
+path and exercises every call against it. `KEYNUB_SDK_ROOT` names the SDK
+sources when the package is not inside a clone; `KEYNUB_LICDONGLE_LIBRARY` names
+a compiled stand-in instead.
+
 ## Links
 
 - [KeyNub License Dongle for PHP](https://www.keynub.com/developers/php/): the product, and how to

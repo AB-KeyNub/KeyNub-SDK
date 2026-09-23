@@ -83,3 +83,17 @@ see NATIVES.md for the prebuilt library
 
 It exports **only** `licdf_*`. The core's `licd_*` symbols are compiled in but
 hidden, so the two ABIs cannot be confused for one another.
+
+## Tests
+
+`bindings/flat/tests` compiles `licd_flat.c` over a stand-in for the C API
+(`bindings/julia/test/stub/licd_stub.c`, one imaginary dongle held in memory)
+into one executable and exercises every `licdf_*` call, the two-call buffer
+convention and the handle limit included; no dongle and no native library are
+needed:
+
+```
+cmake -S bindings/flat/tests -B build-flat-standin
+cmake --build build-flat-standin
+ctest --test-dir build-flat-standin
+```

@@ -63,6 +63,13 @@ is a plain struct rather than `std.BoundedArray` on purpose: that type has moved
 between releases, and a licensing binding should not break on a compiler
 upgrade.
 
+## Tests
+
+`zig build standin-test` runs without a dongle: it compiles a stand-in for the C
+ABI (`bindings/julia/test/stub/licd_stub.c`) into the shared library
+`keynub_licdongle_standin`, links the tests against it and exercises every call
+of the binding. It needs no C compiler besides Zig.
+
 ## Notes
 
 - Errors are a Zig error set, which carries no payload, so the numeric status and

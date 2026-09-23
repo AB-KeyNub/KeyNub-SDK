@@ -125,7 +125,7 @@ pub const Version = struct { major: i32, minor: i32, patch: i32 };
 
 pub const DeviceInfo = struct {
     serial: FixedString,
-    /// Opaque; pass to `Context.openPath`.
+    /// The platform's device path; opaque.
     path: FixedString,
     vendor_id: u16,
     product_id: u16,

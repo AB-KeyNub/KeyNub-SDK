@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Every call of the binding against the C ABI stand-in
+       (bindings/julia/test/stub/licd_stub.c), which the tests compile with the C
+       compiler on the path. No dongle and no native library needed:
+
+           dotnet test KeyNub.LicenseDongle.StandInTests -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+    <PackageReference Include="xunit" Version="2.5.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KeyNub.LicenseDongle\KeyNub.LicenseDongle.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -68,6 +68,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
+        <!-- One JVM per test class: the binding loads its native library once per JVM,
+             and StandInTest loads a different one. -->
+        <configuration>
+          <reuseForks>false</reuseForks>
+        </configuration>
       </plugin>
 
       <!-- Copy the SDK's license and attribution files into META-INF/ so they are

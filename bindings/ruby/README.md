@@ -82,6 +82,14 @@ The binding looks for the core library, in order:
 3. beside `lib/keynub_licdongle/`
 4. the system search path
 
+## Tests
+
+`ruby test/test_standin.rb` runs without a dongle: it compiles a stand-in for
+the C ABI (`bindings/julia/test/stub/licd_stub.c`) with the C compiler on the
+path and exercises every call against it. `KEYNUB_SDK_ROOT` names the SDK
+sources when the gem is not inside a clone; `KEYNUB_LICDONGLE_LIBRARY` names a
+compiled stand-in instead.
+
 ## License
 
 Apache-2.0, like the rest of the SDK — [`../../LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE),

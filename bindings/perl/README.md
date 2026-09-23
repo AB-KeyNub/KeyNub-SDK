@@ -54,13 +54,14 @@ Set `KEYNUB_LICDONGLE_FLAT_LIBRARY` to point at a specific library.
 > What cannot be deleted is data the program needs and only the dongle can
 > decrypt.
 
-## Status
+## Tests
 
-Shipping this one is still an open decision. It works and it is tested like
-everything else, but on an *engineering*-dongle language list Perl reads as padding
-to a technical evaluator. It is here because
-it was cheap once the toolchain was in place; see
-the binding list.
+`prove -l t/standin.t` runs without a dongle: it compiles a stand-in for the
+flat C API (`bindings/flat/licd_flat.c` over
+`bindings/julia/test/stub/licd_stub.c`) with the C compiler on the path and
+exercises every call against it. `KEYNUB_SDK_ROOT` names the SDK sources when
+the distribution is not inside a clone; `KEYNUB_LICDONGLE_FLAT_LIBRARY` names a
+compiled stand-in instead.
 
 ## Links
 

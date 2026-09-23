@@ -96,3 +96,21 @@ cannot run without — a rate table, a fee schedule, the parameters of a calcula
 licence, ship the blob, and decrypt at run time.
 
 See [`../../docs/integration-security.md`](../../docs/integration-security.md).
+
+## Tests
+
+`bindings/cobol/tests/standin_test.cob` exercises every call of the copybook
+against a stand-in for the C API: `licd_flat.c` over
+`bindings/julia/test/stub/licd_stub.c`, one imaginary dongle held in memory,
+compiled into one shared library that GnuCOBOL preloads by name; no dongle and
+no native library are needed. On Linux:
+
+```
+cc -shared -fPIC -DLICD_BUILD_SHARED -DLICDF_BUILD_SHARED -Iinclude -Ibindings/flat \
+   bindings/flat/licd_flat.c bindings/julia/test/stub/licd_stub.c -o libkeynub_flat_standin.so
+cobc -x -free -Ibindings/cobol bindings/cobol/tests/standin_test.cob
+COB_PRE_LOAD=libkeynub_flat_standin COB_LIBRARY_PATH=. ./standin_test
+```
+
+On Windows the library is `keynub_flat_standin.dll` and `COB_PRE_LOAD` names
+it without the suffix.

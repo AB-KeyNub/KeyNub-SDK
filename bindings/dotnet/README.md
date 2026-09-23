@@ -54,6 +54,14 @@ it cannot stop an attacker from patching your application or substituting a fake
 native library. Branch on a boolean and you will be bypassed — put dongle-derived
 data (`AppEncrypt`/`AppDecrypt`) on the path your application actually needs.
 
+## Tests
+
+`dotnet test KeyNub.LicenseDongle.StandInTests` runs without a dongle: it
+compiles a stand-in for the C ABI (`bindings/julia/test/stub/licd_stub.c`) with
+the C compiler on the path (cc, gcc, clang, `zig cc` or cl) and exercises every
+call of the binding against it. `KEYNUB_SDK_ROOT` names the SDK sources when the
+project is not inside a clone.
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE), [`NOTICE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NOTICE), and

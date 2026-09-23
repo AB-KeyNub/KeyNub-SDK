@@ -113,6 +113,22 @@ code, and the MATLAB Coder configuration that links it.
 | A Simulink model or blockset | `keynub.LicenseCheck`, plus `appDecrypt` for parameters |
 | Generated C from Coder / Simulink Coder | `samples/matlab/codegen` (`keynub_gate.c`) |
 
+## Tests
+
+`tests/standin_test.m` exercises every call of the `+keynub` classes against a
+stand-in for the C API (`bindings/julia/test/stub/licd_stub.c`, one imaginary
+dongle held in memory) compiled into the gateway; no dongle and no native
+library are needed. It runs in MATLAB and in Octave. Octave, from
+`bindings/matlab`:
+
+```
+mkoctfile --mex -I../../include -o standin/licd_mex.mex src/licd_mex.c ../julia/test/stub/licd_stub.c
+octave-cli --eval "addpath(pwd); addpath('standin'); addpath('tests'); standin_test"
+```
+
+MATLAB with Visual C++ compiles the same two files with
+`mex -DLICD_BUILD_SHARED -I../../include -outdir standin ...`.
+
 ## License
 
 Apache-2.0, the same as the rest of the SDK — see [`../../LICENSE`](../../LICENSE),

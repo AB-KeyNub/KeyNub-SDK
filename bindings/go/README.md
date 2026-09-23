@@ -73,6 +73,30 @@ A progress callback that panics does not unwind through the cgo frame (that is
 undefined behaviour). The panic is captured at the boundary, the transfer is
 cancelled, and it is re-raised in your goroutine once C is off the stack.
 
+## Tests
+
+`go test -tags keynub_standin` runs without a dongle: it links a stand-in for the
+C ABI (`bindings/julia/test/stub/licd_stub.c`, compiled into
+`keynub_licdongle_standin` and linked under the name `keynub_licdongle`) and
+exercises every call of the binding against it. Compile the stand-in first. On
+Windows, in PowerShell with MinGW-w64 gcc on the path:
+
+```
+mkdir -Force $env:TEMP\kn-go > $null
+gcc -shared -O1 -DLICD_BUILD_SHARED -I../../include ../julia/test/stub/licd_stub.c -o $env:TEMP\kn-go\keynub_licdongle_standin.dll "-Wl,--out-implib,$env:TEMP\kn-go\libkeynub_licdongle.dll.a"
+$env:CGO_LDFLAGS = "-L$env:TEMP\kn-go"; $env:PATH = "$env:TEMP\kn-go;$env:PATH"
+go test -tags keynub_standin
+```
+
+On Linux:
+
+```
+mkdir -p /tmp/kn-go
+cc -shared -fPIC -O1 -DLICD_BUILD_SHARED -I../../include -Wl,-soname,libkeynub_licdongle_standin.so ../julia/test/stub/licd_stub.c -o /tmp/kn-go/libkeynub_licdongle_standin.so
+ln -sf libkeynub_licdongle_standin.so /tmp/kn-go/libkeynub_licdongle.so
+CGO_LDFLAGS=-L/tmp/kn-go LD_LIBRARY_PATH=/tmp/kn-go go test -tags keynub_standin
+```
+
 ## License
 
 Apache-2.0, like the rest of the SDK — see

@@ -75,6 +75,30 @@ FFI: `Context::as_raw`, `Dongle::as_raw`, `Context::adopt`, and the whole `sys`
 module. `Context::adopt` in particular is how an existing codebase moves to this
 crate one call at a time.
 
+## Tests
+
+`cargo test --test standin -- --ignored` runs without a dongle: it links a
+stand-in for the C ABI (`bindings/julia/test/stub/licd_stub.c`, compiled into
+`keynub_licdongle_standin`) and exercises every call of the binding against it.
+The stand-in tests are ignored in a normal `cargo test`. Compile the stand-in
+first. On Windows, in PowerShell with `zig cc` or MinGW-w64 `gcc` on the path:
+
+```
+mkdir -Force $env:TEMP\kn-rust > $null
+zig cc -shared -O1 -DLICD_BUILD_SHARED -I../../include ../julia/test/stub/licd_stub.c -o $env:TEMP\kn-rust\keynub_licdongle_standin.dll "-Wl,--out-implib,$env:TEMP\kn-rust\keynub_licdongle_standin.lib"
+$env:KEYNUB_LIB_DIR = "$env:TEMP\kn-rust"; $env:KEYNUB_LIB_NAME = "keynub_licdongle_standin"
+$env:PATH = "$env:TEMP\kn-rust;$env:PATH"
+cargo test --test standin -- --ignored
+```
+
+On Linux:
+
+```
+mkdir -p /tmp/kn-rust
+cc -shared -fPIC -O1 -DLICD_BUILD_SHARED -I../../include ../julia/test/stub/licd_stub.c -o /tmp/kn-rust/libkeynub_licdongle_standin.so
+KEYNUB_LIB_DIR=/tmp/kn-rust KEYNUB_LIB_NAME=keynub_licdongle_standin LD_LIBRARY_PATH=/tmp/kn-rust cargo test --test standin -- --ignored
+```
+
 ## License
 
 Apache-2.0, like the rest of the SDK. The native library statically links

@@ -1,11 +1,12 @@
-// A stand-in for the KeyNub C ABI, for testing the Julia binding without a dongle.
+// A stand-in for the KeyNub C ABI, for testing the bindings without a dongle.
 //
 // It implements every function of include/licdongle.h with one imaginary device
 // held in memory: fixed device info, records, two counters and a write role that
 // a fixed key elevates to. No cryptography, no USB. app_encrypt/app_decrypt only
 // pack the data with a check byte, so tampering is detected but nothing is
-// protected. The test suite compiles this file with the C compiler on the path
-// and points the binding at the result.
+// protected. The binding tests compile this file with the C compiler on the path,
+// alone or under bindings/flat/licd_flat.c, and point the binding at the result
+// or link it into the test program.
 
 #include <stdint.h>
 #include <stdlib.h>

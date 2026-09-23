@@ -84,3 +84,16 @@ See [`../../docs/integration-security.md`](../../docs/integration-security.md).
 
 Apache-2.0, like the rest of the SDK — see [`../../LICENSE`](../../LICENSE) and
 [`../../THIRD-PARTY-NOTICES.txt`](../../THIRD-PARTY-NOTICES.txt).
+
+## Tests
+
+`bindings/fortran/tests` links the module, `licd_flat.c` and a stand-in for the
+C API (`bindings/julia/test/stub/licd_stub.c`, one imaginary dongle held in
+memory) into one program and exercises every call; no dongle and no native
+library are needed, only gfortran and a C compiler:
+
+```
+cmake -S bindings/fortran/tests -B build-fortran-standin
+cmake --build build-fortran-standin
+ctest --test-dir build-fortran-standin
+```

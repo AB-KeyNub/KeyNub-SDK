@@ -46,6 +46,14 @@ Put what the add-on needs through `appEncrypt`/`appDecrypt` instead.
   resource, so a long-running host that forgot would eventually run out.
 
 
+## Tests
+
+`luajit test/test_standin.lua` runs without a dongle: it compiles a stand-in for
+the C ABI (`bindings/julia/test/stub/licd_stub.c`) with the C compiler on the
+path and exercises every call against it. `KEYNUB_SDK_ROOT` names the SDK
+sources when the module is not inside a clone; `KEYNUB_LICDONGLE_LIBRARY` names
+a compiled stand-in instead.
+
 ## Links
 
 - [KeyNub License Dongle for Lua](https://www.keynub.com/developers/lua/): the product, and how to

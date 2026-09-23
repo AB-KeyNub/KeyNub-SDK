@@ -52,6 +52,14 @@ it cannot stop an attacker from patching your application or pointing
 bypassed — put dongle-derived data (`appEncrypt`/`appDecrypt`) on the path your
 application actually needs.
 
+## Tests
+
+`mvn test -Dtest=StandInTest` runs without a dongle: it compiles a stand-in for
+the C ABI (`bindings/julia/test/stub/licd_stub.c`) with the C compiler on the path
+(cc, gcc, clang, `zig cc` or cl), loads it through `keynub.licdongle.library` and
+exercises every call of the binding against it. `KEYNUB_SDK_ROOT` names the SDK
+sources when the project is not inside a clone.
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/LICENSE), [`NOTICE`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NOTICE), and

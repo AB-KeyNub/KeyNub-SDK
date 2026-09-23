@@ -217,6 +217,12 @@ local function fixedString(array)
   return ffi.string(array)
 end
 
+--- A C byte buffer holding the bytes of s. A string initializer copies the
+--- string and a terminating zero, so the buffer has one byte more than s.
+local function byteBuffer(s)
+  return ffi.new('uint8_t[?]', #s + 1, s)
+end
+
 --- Copies a library-allocated buffer into a Lua string and frees the original.
 local function takeBuffer(outPointer, length)
   if outPointer[0] == nil then
@@ -289,7 +295,7 @@ end
 --- need this: a release build embeds the KeyNub production root. It exists for
 --- dongles provisioned against a different CA, and for vendor tooling.
 function Context:setTrustRoot(der)
-  local buffer = ffi.new('uint8_t[?]', math.max(#der, 1), der)
+  local buffer = byteBuffer(der)
   self:check(lib.licd_set_trust_root(self:checkedHandle(),
                                      #der > 0 and buffer or nil, #der),
              'licd_set_trust_root')
@@ -460,7 +466,7 @@ end
 --- key). This belongs in your licence-issuing tooling; never ship
 --- that key in the application your users run.
 function Session:authorizeWrite(masterKeyDer)
-  local buffer = ffi.new('uint8_t[?]', math.max(#masterKeyDer, 1), masterKeyDer)
+  local buffer = byteBuffer(masterKeyDer)
   self:check(lib.licd_write_auth(self:device(), buffer, #masterKeyDer), 'licd_write_auth')
 end
 
@@ -468,7 +474,7 @@ end
 --- Call authorizeWrite with the current key first. From the next session on, only
 --- the new key elevates.
 function Session:rotateWriteKey(newKeyDer)
-  local buffer = ffi.new('uint8_t[?]', math.max(#newKeyDer, 1), newKeyDer)
+  local buffer = byteBuffer(newKeyDer)
   self:check(lib.licd_write_auth_rotate(self:device(), buffer, #newKeyDer),
              'licd_write_auth_rotate')
 end
@@ -552,7 +558,7 @@ end
 function Session:writeRecord(name, data, progress)
   requireName(name)
   local device = self:device()
-  local buffer = ffi.new('uint8_t[?]', math.max(#data, 1), data)
+  local buffer = byteBuffer(data)
   local rc = withProgress(progress, function(callback)
     return lib.licd_record_write(device, name, #data > 0 and buffer or nil, #data,
                                  callback, nil)
@@ -594,7 +600,7 @@ function Session:appEncrypt(scope, plaintext)
   if scope ~= M.Scope.DEVICE and scope ~= M.Scope.DEVELOPER then
     error('scope must be Scope.DEVICE or Scope.DEVELOPER', 2)
   end
-  local buffer = ffi.new('uint8_t[?]', math.max(#plaintext, 1), plaintext)
+  local buffer = byteBuffer(plaintext)
   local out = ffi.new('uint8_t*[1]')
   local outLen = ffi.new('uint32_t[1]')
   self:check(lib.licd_app_encrypt(self:device(), scope,
@@ -606,7 +612,7 @@ end
 
 --- Decrypts a blob produced by appEncrypt, using the dongle.
 function Session:appDecrypt(packed)
-  local buffer = ffi.new('uint8_t[?]', math.max(#packed, 1), packed)
+  local buffer = byteBuffer(packed)
   local out = ffi.new('uint8_t*[1]')
   local outLen = ffi.new('uint32_t[1]')
   self:check(lib.licd_app_decrypt(self:device(), #packed > 0 and buffer or nil, #packed,
