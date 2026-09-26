@@ -1,25 +1,25 @@
 -- LuaRocks manifest.
 --
 -- The rockspec filename carries the version and the rockspec revision
--- (1.1.1-1): LuaRocks derives both from it, so a new SDK version means a new
--- file, not an edited one. The trailing -1 increments only when the packaging
--- changes without the SDK changing.
+-- (1.1.1-2): LuaRocks derives both from it, so a new SDK version means a new
+-- file, not an edited one. The trailing revision increments when the rock
+-- changes without the SDK version changing.
 --
--- source.dir is needed because the binding lives in a subdirectory of the SDK
--- repository rather than at its root; without it LuaRocks looks for the module
--- beside the checkout root and reports it missing.
+-- source is the repository archive at a fixed commit. source.dir is needed
+-- because the binding lives in a subdirectory of the SDK repository rather than
+-- at its root; without it LuaRocks looks for the module beside the archive root
+-- and reports it missing.
 --
 -- Apache-2.0 alone is correct here: the rock contains only the Lua source. The
 -- native library is not bundled -- it is loaded at run time from the system
 -- search path -- and its terms are stated separately in BINARY-LICENSE.txt.
 
 package = "keynub-licdongle"
-version = "1.1.1-1"
+version = "1.1.1-2"
 
 source = {
-   url = "git+https://github.com/AB-KeyNub/KeyNub-SDK.git",
-   tag = "v1.1.1",
-   dir = "KeyNub-SDK/bindings/lua",
+   url = "https://github.com/AB-KeyNub/KeyNub-SDK/archive/4dc2463168d11badabbbeea9e59e0366df3d84e9.zip",
+   dir = "KeyNub-SDK-4dc2463168d11badabbbeea9e59e0366df3d84e9/bindings/lua",
 }
 
 description = {

@@ -30,6 +30,21 @@ The VIs find `keynub_licdongle_flat.dll` in `natives/win-x64/` relative to this
 repository. Deployed elsewhere, put that file next to the VIs or on `PATH`;
 LabVIEW looks in the calling VI's folder when the stored path does not resolve.
 
+## Tests
+
+`bindings/labview/tests/standin_test.py` runs every VI of the library against a
+stand-in for the flat C API (`licd_flat.c` over
+`bindings/julia/test/stub/licd_stub.c`, one imaginary dongle held in memory),
+compiled as `keynub_licdongle_flat.dll` with the C compiler on the path (cl, gcc,
+clang or `zig cc`). It copies the library into a temporary folder with the
+stand-in in `natives/win-x64/` and drives LabVIEW through its ActiveX automation
+server; no dongle is needed. It needs 64-bit LabVIEW on Windows, Python 3 with
+pywin32, and no other copy of `keynub_licdongle.lvlib` open in LabVIEW:
+
+```
+python bindings/labview/tests/standin_test.py
+```
+
 ## Generating it yourself: the Import Shared Library wizard
 
 **Tools ▸ Import ▸ Shared Library (.dll)…**, then give it
