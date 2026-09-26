@@ -81,6 +81,24 @@ raising, for use in a gate, and fails closed on every kind of failure.
 Strings are marshalled by VBA as ANSI, which is exactly right for serials and
 record names (both ASCII). Do not use non-ASCII record names from VBA.
 
+## Tests
+
+`tests/StandinTest.bas` exercises every public function of the module against a
+stand-in for the flat C API (`licd_flat.c` over
+`bindings/julia/test/stub/licd_stub.c`, one imaginary dongle held in memory); no
+dongle is needed. `tests/run_standin_test.ps1` compiles the stand-in as
+`keynub_licdongle_flat.dll` with the C compiler on the path (cl, gcc, clang or
+`zig cc`, building for Excel's bitness), imports both modules into a new workbook
+in a hidden Excel, runs the test and closes the workbook without saving:
+
+```
+powershell -ExecutionPolicy Bypass -File bindings/vba/tests/run_standin_test.ps1
+```
+
+It needs Excel's **Trust access to the VBA project object model** (Trust Center,
+Macro Settings) for the import. By hand, import both modules and run
+`? StandinRun("<folder>\keynub_licdongle_flat.dll")` in the Immediate window.
+
 ## Where to put the check
 
 VBA is the easiest code in the world to read and change. A workbook that does

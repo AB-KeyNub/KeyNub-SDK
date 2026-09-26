@@ -54,19 +54,6 @@ it, and the test exercises every call of the binding against it.
 > exercise. Route something the program needs through `appEncrypt`/`appDecrypt`,
 > so removing the check removes the data.
 
-## Testing
-
-8 tests against an in-process software dongle — **no hardware** — covering the full
-protocol stack plus what is specific here: the struct layout across the FFI
-boundary (a mistake shows up as a garbage value, not a wrong boolean), the
-progress bridge with cancellation, and a session outliving its dongle. `unittest`
-is a stdlib module, so the tests need no packages either.
-
-A note on obtaining the compiler: Windows Defender has flagged Nim's release
-archive as `Trojan:Win32/Vigorf.A`, a long-standing false positive on its
-binaries. Verify the download against nim-lang.org's own checksum before
-extracting; do not disable the scanner to get past it.
-
 ## Links
 
 - [KeyNub License Dongle for Nim](https://www.keynub.com/developers/nim/): the product, and how to

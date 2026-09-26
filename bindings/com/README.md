@@ -94,6 +94,22 @@ CLSID `{335416C9-F790-454B-81B6-866020DB2A13}` in your application manifest. Use
 for a portable install; note that VB6 needs its own manifest handling for this, which
 is fiddlier than `regsvr32`.
 
+## Tests
+
+`bindings/com/tests` builds the server from `keynub_com.cpp` over the flat API and
+a stand-in for the C API (`bindings/julia/test/stub/licd_stub.c`, one imaginary
+dongle held in memory) and calls every member through the vtable, as early binding
+does, and through `IDispatch`, as `CreateObject` does. No dongle, no native library
+and no registration are needed. With Visual C++ and the Windows SDK:
+
+```
+cmake -S bindings/com/tests -B build-com-standin -A x64
+cmake --build build-com-standin --config Release
+ctest --test-dir build-com-standin -C Release
+```
+
+`-A Win32` builds and tests the 32-bit server that VB6 loads.
+
 ## API
 
 Everything raises on failure except `IsGenuine`.
