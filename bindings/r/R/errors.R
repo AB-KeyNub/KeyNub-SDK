@@ -7,7 +7,14 @@
 #' class `licd_error` whose `status` field holds one of these.
 #'
 #' @format A named integer vector with 21 entries.
+#' @return A named integer vector: each name is a status (such as `no_device`)
+#'   and each value the code the native library returns for it, `0` for `ok`
+#'   and negative for a failure. Compare it with the `status` field of a
+#'   [licd_error].
 #' @seealso [licd_strerror()], [licd_error]
+#' @examples
+#' licd_status_codes[["no_device"]]
+#' names(licd_status_codes)[licd_status_codes == -14L]
 #' @export
 licd_status_codes <- c(
   ok = 0L,
@@ -50,9 +57,8 @@ licd_status_codes <- c(
 #' @return A character vector with the native library's short text for each
 #'   code.
 #' @examples
-#' \dontrun{
-#' licd_strerror(licd_status_codes[["no_device"]])
-#' }
+#' # NULL where the native library is not installed.
+#' tryCatch(licd_strerror(licd_status_codes[["no_device"]]), error = function(e) NULL)
 #' @export
 licd_strerror <- function(status) {
   .ensure_loaded()
@@ -75,10 +81,14 @@ licd_strerror <- function(status) {
 #' `licd_auth_required` and `licd_cancelled`.
 #'
 #' @examples
-#' \dontrun{
-#' ctx <- licd_context()
-#' dongle <- tryCatch(licd_open(ctx),
-#'   licd_no_device = function(e) NULL)
+#' # Does nothing where the native library is not installed.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' if (!is.null(ctx)) {
+#'   dongle <- tryCatch(licd_open(ctx), licd_no_device = function(e) {
+#'     message("no dongle attached")
+#'     NULL
+#'   })
+#'   licd_close(ctx)
 #' }
 #' @name licd_error
 NULL

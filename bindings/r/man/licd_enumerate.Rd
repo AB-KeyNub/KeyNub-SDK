@@ -19,9 +19,11 @@ none is attached.
 Enumerates without opening anything.
 }
 \examples{
-\dontrun{
-ctx <- licd_context()
-dongles <- licd_enumerate(ctx)
-nrow(dongles)
+# Does nothing where the native library is not installed.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+if (!is.null(ctx)) {
+  dongles <- licd_enumerate(ctx)
+  print(nrow(dongles))
+  licd_close(ctx)
 }
 }

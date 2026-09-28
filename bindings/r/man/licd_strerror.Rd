@@ -17,7 +17,6 @@ code.
 Text for a status code
 }
 \examples{
-\dontrun{
-licd_strerror(licd_status_codes[["no_device"]])
-}
+# NULL where the native library is not installed.
+tryCatch(licd_strerror(licd_status_codes[["no_device"]]), error = function(e) NULL)
 }

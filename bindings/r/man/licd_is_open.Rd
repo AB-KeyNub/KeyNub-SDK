@@ -17,10 +17,11 @@ explicitly or through its context.
 Is a context or dongle still open?
 }
 \examples{
-\dontrun{
-ctx <- licd_context()
-licd_is_open(ctx)
-licd_close(ctx)
-licd_is_open(ctx)
+# Does nothing where the native library is not installed.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+if (!is.null(ctx)) {
+  print(licd_is_open(ctx))
+  licd_close(ctx)
+  print(licd_is_open(ctx))
 }
 }

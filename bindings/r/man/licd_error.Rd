@@ -21,9 +21,13 @@ front of \code{licd_error}: \code{licd_no_device}, \code{licd_not_genuine},
 \code{licd_auth_required} and \code{licd_cancelled}.
 }
 \examples{
-\dontrun{
-ctx <- licd_context()
-dongle <- tryCatch(licd_open(ctx),
-  licd_no_device = function(e) NULL)
+# Does nothing where the native library is not installed.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+if (!is.null(ctx)) {
+  dongle <- tryCatch(licd_open(ctx), licd_no_device = function(e) {
+    message("no dongle attached")
+    NULL
+  })
+  licd_close(ctx)
 }
 }

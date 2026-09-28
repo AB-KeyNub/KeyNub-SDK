@@ -9,10 +9,11 @@
 #'
 #' @return A `licd_context` object.
 #' @examples
-#' \dontrun{
-#' ctx <- licd_context()
-#' licd_enumerate(ctx)
-#' licd_close(ctx)
+#' # Does nothing where the native library is not installed.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' if (!is.null(ctx)) {
+#'   print(licd_enumerate(ctx))
+#'   licd_close(ctx)
 #' }
 #' @export
 licd_context <- function() {
@@ -52,11 +53,12 @@ licd_context <- function() {
 #'   [licd_open()].
 #' @return `NULL`, invisibly.
 #' @examples
-#' \dontrun{
-#' ctx <- licd_context()
-#' dongle <- licd_open(ctx)
-#' licd_close(dongle)
-#' licd_close(ctx)
+#' # Does nothing where the native library is not installed.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' if (!is.null(ctx)) {
+#'   dongle <- tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#'   if (!is.null(dongle)) licd_close(dongle)
+#'   licd_close(ctx)
 #' }
 #' @export
 licd_close <- function(x) {
@@ -81,11 +83,12 @@ licd_close.licd_dongle <- function(x) {
 #' @return `TRUE` while the handle can be used, `FALSE` once it has been closed,
 #'   explicitly or through its context.
 #' @examples
-#' \dontrun{
-#' ctx <- licd_context()
-#' licd_is_open(ctx)
-#' licd_close(ctx)
-#' licd_is_open(ctx)
+#' # Does nothing where the native library is not installed.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' if (!is.null(ctx)) {
+#'   print(licd_is_open(ctx))
+#'   licd_close(ctx)
+#'   print(licd_is_open(ctx))
 #' }
 #' @export
 licd_is_open <- function(x) {
@@ -158,10 +161,12 @@ licd_set_trust_root <- function(ctx, der) {
 #'   [licd_open_path()]), `vendor_id` and `product_id` (USB ids). Zero rows when
 #'   none is attached.
 #' @examples
-#' \dontrun{
-#' ctx <- licd_context()
-#' dongles <- licd_enumerate(ctx)
-#' nrow(dongles)
+#' # Does nothing where the native library is not installed.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' if (!is.null(ctx)) {
+#'   dongles <- licd_enumerate(ctx)
+#'   print(nrow(dongles))
+#'   licd_close(ctx)
 #' }
 #' @export
 licd_enumerate <- function(ctx) {
@@ -181,13 +186,14 @@ licd_enumerate <- function(ctx) {
 #' @param path A device path from [licd_enumerate()].
 #' @return A `licd_dongle` object. Close it with [licd_close()].
 #' @examples
-#' \dontrun{
-#' ctx <- licd_context()
-#' dongle <- licd_open(ctx)             # the first dongle
-#' licd_verify_genuine(dongle)          # signals an error unless genuine
-#' licd_close(dongle)
-#' licd_close(ctx)
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   print(licd_serial(dongle))
+#'   licd_close(dongle)
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)
 #' @export
 licd_open <- function(ctx, serial = NULL) {
   if (!is.null(serial) && (!is.character(serial) || length(serial) != 1L || is.na(serial))) {

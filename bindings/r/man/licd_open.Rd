@@ -26,11 +26,12 @@ from \code{\link[=licd_enumerate]{licd_enumerate()}}. Both signal a condition of
 when there is no such dongle.
 }
 \examples{
-\dontrun{
-ctx <- licd_context()
-dongle <- licd_open(ctx)             # the first dongle
-licd_verify_genuine(dongle)          # signals an error unless genuine
-licd_close(dongle)
-licd_close(ctx)
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  print(licd_serial(dongle))
+  licd_close(dongle)
 }
+if (!is.null(ctx)) licd_close(ctx)
 }

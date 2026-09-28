@@ -43,9 +43,14 @@ library a missing name means "erase every record", and an accidentally empty
 variable must not do that.
 }
 \examples{
-\dontrun{
-licd_with_session(dongle, {
-  licence <- rawToChar(licd_record_read(dongle, "license"))
-})
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  licd_with_session(dongle, {
+    records <- licd_record_list(dongle)
+    if (nrow(records) > 0) print(licd_record_read(dongle, records$name[1]))
+  })
 }
+if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 }

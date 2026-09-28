@@ -32,8 +32,13 @@ program that ships as source; what cannot be deleted is data the program
 needs and only the dongle can decrypt, see \code{\link[=licd_app_encrypt]{licd_app_encrypt()}}.
 }
 \examples{
-\dontrun{
-result <- licd_verify_genuine(dongle)
-result$serial
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  print(licd_is_genuine(dongle))
+  result <- tryCatch(licd_verify_genuine(dongle), licd_error = function(e) e)
+  print(if (inherits(result, "licd_error")) conditionMessage(result) else result$serial)
 }
+if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 }

@@ -16,9 +16,10 @@ dongles opened on it. One per program is usual. Close it with
 as well, together with any dongle still open on it.
 }
 \examples{
-\dontrun{
-ctx <- licd_context()
-licd_enumerate(ctx)
-licd_close(ctx)
+# Does nothing where the native library is not installed.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+if (!is.null(ctx)) {
+  print(licd_enumerate(ctx))
+  licd_close(ctx)
 }
 }

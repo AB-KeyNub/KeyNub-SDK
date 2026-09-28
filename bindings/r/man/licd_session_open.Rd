@@ -28,7 +28,15 @@ authenticated channel to the dongle (P-256 ECDH, HKDF-SHA256, AES-256-GCM).
 afterwards whatever happens.
 }
 \examples{
-\dontrun{
-data <- licd_with_session(dongle, licd_record_read(dongle, "license"))
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  licd_session_open(dongle)
+  print(licd_record_list(dongle))
+  licd_session_close(dongle)
+  # The same, closing the session whatever happens:
+  print(licd_with_session(dongle, licd_record_list(dongle)))
 }
+if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 }

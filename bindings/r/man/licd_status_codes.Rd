@@ -9,10 +9,20 @@ A named integer vector with 21 entries.
 \usage{
 licd_status_codes
 }
+\value{
+A named integer vector: each name is a status (such as \code{no_device})
+and each value the code the native library returns for it, \code{0} for \code{ok}
+and negative for a failure. Compare it with the \code{status} field of a
+\link{licd_error}.
+}
 \description{
 A named integer vector of the status codes the native library reports; \code{ok}
 is zero and every failure is negative. A failed call signals a condition of
 class \code{licd_error} whose \code{status} field holds one of these.
+}
+\examples{
+licd_status_codes[["no_device"]]
+names(licd_status_codes)[licd_status_codes == -14L]
 }
 \seealso{
 \code{\link[=licd_strerror]{licd_strerror()}}, \link{licd_error}

@@ -20,10 +20,11 @@ the garbage collector reclaims it, so a forgotten handle leaks nothing, but
 closing explicitly frees the dongle for other programs at once.
 }
 \examples{
-\dontrun{
-ctx <- licd_context()
-dongle <- licd_open(ctx)
-licd_close(dongle)
-licd_close(ctx)
+# Does nothing where the native library is not installed.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+if (!is.null(ctx)) {
+  dongle <- tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+  if (!is.null(dongle)) licd_close(dongle)
+  licd_close(ctx)
 }
 }

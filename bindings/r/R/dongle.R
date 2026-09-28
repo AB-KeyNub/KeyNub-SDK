@@ -19,10 +19,14 @@
 #'   takes writes from anyone holding it; rotate on receipt with
 #'   [licd_write_auth_rotate()].
 #' @examples
-#' \dontrun{
-#' info <- licd_info(dongle)
-#' info$firmware_version
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   info <- licd_info(dongle)
+#'   print(info$firmware_version)
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 #' @export
 licd_info <- function(dongle) {
   .check(.Call(C_get_info, .dev_ptr(dongle)), "licd_get_info")
@@ -56,10 +60,15 @@ licd_serial <- function(dongle) {
 #'   (from the verified certificate) and `provisioned_date` (`"YYYY-MM-DD"`, or
 #'   `""`). `licd_is_genuine()`: `TRUE` or `FALSE`.
 #' @examples
-#' \dontrun{
-#' result <- licd_verify_genuine(dongle)
-#' result$serial
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   print(licd_is_genuine(dongle))
+#'   result <- tryCatch(licd_verify_genuine(dongle), licd_error = function(e) e)
+#'   print(if (inherits(result, "licd_error")) conditionMessage(result) else result$serial)
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 #' @export
 licd_verify_genuine <- function(dongle) {
   result <- .check(.Call(C_verify_genuine, .dev_ptr(dongle)), "licd_verify_genuine")
@@ -90,9 +99,17 @@ licd_is_genuine <- function(dongle) {
 #' @return `licd_session_open()` and `licd_session_close()`: `NULL`, invisibly.
 #'   `licd_with_session()`: the value of `expr`.
 #' @examples
-#' \dontrun{
-#' data <- licd_with_session(dongle, licd_record_read(dongle, "license"))
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   licd_session_open(dongle)
+#'   print(licd_record_list(dongle))
+#'   licd_session_close(dongle)
+#'   # The same, closing the session whatever happens:
+#'   print(licd_with_session(dongle, licd_record_list(dongle)))
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 #' @export
 licd_session_open <- function(dongle) {
   .check(.Call(C_session_open, .dev_ptr(dongle)), "licd_session_open")
@@ -133,6 +150,7 @@ licd_with_session <- function(dongle, expr) {
 #'   `readBin(path, "raw", file.size(path))`.
 #' @return `NULL`, invisibly.
 #' @examples
+#' # Needs your write key, and replaces a record on the dongle.
 #' \dontrun{
 #' key <- readBin("my-write-key.der", "raw", file.size("my-write-key.der"))
 #' licd_with_session(dongle, {

@@ -84,10 +84,8 @@
 #'   once there is one, otherwise the choice the next call would make.
 #'   Invisibly when `path` is given.
 #' @examples
-#' \dontrun{
-#' licd_library("C:/keynub/natives/win-x64/keynub_licdongle.dll")
-#' licd_version()
-#' }
+#' # The file the package has loaded, or would load on its first call.
+#' licd_library()
 #' @export
 licd_library <- function(path = NULL) {
   if (is.null(path)) {
@@ -111,9 +109,8 @@ licd_library <- function(path = NULL) {
 #' @return An integer vector of length three: major, minor and patch version of
 #'   the loaded library, which is the SDK version it was built from.
 #' @examples
-#' \dontrun{
-#' licd_version()
-#' }
+#' # NULL where the native library is not installed.
+#' tryCatch(licd_version(), error = function(e) NULL)
 #' @export
 licd_version <- function() {
   .ensure_loaded()

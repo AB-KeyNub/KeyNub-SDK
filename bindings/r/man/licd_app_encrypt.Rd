@@ -35,11 +35,17 @@ one sealed file serves every customer; \code{scope = "device"} locks it to the
 one dongle that sealed it.
 }
 \examples{
-\dontrun{
-sealed <- licd_with_session(dongle, licd_app_encrypt(dongle, "the data", "developer"))
-saveRDS(sealed, "model-parameters.sealed")
-# In the shipped program:
-plain <- licd_with_session(dongle, licd_app_decrypt(dongle, readRDS("model-parameters.sealed")))
-rawToChar(plain)
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  sealed <- licd_with_session(dongle, licd_app_encrypt(dongle, "the data", "developer"))
+  file <- tempfile(fileext = ".sealed")
+  saveRDS(sealed, file)
+  # In the shipped program:
+  plain <- licd_with_session(dongle, licd_app_decrypt(dongle, readRDS(file)))
+  print(rawToChar(plain))
+  unlink(file)
 }
+if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 }

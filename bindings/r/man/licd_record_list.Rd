@@ -17,7 +17,11 @@ record; zero rows when the dongle holds none.
 The records on the dongle
 }
 \examples{
-\dontrun{
-licd_with_session(dongle, licd_record_list(dongle))
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  print(licd_with_session(dongle, licd_record_list(dongle)))
 }
+if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 }

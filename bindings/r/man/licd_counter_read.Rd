@@ -25,7 +25,11 @@ The dongle holds hardware counters that only ever go up. Reading needs a
 session; incrementing needs the write role and is irreversible.
 }
 \examples{
-\dontrun{
-licd_with_session(dongle, licd_counter_read(dongle, 0))
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  print(licd_with_session(dongle, licd_counter_read(dongle, 0)))
 }
+if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 }

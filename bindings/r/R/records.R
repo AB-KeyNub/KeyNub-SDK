@@ -28,9 +28,13 @@
 #' @return A data frame with the columns `name` and `size` (bytes), one row per
 #'   record; zero rows when the dongle holds none.
 #' @examples
-#' \dontrun{
-#' licd_with_session(dongle, licd_record_list(dongle))
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   print(licd_with_session(dongle, licd_record_list(dongle)))
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 #' @export
 licd_record_list <- function(dongle) {
   columns <- .check(.Call(C_record_list, .dev_ptr(dongle)), "licd_record_list")
@@ -58,11 +62,16 @@ licd_record_list <- function(dongle) {
 #' @return `licd_record_read()`: the record as a raw vector (`rawToChar()` gives
 #'   text back). The others: `NULL`, invisibly.
 #' @examples
-#' \dontrun{
-#' licd_with_session(dongle, {
-#'   licence <- rawToChar(licd_record_read(dongle, "license"))
-#' })
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   licd_with_session(dongle, {
+#'     records <- licd_record_list(dongle)
+#'     if (nrow(records) > 0) print(licd_record_read(dongle, records$name[1]))
+#'   })
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 #' @export
 licd_record_read <- function(dongle, name, progress = NULL) {
   .check(.Call(C_record_read, .dev_ptr(dongle), .record_name(name), .progress_arg(progress)),
@@ -103,9 +112,13 @@ licd_record_erase_all <- function(dongle) {
 #'   `licd_counter_increment()`) as a number. Counters are unsigned 32-bit, so
 #'   the value is returned as a double.
 #' @examples
-#' \dontrun{
-#' licd_with_session(dongle, licd_counter_read(dongle, 0))
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   print(licd_with_session(dongle, licd_counter_read(dongle, 0)))
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 #' @export
 licd_counter_read <- function(dongle, id) {
   .check(.Call(C_counter_read, .dev_ptr(dongle), .counter_id(id)), "licd_counter_read")
@@ -144,13 +157,19 @@ licd_counter_increment <- function(dongle, id) {
 #' @param scope `"device"` or `"developer"`.
 #' @return A raw vector: the sealed data, or the recovered plaintext.
 #' @examples
-#' \dontrun{
-#' sealed <- licd_with_session(dongle, licd_app_encrypt(dongle, "the data", "developer"))
-#' saveRDS(sealed, "model-parameters.sealed")
-#' # In the shipped program:
-#' plain <- licd_with_session(dongle, licd_app_decrypt(dongle, readRDS("model-parameters.sealed")))
-#' rawToChar(plain)
+#' # Needs the native library and an attached dongle; does nothing without them.
+#' ctx <- tryCatch(licd_context(), error = function(e) NULL)
+#' dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+#' if (!is.null(dongle)) {
+#'   sealed <- licd_with_session(dongle, licd_app_encrypt(dongle, "the data", "developer"))
+#'   file <- tempfile(fileext = ".sealed")
+#'   saveRDS(sealed, file)
+#'   # In the shipped program:
+#'   plain <- licd_with_session(dongle, licd_app_decrypt(dongle, readRDS(file)))
+#'   print(rawToChar(plain))
+#'   unlink(file)
 #' }
+#' if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 #' @export
 licd_app_encrypt <- function(dongle, data, scope = c("device", "developer")) {
   scope <- match.arg(scope)

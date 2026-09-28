@@ -28,8 +28,12 @@ takes writes from anyone holding it; rotate on receipt with
 Reads what the dongle reports without a session.
 }
 \examples{
-\dontrun{
-info <- licd_info(dongle)
-info$firmware_version
+# Needs the native library and an attached dongle; does nothing without them.
+ctx <- tryCatch(licd_context(), error = function(e) NULL)
+dongle <- if (!is.null(ctx)) tryCatch(licd_open(ctx), licd_error = function(e) NULL)
+if (!is.null(dongle)) {
+  info <- licd_info(dongle)
+  print(info$firmware_version)
 }
+if (!is.null(ctx)) licd_close(ctx)   # closes the dongle as well
 }

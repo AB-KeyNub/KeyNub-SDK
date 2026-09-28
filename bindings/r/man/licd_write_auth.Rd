@@ -33,6 +33,7 @@ on only the new key elevates, and the old one no longer works on this
 dongle. Do this once per dongle, when it arrives: the factory key is public.
 }
 \examples{
+# Needs your write key, and replaces a record on the dongle.
 \dontrun{
 key <- readBin("my-write-key.der", "raw", file.size("my-write-key.der"))
 licd_with_session(dongle, {

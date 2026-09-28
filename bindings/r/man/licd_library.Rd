@@ -27,8 +27,6 @@ along its usual search path (\code{PATH}, \code{LD_LIBRARY_PATH},
 \code{DYLD_LIBRARY_PATH}).
 }
 \examples{
-\dontrun{
-licd_library("C:/keynub/natives/win-x64/keynub_licdongle.dll")
-licd_version()
-}
+# The file the package has loaded, or would load on its first call.
+licd_library()
 }

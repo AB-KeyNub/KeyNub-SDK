@@ -14,7 +14,6 @@ the loaded library, which is the SDK version it was built from.
 Version of the native library
 }
 \examples{
-\dontrun{
-licd_version()
-}
+# NULL where the native library is not installed.
+tryCatch(licd_version(), error = function(e) NULL)
 }
