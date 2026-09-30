@@ -13,6 +13,9 @@ dongle is a vendor-defined USB HID device.
 [![LuaRocks](https://img.shields.io/luarocks/v/ab-tools/keynub-licdongle?label=LuaRocks)](https://luarocks.org/modules/ab-tools/keynub-licdongle)
 [![Packagist](https://img.shields.io/packagist/v/keynub/licdongle?label=Packagist)](https://packagist.org/packages/keynub/licdongle)
 [![Maven Central](https://img.shields.io/maven-central/v/com.keynub/keynub-licdongle?label=Maven%20Central)](https://central.sonatype.com/artifact/com.keynub/keynub-licdongle)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/KeyNub.LicenseDongle?label=PowerShell%20Gallery)](https://www.powershellgallery.com/packages/KeyNub.LicenseDongle)
+[![Clojars](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fclojars.org%2Fapi%2Fartifacts%2Fcom.keynub%2Fkeynub-licdongle-clj&query=%24.latest_version&prefix=v&label=Clojars)](https://clojars.org/com.keynub/keynub-licdongle-clj)
+[![VIPM](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fwww.vipm.io%2Fpackage%2Fkeynub_licdongle%2F&search=%3Cstrong%3EVersion%3C%2Fstrong%3E%3C%2Ftd%3E%3Ctd%3E%28%5B0-9.%5D%2B%29%3C%2Ftd%3E&replace=v%241&label=VIPM)](https://www.vipm.io/package/keynub_licdongle/)
 [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go)
 [![Julia General](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2FJuliaRegistries%2FGeneral%2Fmaster%2FK%2FKeyNubLicenseDongle%2FVersions.toml&search=%5C%5B%22%28%5B0-9.%5D%2B%29%22%5C%5D%5Cs*git-tree-sha1%20%3D%20%22%5B0-9a-f%5D%2B%22%5Cs*%24&replace=v%241&label=Julia%20General&logo=julia)](https://juliahub.com/ui/Packages/General/KeyNubLicenseDongle)
 [![pub.dev](https://img.shields.io/pub/v/keynub_licdongle?label=pub.dev)](https://pub.dev/packages/keynub_licdongle)
@@ -67,17 +70,17 @@ once.
 | C++ | [`bindings/cpp`](bindings/cpp) — header-only RAII, C++11, CMake target `keynub::licdongle_cpp` | [`samples/cpp`](samples/cpp) | [![CMake package](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&sort=semver&label=CMake%20package)](NATIVES.md) [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle.Native?label=NuGet%20native)](https://www.nuget.org/packages/KeyNub.LicenseDongle.Native) [![xmake](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fxmake-io%2Fxmake-repo%2Fmaster%2Fpackages%2Fk%2Fkeynub_licdongle%2Fxmake.lua&search=add_versions%5C%28%22%28%5B0-9.%5D%2B%29%22&replace=v%241&label=xmake)](https://packages.xmake.io/packages/keynub_licdongle) [![Bazel Central Registry](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbazelbuild%2Fbazel-central-registry%2Fmain%2Fmodules%2Fkeynub_licdongle%2Fmetadata.json&query=%24.versions%5B-1%3A%5D&prefix=v&label=Bazel%20Central%20Registry)](https://registry.bazel.build/modules/keynub_licdongle) |
 | flat API | [`bindings/flat`](bindings/flat) — integer handles, no callbacks | [`samples/flat`](samples/flat) | — |
 | C# / VB.NET / F# | [`bindings/dotnet`](bindings/dotnet) — `KeyNub.LicenseDongle` | [`samples/csharp`](samples/csharp), [`samples/vbnet`](samples/vbnet), [`samples/fsharp`](samples/fsharp) | [![NuGet](https://img.shields.io/nuget/v/KeyNub.LicenseDongle?label=NuGet)](https://www.nuget.org/packages/KeyNub.LicenseDongle) |
-| PowerShell | [`bindings/powershell`](bindings/powershell) — module `KeyNub.LicenseDongle`, Windows PowerShell 5.1 and PowerShell 7 | [`samples/powershell`](samples/powershell) | — |
+| PowerShell | [`bindings/powershell`](bindings/powershell) — module `KeyNub.LicenseDongle`, Windows PowerShell 5.1 and PowerShell 7 | [`samples/powershell`](samples/powershell) | [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/KeyNub.LicenseDongle?label=PowerShell%20Gallery)](https://www.powershellgallery.com/packages/KeyNub.LicenseDongle) |
 | Python | [`bindings/python`](bindings/python) — `keynub-licdongle`, ctypes, plus the `licd-tool` CLI | [`samples/python`](samples/python) | [![PyPI](https://img.shields.io/pypi/v/keynub-licdongle?label=PyPI)](https://pypi.org/project/keynub-licdongle/) |
 | Java | [`bindings/java`](bindings/java) — JNA, Java 17+ | [`samples/java`](samples/java) | [![Maven Central](https://img.shields.io/maven-central/v/com.keynub/keynub-licdongle?label=Maven%20Central)](https://central.sonatype.com/artifact/com.keynub/keynub-licdongle) |
-| Clojure | [`bindings/clojure`](bindings/clojure) — `com.keynub/keynub-licdongle-clj`, over the Java binding | [`samples/clojure`](samples/clojure) | — |
+| Clojure | [`bindings/clojure`](bindings/clojure) — `com.keynub/keynub-licdongle-clj`, over the Java binding | [`samples/clojure`](samples/clojure) | [![Clojars](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fclojars.org%2Fapi%2Fartifacts%2Fcom.keynub%2Fkeynub-licdongle-clj&query=%24.latest_version&prefix=v&label=Clojars)](https://clojars.org/com.keynub/keynub-licdongle-clj) |
 | Delphi / Free Pascal | [`bindings/delphi`](bindings/delphi) | [`samples/delphi`](samples/delphi) | [![Lazarus OPM](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&sort=semver&label=Lazarus%20OPM)](https://packages.lazarus-ide.org/) |
 | Visual Basic 6 / VBScript | [`bindings/com`](bindings/com) — COM object `KeyNub.Dongle` | [`samples/vb6`](samples/vb6) | — |
 | twinBASIC | [`bindings/com`](bindings/com) | [`samples/twinbasic`](samples/twinbasic) | — |
 | Excel / VBA | [`bindings/vba`](bindings/vba) | [`samples/vba`](samples/vba) | — |
 | MATLAB / Simulink | [`bindings/matlab`](bindings/matlab) — MEX gateway, incl. MATLAB Coder output; runs in GNU Octave | [`samples/matlab`](samples/matlab), [`samples/simulink`](samples/simulink) | [![File Exchange](https://img.shields.io/github/v/tag/AB-KeyNub/KeyNub-SDK?filter=v*&sort=semver&label=File%20Exchange)](https://www.mathworks.com/matlabcentral/fileexchange/184704-keynub-license-dongle-for-matlab-and-simulink) |
 | Wolfram Language | [`bindings/wolfram`](bindings/wolfram) — paclet over `ForeignFunctionLoad`, flat API | [`samples/wolfram`](samples/wolfram) | [![Wolfram Paclet Repository](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fresources.wolframcloud.com%2FPacletRepository%2Fresources%2FKeyNub%2FKeyNubLicDongle%2F&search=shingleVersionHistory%5B%5Cs%5CS%5D%2A%3Fclass%3D%22name%22%3E%28%5B0-9.%5D%2B%29%3C&replace=v%241&label=Wolfram%20Paclet%20Repository)](https://resources.wolframcloud.com/PacletRepository/resources/KeyNub/KeyNubLicDongle/) |
-| LabVIEW | [`bindings/labview`](bindings/labview) — VI library (LabVIEW 2026, 64-bit) and the import header | [`samples/labview`](samples/labview) | — |
+| LabVIEW | [`bindings/labview`](bindings/labview) — VI library (LabVIEW 2026, 64-bit) and the import header | [`samples/labview`](samples/labview) | [![VIPM](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fwww.vipm.io%2Fpackage%2Fkeynub_licdongle%2F&search=%3Cstrong%3EVersion%3C%2Fstrong%3E%3C%2Ftd%3E%3Ctd%3E%28%5B0-9.%5D%2B%29%3C%2Ftd%3E&replace=v%241&label=VIPM)](https://www.vipm.io/package/keynub_licdongle/) |
 | Node.js / Electron | [`bindings/nodejs`](bindings/nodejs) — `@keynub/licdongle` | [`samples/nodejs`](samples/nodejs) | [![npm](https://img.shields.io/npm/v/%40keynub%2Flicdongle?label=npm)](https://www.npmjs.com/package/@keynub/licdongle) |
 | Go | [`bindings/go`](bindings/go) — cgo, `errors.Is` sentinels | [`samples/go`](samples/go) | [![Go module](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fproxy.golang.org%2Fgithub.com%2F!a!b-!key!nub%2F!key!nub-!s!d!k%2Fbindings%2Fgo%2F%40latest&query=%24.Version&label=Go%20module&logo=go)](https://pkg.go.dev/github.com/AB-KeyNub/KeyNub-SDK/bindings/go) |
 | Rust | [`bindings/rust`](bindings/rust) — `keynub-licdongle`, no dependencies | [`samples/rust`](samples/rust) | [![crates.io](https://img.shields.io/crates/v/keynub-licdongle?label=crates.io)](https://crates.io/crates/keynub-licdongle) |
@@ -119,6 +122,14 @@ reason: VB6's `Declare` emits **stdcall** while the flat API is **cdecl**. That 
 harmless in a 64-bit process and a stack-drifting mismatch in a 32-bit one, and
 VB6 is 32-bit only. Going through an object removes the question — and adds a
 handle that closes itself and failures that raise with a real `Err.Description`.
+
+## Command-Line Tool
+
+[`tools/licd-tool`](tools/licd-tool) is one executable with the core built in: list and inspect
+dongles, verify them, read and write records, read and increment counters, and encrypt data
+that only a dongle can decrypt, from a script or a terminal. Signed Windows builds are in
+[`natives/`](natives/) (`win-x64/licd-tool.exe`, `win-x86/licd-tool.exe`); elsewhere it builds
+with CMake against the static library there.
 
 ## Where the licence check belongs
 

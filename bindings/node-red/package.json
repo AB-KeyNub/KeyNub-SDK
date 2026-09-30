@@ -1,0 +1,52 @@
+{
+  "name": "@keynub/node-red-licdongle",
+  "version": "1.1.1",
+  "description": "Node-RED nodes for the KeyNub USB license dongle: prove it genuine, read and write licence records, counters, and data only a dongle can decrypt",
+  "license": "Apache-2.0",
+  "author": "KeyNub",
+  "homepage": "https://www.keynub.com/developers/nodejs/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AB-KeyNub/KeyNub-SDK.git",
+    "directory": "bindings/node-red"
+  },
+  "bugs": {
+    "url": "https://github.com/AB-KeyNub/KeyNub-SDK/issues"
+  },
+  "keywords": [
+    "node-red",
+    "keynub",
+    "license",
+    "licensing",
+    "dongle",
+    "usb",
+    "hardware",
+    "copy-protection"
+  ],
+  "node-red": {
+    "version": ">=3.0.0",
+    "nodes": {
+      "keynub": "nodes/keynub.js"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "nodes/",
+    "examples/",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "dependencies": {
+    "@keynub/licdongle": "^1.1.1"
+  },
+  "devDependencies": {
+    "node-red": "^4.1.0",
+    "node-red-node-test-helper": "^0.3.4"
+  },
+  "scripts": {
+    "test": "node --test test/standin.test.js"
+  }
+}

@@ -11,8 +11,9 @@ download separately and no release archive to look for:
 ```
 natives/win-x64/      keynub_licdongle.dll   keynub_licdongle_flat.dll   KeyNub.dll
                       + the .lib import libraries, and keynub_licdongle_static.lib
+                      + licd-tool.exe, the command-line tool (signed)
 natives/win-x86/                          "
-natives/win-arm64/                        "
+natives/win-arm64/                        "   (no licd-tool.exe: the x64 one runs on Arm)
 natives/linux-x64/    libkeynub_licdongle.so      libkeynub_licdongle_flat.so
                       libkeynub_licdongle_static.a
 natives/linux-arm64/                      "

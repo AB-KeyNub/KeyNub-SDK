@@ -41,9 +41,8 @@ rebuild per Electron ABI**. A native addon has to be recompiled for every Electr
 version your app upgrades to; an FFI binding does not.
 
 The trade is that the C signatures live in
-[`lib/native.js`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/nodejs/lib/native.js) as strings that no compiler checks, which is
-exactly why every single one of them is written out by hand against a software
-dongle.
+[`lib/native.js`](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/bindings/nodejs/lib/native.js) as strings that no compiler checks; the stand-in test
+(`test/standin.test.js`) calls every one of them.
 
 ## Everything is synchronous
 

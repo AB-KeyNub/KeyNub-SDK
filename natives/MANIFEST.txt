@@ -2,6 +2,7 @@
 # Written by packaging/stage_public_natives.py; verified by
 # packaging/check_tracked_natives.py. Their terms are in BINARY-LICENSE.txt,
 # not the Apache-2.0 licence that covers the source.
+# The licd-tool executables: packaging/stage_licd_tool.py, after the libraries.
 version 1.1.1
 
 304a39f4bf9028ee445af21cad86e555fee8d946ee24a58e3bd960ae15fad1cb  linux-arm64/libkeynub_licdongle.so
@@ -30,6 +31,7 @@ aef3d59268a5191755db7470851c67365c555e54bd87b1b5484a807c95d96b24  win-x64/keynub
 90e6fd64fc90c5301895980f31dc1f0abba876e2f79a0fd37ab7a2ac2ce410e0  win-x64/keynub_licdongle_static.lib
 835efa734f399b61a8968560513a03c5672bfae3bd22b28abde5503a8fdcf0f0  win-x64/KeyNub.dll
 8b05d49a717627cc537c7154028c1d3c3d89dc84a1f76a70ffb598018f038702  win-x64/KeyNub.lib
+517ebf48695d19bc890b54df8fa02b69e8400b955e53c2708dcbaff6e076a81e  win-x64/licd-tool.exe
 3f45b914eccc89ffd43160aacadd9ea75857342217737b566db4b6b485070ac6  win-x86/keynub_licdongle.dll
 9d815f1cd6e1cdf2555eb4bc4344ac630da5468a789b0a63d0930da2e93fc0bc  win-x86/keynub_licdongle_flat.dll
 7fbd6a98efac21b9239bb2db77490cbbf8059f064ec78fe4ef0088e24bb7e7ea  win-x86/keynub_licdongle.lib
@@ -37,3 +39,4 @@ b38603aea5a2d31c9a07d2beca20ef808fb75fd91b9cfaa6a1a19311dd96b566  win-x86/keynub
 71eec7f18942710cecd7d4bc0aef29d75418c4cb33ae95435ea7441e6152be61  win-x86/keynub_licdongle_static.lib
 197d6d9fe6317e61ab739596ed645f59dec88649571b2d5bccbe431ae870501a  win-x86/KeyNub.dll
 2b6dd8acc59715229332a68889b466bbc63920fb6f867504dffc0c9d2b41c24e  win-x86/KeyNub.lib
+8ba2f409b479816a48a593a763e8c9d8b336291a829802d96e454ab017c13633  win-x86/licd-tool.exe

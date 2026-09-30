@@ -1,0 +1,75 @@
+[
+  {
+    "id": "c1a0d0e0f0a00001",
+    "type": "tab",
+    "label": "KeyNub: verify and read",
+    "info": "Checks that a genuine KeyNub dongle is attached, then lists the licence records on it. For the part of a flow that has to be protected, encrypt its parameters once with a keynub crypto node set to encrypt (scope developer), ship only the encrypted form, and decrypt them with a keynub crypto node after keynub genuine."
+  },
+  {
+    "id": "c1a0d0e0f0a00002",
+    "type": "keynub-dongle",
+    "name": "",
+    "serial": ""
+  },
+  {
+    "id": "c1a0d0e0f0a00003",
+    "type": "inject",
+    "z": "c1a0d0e0f0a00001",
+    "name": "on deploy",
+    "props": [],
+    "once": true,
+    "onceDelay": "1",
+    "x": 130,
+    "y": 100,
+    "wires": [["c1a0d0e0f0a00004"]]
+  },
+  {
+    "id": "c1a0d0e0f0a00004",
+    "type": "keynub-genuine",
+    "z": "c1a0d0e0f0a00001",
+    "name": "",
+    "dongle": "c1a0d0e0f0a00002",
+    "x": 320,
+    "y": 100,
+    "wires": [["c1a0d0e0f0a00005"], ["c1a0d0e0f0a00008"]]
+  },
+  {
+    "id": "c1a0d0e0f0a00005",
+    "type": "keynub-record",
+    "z": "c1a0d0e0f0a00001",
+    "name": "",
+    "dongle": "c1a0d0e0f0a00002",
+    "action": "list",
+    "record": "",
+    "output": "buffer",
+    "x": 540,
+    "y": 80,
+    "wires": [["c1a0d0e0f0a00006"]]
+  },
+  {
+    "id": "c1a0d0e0f0a00006",
+    "type": "debug",
+    "z": "c1a0d0e0f0a00001",
+    "name": "records",
+    "active": true,
+    "tosidebar": true,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 740,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "c1a0d0e0f0a00008",
+    "type": "debug",
+    "z": "c1a0d0e0f0a00001",
+    "name": "not genuine",
+    "active": true,
+    "tosidebar": true,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 550,
+    "y": 140,
+    "wires": []
+  }
+]

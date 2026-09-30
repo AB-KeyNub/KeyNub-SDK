@@ -1,0 +1,309 @@
+<!-- Node-RED editor definitions for the KeyNub license dongle nodes. -->
+
+<!-- keynub-dongle: configuration ----------------------------------------------->
+<script type="text/javascript">
+  RED.nodes.registerType('keynub-dongle', {
+    category: 'config',
+    defaults: {
+      name: { value: '' },
+      serial: { value: '' },
+    },
+    credentials: {
+      writeKeyFile: { type: 'text' },
+    },
+    label: function () {
+      return this.name || (this.serial ? 'KeyNub ' + this.serial : 'KeyNub (first dongle)');
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="keynub-dongle">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-serial"><i class="fa fa-key"></i> Serial</label>
+    <input type="text" id="node-config-input-serial" placeholder="empty: the first dongle attached">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-writeKeyFile"><i class="fa fa-lock"></i> Write key</label>
+    <input type="text" id="node-config-input-writeKeyFile" placeholder="path to the write key (PKCS#8 DER); only to write">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="keynub-dongle">
+  <p>A KeyNub USB license dongle, shared by the KeyNub nodes that use it.</p>
+  <h3>Properties</h3>
+  <dl class="message-properties">
+    <dt>Serial <span class="property-type">string</span></dt>
+    <dd>the dongle to use; empty for the first one attached.</dd>
+    <dt>Write key <span class="property-type">path</span></dt>
+    <dd>a file holding the dongle's write key, a P-256 private key in PKCS#8 DER. Only
+      writing and erasing records and incrementing counters need it; it is stored with
+      the flow's credentials. Keep it on the machines that issue licences.</dd>
+  </dl>
+  <p>The dongle is opened on first use and again after it was unplugged. On Linux, install
+    the udev rule described in the SDK's NATIVES.md so Node-RED can open it without root.</p>
+</script>
+
+<!-- keynub-genuine --------------------------------------------------------------->
+<script type="text/javascript">
+  RED.nodes.registerType('keynub-genuine', {
+    category: 'KeyNub',
+    color: '#F3B567',
+    defaults: {
+      name: { value: '' },
+      dongle: { value: '', type: 'keynub-dongle', required: true },
+    },
+    inputs: 1,
+    outputs: 2,
+    outputLabels: ['genuine', 'not genuine'],
+    icon: 'font-awesome/fa-check-circle',
+    label: function () { return this.name || 'keynub genuine'; },
+  });
+</script>
+
+<script type="text/html" data-template-name="keynub-genuine">
+  <div class="form-row">
+    <label for="node-input-dongle"><i class="fa fa-usb"></i> Dongle</label>
+    <input type="text" id="node-input-dongle">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="keynub-genuine">
+  <p>Proves that the dongle is genuine: its certificate chain to the KeyNub root and a live
+    challenge-response against the key inside it.</p>
+  <h3>Outputs</h3>
+  <ol class="node-ports">
+    <li>Genuine
+      <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd><code>{ genuine: true, serial, provisionedDate }</code></dd>
+      </dl>
+    </li>
+    <li>Not genuine
+      <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd><code>{ genuine: false, code, detail }</code>: every failure, a missing dongle
+          included, arrives here; <code>code</code> says which (for example
+          <code>KEYNUB_NO_DEVICE</code>).</dd>
+      </dl>
+    </li>
+  </ol>
+  <p>A flow that only branches on this is easy to rewire. Encrypt the data the flow needs with
+    <b>keynub crypto</b> and ship only the encrypted form.</p>
+</script>
+
+<!-- keynub-record ------------------------------------------------------------------>
+<script type="text/javascript">
+  RED.nodes.registerType('keynub-record', {
+    category: 'KeyNub',
+    color: '#F3B567',
+    defaults: {
+      name: { value: '' },
+      dongle: { value: '', type: 'keynub-dongle', required: true },
+      action: { value: 'read' },
+      record: { value: '' },
+      output: { value: 'buffer' },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-file-text-o',
+    label: function () { return this.name || 'keynub ' + this.action + (this.record ? ' ' + this.record : ''); },
+    oneditprepare: function () {
+      $('#node-input-action').on('change', function () {
+        $('.keynub-output-row').toggle($(this).val() === 'read');
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="keynub-record">
+  <div class="form-row">
+    <label for="node-input-dongle"><i class="fa fa-usb"></i> Dongle</label>
+    <input type="text" id="node-input-dongle">
+  </div>
+  <div class="form-row">
+    <label for="node-input-action"><i class="fa fa-wrench"></i> Action</label>
+    <select id="node-input-action">
+      <option value="read">read</option>
+      <option value="list">list</option>
+      <option value="write">write</option>
+      <option value="erase">erase</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-record"><i class="fa fa-file-o"></i> Record</label>
+    <input type="text" id="node-input-record" placeholder="empty: msg.topic">
+  </div>
+  <div class="form-row keynub-output-row">
+    <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+    <select id="node-input-output">
+      <option value="buffer">a Buffer</option>
+      <option value="string">a UTF-8 string</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="keynub-record">
+  <p>The license records on the dongle: named blobs a licence typically lives in.</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt class="optional">topic <span class="property-type">string</span></dt>
+    <dd>the record name, when the node does not set one.</dd>
+    <dt class="optional">payload <span class="property-type">Buffer | string | object</span></dt>
+    <dd>for <i>write</i>: the contents; a string is stored as UTF-8, an object as JSON.</dd>
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>payload</dt>
+    <dd><i>read</i>: the record, as a Buffer or a string; <i>list</i>: an array of
+      <code>{ name, size }</code>; <i>write</i> and <i>erase</i>: unchanged.</dd>
+  </dl>
+  <p><i>write</i> and <i>erase</i> need the write key set in the dongle's configuration. A
+    record that does not exist is an error with <code>msg.keynub.code</code>
+    <code>KEYNUB_RECORD_NOT_FOUND</code>.</p>
+</script>
+
+<!-- keynub-counter ------------------------------------------------------------------>
+<script type="text/javascript">
+  RED.nodes.registerType('keynub-counter', {
+    category: 'KeyNub',
+    color: '#F3B567',
+    defaults: {
+      name: { value: '' },
+      dongle: { value: '', type: 'keynub-dongle', required: true },
+      action: { value: 'read' },
+      counter: { value: 0, validate: RED.validators.number() },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-sort-numeric-asc',
+    label: function () { return this.name || 'keynub counter ' + this.counter; },
+  });
+</script>
+
+<script type="text/html" data-template-name="keynub-counter">
+  <div class="form-row">
+    <label for="node-input-dongle"><i class="fa fa-usb"></i> Dongle</label>
+    <input type="text" id="node-input-dongle">
+  </div>
+  <div class="form-row">
+    <label for="node-input-action"><i class="fa fa-wrench"></i> Action</label>
+    <select id="node-input-action">
+      <option value="read">read</option>
+      <option value="increment">increment</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-counter"><i class="fa fa-hashtag"></i> Counter</label>
+    <input type="text" id="node-input-counter">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="keynub-counter">
+  <p>A monotonic counter on the dongle: it only ever goes up.</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt class="optional">counter <span class="property-type">number</span></dt>
+    <dd>the counter id, overriding the node's.</dd>
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">number</span></dt>
+    <dd>the counter's value; after <i>increment</i>, the new one.</dd>
+  </dl>
+  <p><i>increment</i> needs the write key set in the dongle's configuration, and cannot be
+    undone.</p>
+</script>
+
+<!-- keynub-crypto ------------------------------------------------------------------->
+<script type="text/javascript">
+  RED.nodes.registerType('keynub-crypto', {
+    category: 'KeyNub',
+    color: '#F3B567',
+    defaults: {
+      name: { value: '' },
+      dongle: { value: '', type: 'keynub-dongle', required: true },
+      action: { value: 'decrypt' },
+      scope: { value: 'developer' },
+      output: { value: 'buffer' },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'font-awesome/fa-lock',
+    label: function () { return this.name || 'keynub ' + this.action; },
+    oneditprepare: function () {
+      $('#node-input-action').on('change', function () {
+        var encrypt = $(this).val() === 'encrypt';
+        $('.keynub-scope-row').toggle(encrypt);
+        $('.keynub-output-row').toggle(!encrypt);
+      });
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="keynub-crypto">
+  <div class="form-row">
+    <label for="node-input-dongle"><i class="fa fa-usb"></i> Dongle</label>
+    <input type="text" id="node-input-dongle">
+  </div>
+  <div class="form-row">
+    <label for="node-input-action"><i class="fa fa-wrench"></i> Action</label>
+    <select id="node-input-action">
+      <option value="decrypt">decrypt</option>
+      <option value="encrypt">encrypt</option>
+    </select>
+  </div>
+  <div class="form-row keynub-scope-row">
+    <label for="node-input-scope"><i class="fa fa-users"></i> Scope</label>
+    <select id="node-input-scope">
+      <option value="developer">developer: any dongle you have issued</option>
+      <option value="device">device: only this dongle</option>
+    </select>
+  </div>
+  <div class="form-row keynub-output-row">
+    <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+    <select id="node-input-output">
+      <option value="buffer">a Buffer</option>
+      <option value="string">a UTF-8 string</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name">
+  </div>
+</script>
+
+<script type="text/html" data-help-name="keynub-crypto">
+  <p>Encrypts data so that only a dongle can decrypt it, and decrypts it again. Put something
+    the flow needs through this, such as its parameters, and ship only the encrypted form:
+    then the flow cannot run without the dongle.</p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">Buffer | string | object</span></dt>
+    <dd>the data; a string is taken as UTF-8, an object as JSON.</dd>
+  </dl>
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">Buffer | string</span></dt>
+    <dd><i>encrypt</i>: the encrypted Buffer; <i>decrypt</i>: the plaintext.</dd>
+  </dl>
+  <p>Scope <i>developer</i> lets any dongle you have issued decrypt the data, so one encrypted
+    file serves every customer; <i>device</i> locks it to the one dongle that encrypted it.
+    Data that was tampered with fails with <code>msg.keynub.code</code>
+    <code>KEYNUB_TAG_MISMATCH</code>.</p>
+</script>
