@@ -38,10 +38,11 @@ try (LicenseDongleContext ctx = new LicenseDongleContext()) {
 
 ## Native library resolution
 
-JNA loads `keynub_licdongle` from `jna.library.path`, the JAR-embedded natives, or the system
-search path. Override with the system property `-Dkeynub.licdongle.library=<path-or-name>`. Linux
-additionally needs the shipped udev rule (a permission rule, not a driver). Per-platform natives
-are embedded into the published JAR.
+The JAR carries no native library. Take `keynub_licdongle` for your platform from the SDK's
+[natives folder](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md): JNA loads it from
+`jna.library.path` or the system search path, or from the path the system property
+`-Dkeynub.licdongle.library=<path-or-name>` names. Linux additionally needs the shipped udev rule
+(a permission rule, not a driver).
 
 ## Security
 

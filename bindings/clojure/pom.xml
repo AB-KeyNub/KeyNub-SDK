@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.keynub</groupId>
+  <artifactId>keynub-licdongle-clj</artifactId>
+  <version>1.1.1</version>
+  <packaging>jar</packaging>
+
+  <name>keynub-licdongle-clj</name>
+  <description>Clojure client for the KeyNub USB license dongle: prove that a dongle is genuine, read and write its license records, read and increment its counters, and encrypt data that only a dongle can decrypt. Over the Java binding com.keynub/keynub-licdongle; Windows, Linux and macOS, no driver.</description>
+  <url>https://www.keynub.com/developers/clojure/</url>
+
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>KeyNub</name>
+    <url>https://www.keynub.com</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>KeyNub</name>
+      <organization>KeyNub</organization>
+      <organizationUrl>https://www.keynub.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/AB-KeyNub/KeyNub-SDK.git</connection>
+    <url>https://github.com/AB-KeyNub/KeyNub-SDK/tree/master/bindings/clojure</url>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- The oldest Clojure the library supports; -Dclojure.version=... tests another. -->
+    <clojure.version>1.11.4</clojure.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>clojure</artifactId>
+      <version>${clojure.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.keynub</groupId>
+      <artifactId>keynub-licdongle</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- A Clojure library ships its source: src/ is the jar's content. -->
+    <resources>
+      <resource>
+        <directory>src</directory>
+      </resource>
+      <resource>
+        <directory>${project.basedir}</directory>
+        <targetPath>META-INF</targetPath>
+        <includes>
+          <include>README.md</include>
+          <include>LICENSE</include>
+        </includes>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>test</directory>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <!-- mvn test: every function against the C ABI stand-in, with clojure.main. -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.6.4</version>
+        <executions>
+          <execution>
+            <id>standin-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <executable>${java.home}/bin/java</executable>
+              <classpathScope>test</classpathScope>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>clojure.main</argument>
+                <argument>-m</argument>
+                <argument>keynub.licdongle.standin-test</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars</name>
+      <url>https://repo.clojars.org/</url>
+    </repository>
+  </distributionManagement>
+</project>

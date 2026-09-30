@@ -1,0 +1,6 @@
+{:paths ["src"]
+ :deps {org.clojure/clojure {:mvn/version "1.11.4"}
+        com.keynub/keynub-licdongle {:mvn/version "1.1.1"}}
+ :aliases {;; clojure -M:test runs every function against the C ABI stand-in.
+           :test {:extra-paths ["test"]
+                  :main-opts ["-m" "keynub.licdongle.standin-test"]}}}
