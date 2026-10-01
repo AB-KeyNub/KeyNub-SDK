@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>keynub-licd-tool</id>
+    <version>1.1.1</version>
+    <packageSourceUrl>https://github.com/AB-KeyNub/KeyNub-SDK/tree/master/tools/licd-tool/chocolatey</packageSourceUrl>
+    <owners>ab-tools</owners>
+    <title>KeyNub licd-tool</title>
+    <authors>KeyNub</authors>
+    <projectUrl>https://www.keynub.com/developers/</projectUrl>
+    <iconUrl>https://www.keynub.com/wp-content/uploads/keynub-site-icon-512.png</iconUrl>
+    <copyright>Copyright (c) KeyNub</copyright>
+    <licenseUrl>https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/BINARY-LICENSE.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/AB-KeyNub/KeyNub-SDK/tree/master/tools/licd-tool</projectSourceUrl>
+    <docsUrl>https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/tools/licd-tool/README.md</docsUrl>
+    <bugTrackerUrl>https://github.com/AB-KeyNub/KeyNub-SDK/issues</bugTrackerUrl>
+    <tags>keynub licd-tool dongle license licensing usb hardware security cli</tags>
+    <summary>Command-line tool for the KeyNub USB license dongle.</summary>
+    <description><![CDATA[licd-tool lists and inspects KeyNub USB license dongles, proves that a dongle is genuine, reads and writes the license records it holds, reads and increments its monotonic counters, and encrypts data that only a dongle can decrypt.
+
+One executable with the KeyNub core library built in: no driver and no other library to install. For licence-issuing scripts, support and test benches; `--json` gives machine-readable output.
+
+## Usage
+
+```
+licd-tool list
+licd-tool info
+licd-tool verify
+licd-tool records read license -o license.bin
+licd-tool counter read
+licd-tool --help
+```
+
+The package contains the Authenticode-signed x64 and x86 executables and installs the one that fits the machine; the x64 one also runs on Windows on Arm.
+]]></description>
+    <releaseNotes>https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/tools/licd-tool/README.md</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="legal\**" target="legal" />
+  </files>
+</package>

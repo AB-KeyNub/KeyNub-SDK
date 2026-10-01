@@ -1,0 +1,22 @@
+VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+
+KeyNub, the publisher of licd-tool, maintains this package. The executables
+in tools\x64 and tools\x86 are the Authenticode-signed builds published in
+the KeyNub SDK repository under the tag licd-tool-v1.1.1:
+
+  x64: https://github.com/AB-KeyNub/KeyNub-SDK/raw/licd-tool-v1.1.1/natives/win-x64/licd-tool.exe
+  x86: https://github.com/AB-KeyNub/KeyNub-SDK/raw/licd-tool-v1.1.1/natives/win-x86/licd-tool.exe
+
+Download them and compare their SHA-256 checksums with these:
+
+  tools\x64\licd-tool.exe  517EBF48695D19BC890B54DF8FA02B69E8400B955E53C2708DCBAFF6E076A81E
+  tools\x86\licd-tool.exe  8BA2F409B479816A48A593A763E8C9D8B336291A829802D96E454AB017C13633
+
+PowerShell: Get-FileHash -Algorithm SHA256 <file>
+The signature: Get-AuthenticodeSignature <file>
+
+The executables are licensed under the terms in legal\LICENSE.txt
+(https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/BINARY-LICENSE.txt);
+the licd-tool source is Apache-2.0 (legal\LICENSE-APACHE-2.0.txt).
