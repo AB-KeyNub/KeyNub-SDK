@@ -1,0 +1,34 @@
+{
+    "meta-version": 1,
+    "name": "KeyNub::LicDongle",
+    "version": "1.1.1",
+    "auth": "zef:keynub",
+    "api": "1",
+    "description": "KeyNub License Dongle: verify that a dongle is genuine, read and write its license records, use its hardware counters and encrypt data only a dongle can decrypt",
+    "authors": [
+        "KeyNub"
+    ],
+    "license": "Apache-2.0",
+    "raku-version": "6.d",
+    "source-url": "https://github.com/AB-KeyNub/KeyNub-SDK.git",
+    "support": {
+        "source": "https://github.com/AB-KeyNub/KeyNub-SDK.git",
+        "bugtracker": "https://github.com/AB-KeyNub/KeyNub-SDK/issues"
+    },
+    "tags": [
+        "licensing",
+        "dongle",
+        "copy-protection",
+        "hardware-key",
+        "nativecall",
+        "usb"
+    ],
+    "depends": [],
+    "test-depends": [],
+    "provides": {
+        "KeyNub::LicDongle": "lib/KeyNub/LicDongle.rakumod",
+        "KeyNub::LicDongle::Flat": "lib/KeyNub/LicDongle/Flat.rakumod",
+        "KeyNub::LicDongle::Library": "lib/KeyNub/LicDongle/Library.rakumod"
+    },
+    "resources": []
+}

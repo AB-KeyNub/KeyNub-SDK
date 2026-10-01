@@ -1,0 +1,70 @@
+use v6.d;
+use Test;
+use KeyNub::LicDongle;
+
+# Checks that need neither the native library nor a dongle.
+
+plan 7;
+
+subtest 'names status codes', {
+    is KeyNub::LicDongle::status-name(-2), 'NoDevice', 'NoDevice';
+    is KeyNub::LicDongle::status-name(0), 'Ok', 'Ok';
+    is KeyNub::LicDongle::status-name(-99), 'Unknown', 'a code the binding does not know';
+}
+
+subtest 'status codes match licd_status', {
+    my constant Status = KeyNub::LicDongle::Status;
+    is Status::Ok.value, 0, 'Ok';
+    is Status::InvalidArg.value, -1, 'InvalidArg';
+    is Status::NotGenuine.value, -7, 'NotGenuine';
+    is Status::Range.value, -11, 'Range';
+    is Status::AuthRequired.value, -15, 'AuthRequired';
+    is Status::Internal.value, -20, 'Internal';
+    is-deeply Status.enums.values.sort.List, (-20 .. 0).List, 'every code from -20 to 0, once';
+}
+
+subtest 'scopes', {
+    is KeyNub::LicDongle::Scope::Device.value, 0, 'Device';
+    is KeyNub::LicDongle::Scope::Developer.value, 1, 'Developer';
+}
+
+subtest 'builds the error text from operation, status and detail', {
+    my $e = X::KeyNub::LicDongle.new(operation => 'licdf_open', code => -2);
+    ok $e.status === KeyNub::LicDongle::Status::NoDevice, 'status';
+    is $e.code, -2, 'code';
+    is $e.operation, 'licdf_open', 'operation';
+    is $e.message, 'licdf_open: NoDevice (-2)', 'message';
+    my $f = X::KeyNub::LicDongle.new(operation => 'licdf_record_read', code => -14, detail => 'no such record');
+    is $f.message, 'licdf_record_read: NotFound (-14): no such record', 'message with detail';
+    nok X::KeyNub::LicDongle.new(operation => 'x', code => -99).status.defined, 'no status for an unknown code';
+    throws-like { X::KeyNub::LicDongle.new(operation => 'licdf_open', code => -2).throw },
+        X::KeyNub::LicDongle, code => -2;
+}
+
+subtest 'keeps the bare file name as the last resort', {
+    my @all = KeyNub::LicDongle::library-candidates();
+    ok @all.elems > 0, 'candidates';
+    if %*ENV{KeyNub::LicDongle::LIBRARY-ENVIRONMENT-VARIABLE} {
+        pass 'the environment names the library';
+    }
+    else {
+        is @all[*-1], KeyNub::LicDongle::library-basename(), 'bare file name last';
+    }
+    nok KeyNub::LicDongle::loaded-library-path().defined, 'nothing loaded';
+}
+
+subtest 'reads a NUL-terminated buffer', {
+    is KeyNub::LicDongle::c-string(buf8.new(0x61, 0x62, 0, 0x63)), 'ab', 'stops at the NUL';
+    is KeyNub::LicDongle::c-string(buf8.new(0x61, 0x62)), 'ab', 'no NUL';
+}
+
+subtest 'version matches META6.json', {
+    my $meta = $?FILE.IO.parent.parent.add('META6.json');
+    if $meta.f {
+        my $version = $meta.slurp ~~ / '"version"' \s* ':' \s* '"' (<-["]>+) '"' /;
+        is KeyNub::LicDongle::VERSION, ~$version[0], 'VERSION';
+    }
+    else {
+        skip 'META6.json not beside the tests';
+    }
+}

@@ -1,0 +1,18 @@
+name = "keynub_licdongle_gleam"
+version = "1.1.1"
+description = "Client for the KeyNub USB license dongle: genuineness check, license records, hardware counters and dongle-bound encryption, over the keynub_licdongle Hex package."
+licences = ["Apache-2.0"]
+repository = { type = "github", user = "AB-KeyNub", repo = "KeyNub-SDK", path = "bindings/gleam" }
+links = [
+  { title = "Website", href = "https://www.keynub.com/developers/gleam/" },
+  { title = "Native library", href = "https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md" },
+]
+gleam = ">= 1.11.0"
+target = "erlang"
+
+[dependencies]
+gleam_stdlib = ">= 0.44.0 and < 2.0.0"
+keynub_licdongle = ">= 1.1.1 and < 2.0.0"
+
+[dev-dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"

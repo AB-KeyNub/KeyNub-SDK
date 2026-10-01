@@ -1,0 +1,3 @@
+*.gleam text eol=lf
+*.erl text eol=lf
+*.toml text eol=lf
