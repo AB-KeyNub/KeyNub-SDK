@@ -1,0 +1,14 @@
+# Line endings the format checks need on every checkout, Windows included: these
+# languages' formatters (deno fmt, mix format, gleam format, v fmt, odin -strict-style)
+# reject CRLF.
+*.ex text eol=lf
+*.exs text eol=lf
+*.gleam text eol=lf
+*.erl text eol=lf
+*.v text eol=lf
+*.odin text eol=lf
+bindings/deno/** text=auto eol=lf
+samples/deno/** text=auto eol=lf
+bindings/gleam/*.toml text eol=lf
+samples/gleam/*.toml text eol=lf
+v.mod text eol=lf

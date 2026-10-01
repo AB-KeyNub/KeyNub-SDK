@@ -130,10 +130,21 @@ namespace KeyNub.LicenseDongle
             }
 
             var full = new byte[total];
-            LicdProgressCallback? bridge = MakeBridge(progress, cancellationToken);
-            rc = NativeMethods.licd_record_read(_dongle.Handle, nameUtf8, 0, full, (uint)full.Length,
-                out uint len, out uint _, bridge, IntPtr.Zero);
-            GC.KeepAlive(bridge);
+            GCHandle target = MakeTarget(progress, cancellationToken);
+            uint len;
+            try
+            {
+                rc = NativeMethods.licd_record_read(_dongle.Handle, nameUtf8, 0, full, (uint)full.Length,
+                    out len, out uint _, target.IsAllocated ? Callbacks.Progress : null,
+                    target.IsAllocated ? GCHandle.ToIntPtr(target) : IntPtr.Zero);
+            }
+            finally
+            {
+                if (target.IsAllocated)
+                {
+                    target.Free();
+                }
+            }
             ThrowIfCancelled(rc, cancellationToken);
             Errors.Check(rc, Ctx, "licd_record_read");
             return Trim(full, len);
@@ -155,10 +166,21 @@ namespace KeyNub.LicenseDongle
             }
             byte[] nameUtf8 = RequireName(name);
             cancellationToken.ThrowIfCancellationRequested();
-            LicdProgressCallback? bridge = MakeBridge(progress, cancellationToken);
-            int rc = NativeMethods.licd_record_write(_dongle.Handle, nameUtf8, data, (uint)data.Length,
-                bridge, IntPtr.Zero);
-            GC.KeepAlive(bridge);
+            GCHandle target = MakeTarget(progress, cancellationToken);
+            int rc;
+            try
+            {
+                rc = NativeMethods.licd_record_write(_dongle.Handle, nameUtf8, data, (uint)data.Length,
+                    target.IsAllocated ? Callbacks.Progress : null,
+                    target.IsAllocated ? GCHandle.ToIntPtr(target) : IntPtr.Zero);
+            }
+            finally
+            {
+                if (target.IsAllocated)
+                {
+                    target.Free();
+                }
+            }
             ThrowIfCancelled(rc, cancellationToken);
             Errors.Check(rc, Ctx, "licd_record_write");
         }
@@ -295,23 +317,15 @@ namespace KeyNub.LicenseDongle
         /// <summary>Ends the session.</summary>
         public void Dispose() => Close();
 
-        // Bridges an IProgress/CancellationToken to the native progress callback. Returns null when
-        // neither is active so the core takes its no-callback fast path.
-        private static LicdProgressCallback? MakeBridge(IProgress<TransferProgress>? progress, CancellationToken ct)
+        // The target of the native progress callback for one transfer. Unallocated when neither
+        // progress nor cancellation is active, so the core takes its no-callback fast path.
+        private static GCHandle MakeTarget(IProgress<TransferProgress>? progress, CancellationToken ct)
         {
             if (progress == null && !ct.CanBeCanceled)
             {
-                return null;
+                return default;
             }
-            return (done, total, _) =>
-            {
-                if (ct.IsCancellationRequested)
-                {
-                    return 0; // -> native returns LICD_E_CANCELLED
-                }
-                progress?.Report(new TransferProgress(done, total));
-                return 1;
-            };
+            return GCHandle.Alloc(new Callbacks.ProgressTarget(progress, ct));
         }
 
         private static void ThrowIfCancelled(int rc, CancellationToken ct)

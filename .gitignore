@@ -117,6 +117,12 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 dependency-reduced-pom.xml
 
+# --- Scala (scala-cli), Kotlin and Gradle ------------------------------------
+.scala-build/
+.bsp/
+.gradle/
+.kotlin/
+
 # --- Julia -------------------------------------------------------------------
 Manifest.toml
 *.jl.cov
@@ -161,9 +167,10 @@ __recovery/
 # --- Fortran -----------------------------------------------------------------
 *.mod
 *.smod
-# The Go sample's go.mod is source, and matches *.mod above.
+# The Go sample's go.mod and the V module's root v.mod are source, and match *.mod above.
 !samples/go/*/go.mod
 !bindings/go/go.mod
+!/v.mod
 
 # --- COBOL -------------------------------------------------------------------
 bindings/cobol/*.c
@@ -174,6 +181,8 @@ samples/cobol/*.so
 samples/cobol/*.exe
 
 # --- MATLAB, Simulink --------------------------------------------------------
+# keynub.build compiles the MEX gateways into bindings/matlab/mex.
+bindings/matlab/mex/
 *.mex*
 *.asv
 *.slxc
@@ -239,6 +248,42 @@ dub.selections.json
 bindings/d/build/
 samples/d/verify_and_read
 samples/d/rotate_write_key
+
+# --- Gleam -----------------------------------------------------------------------
+erl_crash.dump
+*.beam
+
+# --- Racket ----------------------------------------------------------------------
+compiled/
+bindings/racket/doc/
+
+# --- Raku ------------------------------------------------------------------------
+.precomp/
+
+# --- Common Lisp -----------------------------------------------------------------
+*.fasl
+*.dx64fsl
+*.lx64fsl
+*.fas
+
+# --- SWI-Prolog ------------------------------------------------------------------
+# The foreign module an in-place pack build installs (build/ is covered above).
+bindings/prolog/lib/
+
+# --- Odin ------------------------------------------------------------------------
+# odin build from the repository root leaves the executable there, named after the
+# file or folder (.exe and .pdb are covered above).
+/verify_and_read
+/rotate_write_key
+/standin
+/unit
+
+# --- V ---------------------------------------------------------------------------
+# v <file>.v leaves the executable beside the source (.exe is covered above).
+samples/v/verify_and_read
+samples/v/rotate_write_key
+bindings/v/test/standin
+*.tmp.c
 
 # --- the tracked prebuilt libraries ------------------------------------------
 # Last word, deliberately: these are the one binary thing this repository does

@@ -22,10 +22,11 @@ later, on Windows, Linux and macOS.
 raco pkg install keynub-licdongle
 ```
 
-or straight from the repository:
+or straight from the repository, under the package's name (without `--name`,
+raco names it after the last path segment):
 
 ```
-raco pkg install "https://github.com/AB-KeyNub/KeyNub-SDK.git?path=bindings/racket"
+raco pkg install --name keynub-licdongle "https://github.com/AB-KeyNub/KeyNub-SDK.git?path=bindings/racket#racket-v1.1.1"
 ```
 
 The package does not contain the native library. Put the library for your

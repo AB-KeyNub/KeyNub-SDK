@@ -13,8 +13,8 @@ namespace KeyNub.LicenseDongle
     {
         private readonly LicdContextHandle _handle;
 
-        // Kept alive for the context lifetime so the native side can call it.
-        private LicdLogCallback? _logThunk;
+        // The registered log callback, which the native side reaches through its user pointer.
+        private GCHandle _logTarget;
 
         private LicenseDongleContext(LicdContextHandle handle)
         {
@@ -50,14 +50,27 @@ namespace KeyNub.LicenseDongle
         {
             if (callback == null)
             {
-                _logThunk = null;
                 NativeMethods.licd_set_log_callback(_handle, null, IntPtr.Zero);
+                FreeLogTarget();
                 return;
             }
 
-            // Wrap once and retain, so the delegate outlives the native registration.
-            _logThunk = (level, msgPtr, _) => callback(level, Utf8.FromPtr(msgPtr));
-            NativeMethods.licd_set_log_callback(_handle, _logThunk, IntPtr.Zero);
+            GCHandle previous = _logTarget;
+            _logTarget = GCHandle.Alloc(callback);
+            NativeMethods.licd_set_log_callback(_handle, Callbacks.Log, GCHandle.ToIntPtr(_logTarget));
+            if (previous.IsAllocated)
+            {
+                previous.Free();
+            }
+        }
+
+        private void FreeLogTarget()
+        {
+            if (_logTarget.IsAllocated)
+            {
+                _logTarget.Free();
+            }
+            _logTarget = default;
         }
 
         /// <summary>
@@ -137,8 +150,8 @@ namespace KeyNub.LicenseDongle
         /// <summary>Releases the context.</summary>
         public void Dispose()
         {
-            _logThunk = null;
             _handle.Dispose();
+            FreeLogTarget();
         }
     }
 }

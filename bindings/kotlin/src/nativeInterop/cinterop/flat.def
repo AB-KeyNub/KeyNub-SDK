@@ -1,0 +1,116 @@
+package = com.keynub.licdongle.kotlin.cinterop
+noStringConversion = kn_load
+---
+/*
+ * Loads the SDK's flat C API (bindings/flat/licd_flat.h) from a library file at run time and forwards every call
+ * to it. Nothing is linked: kn_load resolves the 28 functions, and the kn_ functions call through them.
+ */
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
+#define KN_FUNCTIONS(X) \
+    X(licdf_version, (int32_t *a, int32_t *b, int32_t *c), (a, b, c)) \
+    X(licdf_device_count, (int32_t *n), (n)) \
+    X(licdf_device_serial, (int32_t i, char *out, int32_t size), (i, out, size)) \
+    X(licdf_device_path, (int32_t i, char *out, int32_t size), (i, out, size)) \
+    X(licdf_open, (const char *serial), (serial)) \
+    X(licdf_open_path, (const char *path), (path)) \
+    X(licdf_close, (int32_t h), (h)) \
+    X(licdf_set_trust_root, (int32_t h, const uint8_t *der, int32_t len), (h, der, len)) \
+    X(licdf_get_serial, (int32_t h, char *out, int32_t size), (h, out, size)) \
+    X(licdf_get_info, (int32_t h, int32_t *pa, int32_t *pb, int32_t *fa, int32_t *fb, int32_t *fc, \
+                       int32_t *flags, int32_t *capacity, int32_t *free_bytes), \
+      (h, pa, pb, fa, fb, fc, flags, capacity, free_bytes)) \
+    X(licdf_verify_genuine, (int32_t h, int32_t *genuine, char *serial, int32_t serial_size, char *date, \
+                             int32_t date_size), \
+      (h, genuine, serial, serial_size, date, date_size)) \
+    X(licdf_session_open, (int32_t h), (h)) \
+    X(licdf_session_close, (int32_t h), (h)) \
+    X(licdf_write_auth, (int32_t h, const uint8_t *der, int32_t len), (h, der, len)) \
+    X(licdf_write_auth_rotate, (int32_t h, const uint8_t *der, int32_t len), (h, der, len)) \
+    X(licdf_record_count, (int32_t h, int32_t *n), (h, n)) \
+    X(licdf_record_name, (int32_t h, int32_t i, char *out, int32_t size, int32_t *record_size), \
+      (h, i, out, size, record_size)) \
+    X(licdf_record_size, (int32_t h, const char *name, int32_t *size), (h, name, size)) \
+    X(licdf_record_read, (int32_t h, const char *name, uint8_t *out, int32_t cap, int32_t *len), \
+      (h, name, out, cap, len)) \
+    X(licdf_record_write, (int32_t h, const char *name, const uint8_t *data, int32_t len), (h, name, data, len)) \
+    X(licdf_record_erase, (int32_t h, const char *name), (h, name)) \
+    X(licdf_record_erase_all, (int32_t h), (h)) \
+    X(licdf_counter_read, (int32_t h, int32_t id, int32_t *value), (h, id, value)) \
+    X(licdf_counter_increment, (int32_t h, int32_t id, int32_t *value), (h, id, value)) \
+    X(licdf_app_encrypt, (int32_t h, int32_t scope, const uint8_t *data, int32_t len, uint8_t *out, int32_t cap, \
+                          int32_t *out_len), \
+      (h, scope, data, len, out, cap, out_len)) \
+    X(licdf_app_decrypt, (int32_t h, const uint8_t *data, int32_t len, uint8_t *out, int32_t cap, \
+                          int32_t *out_len), \
+      (h, data, len, out, cap, out_len)) \
+    X(licdf_strerror, (int32_t status, char *out, int32_t size), (status, out, size)) \
+    X(licdf_last_error, (int32_t h, char *out, int32_t size), (h, out, size))
+
+#define KN_POINTER(name, params, args) static int32_t(*kn_p_##name) params;
+KN_FUNCTIONS(KN_POINTER)
+#undef KN_POINTER
+
+#define KN_FORWARD(name, params, args) static int32_t kn_##name params { return kn_p_##name args; }
+KN_FUNCTIONS(KN_FORWARD)
+#undef KN_FORWARD
+
+/*
+ * Loads the library at path (UTF-8) and resolves every function. Returns 0 on success; otherwise writes the
+ * reason into message (NUL-terminated) and returns -1. A failed load leaves nothing loaded.
+ */
+static int32_t kn_load(const char *path, char *message, int32_t message_size) {
+#ifdef _WIN32
+    int wide_length = MultiByteToWideChar(CP_UTF8, 0, path, -1, NULL, 0);
+    if (wide_length <= 0) {
+        snprintf(message, (size_t)message_size, "the path is not valid UTF-8");
+        return -1;
+    }
+    WCHAR *wide = (WCHAR *)HeapAlloc(GetProcessHeap(), 0, (SIZE_T)wide_length * sizeof(WCHAR));
+    if (wide == NULL) {
+        snprintf(message, (size_t)message_size, "out of memory");
+        return -1;
+    }
+    MultiByteToWideChar(CP_UTF8, 0, path, -1, wide, wide_length);
+    HMODULE lib = LoadLibraryW(wide);
+    HeapFree(GetProcessHeap(), 0, wide);
+    if (lib == NULL) {
+        snprintf(message, (size_t)message_size, "LoadLibrary failed with error %lu", (unsigned long)GetLastError());
+        return -1;
+    }
+#define KN_RESOLVE(name, params, args) \
+    kn_p_##name = (int32_t(*) params)(void (*)(void))GetProcAddress(lib, #name); \
+    if (kn_p_##name == NULL) { \
+        snprintf(message, (size_t)message_size, "does not export %s", #name); \
+        FreeLibrary(lib); \
+        return -1; \
+    }
+    KN_FUNCTIONS(KN_RESOLVE)
+#undef KN_RESOLVE
+#else
+    void *lib = dlopen(path, RTLD_NOW | RTLD_LOCAL);
+    if (lib == NULL) {
+        const char *reason = dlerror();
+        snprintf(message, (size_t)message_size, "%s", reason != NULL ? reason : "dlopen failed");
+        return -1;
+    }
+#define KN_RESOLVE(name, params, args) \
+    *(void **)(&kn_p_##name) = dlsym(lib, #name); \
+    if (kn_p_##name == NULL) { \
+        snprintf(message, (size_t)message_size, "does not export %s", #name); \
+        dlclose(lib); \
+        return -1; \
+    }
+    KN_FUNCTIONS(KN_RESOLVE)
+#undef KN_RESOLVE
+#endif
+    return 0;
+}
