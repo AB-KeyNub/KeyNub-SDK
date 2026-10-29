@@ -18,14 +18,23 @@ later, on Windows, Linux and macOS.
 
 ## Setup
 
-From a clone of the [SDK repository](https://github.com/AB-KeyNub/KeyNub-SDK),
+The system is in [Ultralisp](https://ultralisp.org/projects/AB-KeyNub/KeyNub-SDK). With Quicklisp loaded,
+add the Ultralisp dist once and load the system, which also fetches `cffi`:
+
+```lisp
+(ql-dist:install-dist "http://dist.ultralisp.org/" :prompt nil)
+(ql:quickload "keynub-licdongle")
+```
+
+From a clone of the [SDK repository](https://github.com/AB-KeyNub/KeyNub-SDK) instead,
 put `bindings/common-lisp/` where ASDF looks (a link in
 `~/quicklisp/local-projects/`, or
 `(push #p"/path/to/KeyNub-SDK/bindings/common-lisp/" asdf:*central-registry*)`)
 and load it with `ql:quickload`, which also fetches `cffi`, or with
 `asdf:load-system`.
 
-The system does not contain the native library. Put the library for your
+The system does not contain the native library; the Ultralisp release and a
+clone carry the SDK's `natives/` folder beside it. Put the library for your
 platform from the SDK's
 [natives folder](https://github.com/AB-KeyNub/KeyNub-SDK/blob/master/NATIVES.md)
 next to your program, or name it before the first call:

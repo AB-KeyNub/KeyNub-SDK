@@ -23,6 +23,8 @@ machine-readable output on stdout; `licd-tool --help` lists every command.
 - **Windows:** `natives/win-x64/licd-tool.exe` and `natives/win-x86/licd-tool.exe`
   in this repository, Authenticode-signed; the x64 one also runs on Windows on
   Arm.
+- **Chocolatey:** `choco install keynub-licd-tool` installs the signed
+  executable for the machine's architecture as `licd-tool`.
 - **Python:** `pip install keynub-licdongle` brings a `licd-tool` with the same
   commands.
 - **Build it:** from a clone, against the static library in `natives/`:
